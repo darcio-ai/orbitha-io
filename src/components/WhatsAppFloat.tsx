@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 const WhatsAppFloat = () => {
   const handleWhatsAppClick = () => {
     window.open(
-      "https://wa.me/5511999999999?text=Oi! Quero conhecer as soluções da Orbitha",
+      "https://wa.me/5583993095371?text=Oi! Quero conhecer as soluções da Orbitha",
       "_blank",
       "noopener,noreferrer"
     );

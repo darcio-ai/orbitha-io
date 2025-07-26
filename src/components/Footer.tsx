@@ -7,13 +7,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo e Descrição */}
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">O</span>
-              </div>
-              <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Orbitha.io
-              </span>
+            <div className="flex items-center space-x-3 mb-4">
+              <img 
+                src="/src/assets/orbitha-logo.png" 
+                alt="Orbitha Logo" 
+                className="w-8 h-8 object-contain"
+              />
+              <span className="text-xl font-bold">Orbitha.io</span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
               Ajudamos pequenas e médias empresas a integrarem inteligência artificial em seus 
@@ -21,7 +21,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://wa.me/5511999999999"
+                href="https://wa.me/5583993095371"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -62,10 +62,10 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Contato</h3>
             <ul className="space-y-2 text-muted-foreground">
-              <li>contato@orbitha.io</li>
+              <li>darciog@orbitha.io</li>
               <li>
                 <a
-                  href="https://wa.me/5511999999999"
+                  href="https://wa.me/5583993095371"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"

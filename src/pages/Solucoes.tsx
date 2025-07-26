@@ -170,7 +170,7 @@ const Solucoes = () => {
                     </div>
                     <Button className="w-full mt-8" asChild>
                       <a
-                        href={`https://wa.me/5511999999999?text=Oi! Quero saber mais sobre: ${solution.title}`}
+                        href={`https://wa.me/5583993095371?text=Oi! Quero saber mais sobre: ${solution.title}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -199,7 +199,7 @@ const Solucoes = () => {
             </p>
             <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
               <a
-                href="https://wa.me/5511999999999?text=Oi! Quero implementar soluções de IA na minha empresa"
+                href="https://wa.me/5583993095371?text=Oi! Quero implementar soluções de IA na minha empresa"
                 target="_blank"
                 rel="noopener noreferrer"
               >

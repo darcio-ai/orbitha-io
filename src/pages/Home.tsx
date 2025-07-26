@@ -79,7 +79,7 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button size="lg" className="text-lg px-8 py-6" asChild>
                 <a
-                  href="https://wa.me/5511999999999?text=Oi! Quero conhecer as soluções da Orbitha"
+                  href="https://wa.me/5583993095371?text=Oi! Quero conhecer as soluções da Orbitha"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -157,7 +157,7 @@ const Home = () => {
             </p>
             <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
               <a
-                href="https://wa.me/5511999999999?text=Oi! Quero descobrir como a automação pode ajudar minha empresa"
+                href="https://wa.me/5583993095371?text=Oi! Quero descobrir como a automação pode ajudar minha empresa"
                 target="_blank"
                 rel="noopener noreferrer"
               >
