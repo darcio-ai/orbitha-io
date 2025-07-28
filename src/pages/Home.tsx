@@ -96,7 +96,7 @@ const Home = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 justify-items-center">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
