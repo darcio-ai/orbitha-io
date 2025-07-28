@@ -40,8 +40,7 @@ const Home = () => {
   const stats = [
     { number: "95%", label: "Redução no tempo de resposta" },
     { number: "24/7", label: "Atendimento disponível" },
-    { number: "3x", label: "Aumento na produtividade" },
-    { number: "100+", label: "Empresas atendidas" }
+    { number: "3x", label: "Aumento na produtividade" }
   ];
 
   return (

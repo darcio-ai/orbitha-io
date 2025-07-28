@@ -81,7 +81,6 @@ const Contato = () => {
 
   const benefits = [
     "Resposta em até 2 horas úteis",
-    "Análise gratuita do seu processo",
     "Proposta personalizada",
     "Suporte especializado"
   ];
