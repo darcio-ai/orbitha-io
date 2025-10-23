@@ -22,7 +22,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://wa.me/5583993095371"
+                href="https://wa.me/5513991497873"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -66,7 +66,7 @@ const Footer = () => {
               <li>darciog@orbitha.io</li>
               <li>
                 <a
-                  href="https://wa.me/5583993095371"
+                  href="https://wa.me/5513991497873"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"

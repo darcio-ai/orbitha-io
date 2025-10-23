@@ -277,7 +277,7 @@ const Blog = () => {
                   </p>
                   <Button className="w-full" asChild>
                     <a
-                      href="https://wa.me/5583993095371?text=Oi! Vi o blog e quero implementar IA na minha empresa"
+                      href="https://wa.me/5513991497873?text=Oi! Vi o blog e quero implementar IA na minha empresa"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

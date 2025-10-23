@@ -50,7 +50,7 @@ const Header = () => {
           <div className="hidden md:flex">
             <Button variant="default" asChild>
               <a
-                href="https://wa.me/5583993095371?text=Oi! Quero conhecer as soluções da Orbitha"
+                href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -88,7 +88,7 @@ const Header = () => {
               <div className="px-3 py-2">
                 <Button variant="default" className="w-full" asChild>
                   <a
-                    href="https://wa.me/5583993095371?text=Oi! Quero conhecer as soluções da Orbitha"
+                    href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

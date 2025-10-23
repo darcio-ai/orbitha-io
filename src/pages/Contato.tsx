@@ -61,7 +61,7 @@ const Contato = () => {
       title: "WhatsApp",
       description: "Fale diretamente com a Dora",
       action: "Iniciar conversa",
-      link: "https://wa.me/5583993095371?text=Oi! Quero conhecer as soluções da Orbitha"
+      link: "https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
     },
     {
       icon: <Mail className="h-6 w-6" />,
@@ -229,7 +229,7 @@ const Contato = () => {
               <CardContent>
                 <Button variant="secondary" size="lg" className="w-full" asChild>
                   <a
-                    href="https://wa.me/5583993095371?text=Oi! Quero conhecer as soluções da Orbitha"
+                    href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
