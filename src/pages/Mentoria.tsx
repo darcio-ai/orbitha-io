@@ -79,14 +79,15 @@ const Mentoria = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
         <div className="container mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-              Mentoria Direto ao Ponto
-            </h1>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Mentoria Direto ao Ponto</span>
+            </div>
             
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               De "falo demais e não vendo" para{" "}
               <span className="text-primary">"pergunto certo e fecho"</span>
-            </h2>
+            </h1>
             
             <p className="text-xl text-muted-foreground mb-4">
               em 4 encontros — sem teoria, só prática
