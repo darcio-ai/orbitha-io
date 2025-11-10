@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import Home from "./pages/Home";
+import Mentoria from "./pages/Mentoria";
 import Solucoes from "./pages/Solucoes";
 import Blog from "./pages/Blog";
 import Contato from "./pages/Contato";
@@ -24,6 +25,7 @@ const App = () => (
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/mentoria" element={<Mentoria />} />
             <Route path="/solucoes" element={<Solucoes />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/contato" element={<Contato />} />
