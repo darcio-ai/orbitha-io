@@ -10,7 +10,7 @@ const Produtos = () => {
       title: "Financial Assistant",
       image: agenteFinanceiro,
       description: "Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.",
-      link: "/produtos/financial-assistant",
+      link: "/assistentes/financial-assistant",
     },
     {
       title: "Sales Assistant",
