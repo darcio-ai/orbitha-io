@@ -20,7 +20,8 @@ const Produtos = () => {
     {
       title: "Travel Assistant",
       image: agenteViagens,
-      description: "Assistente de IA especializado em viagens",
+      description: "Planeje viagens incríveis com um especialista que conhece destinos, roteiros, dicas e transforma sonhos em itinerários reais.",
+      link: "/assistentes/travel-assistant",
     },
     {
       title: "Fitness Assistant",
