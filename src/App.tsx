@@ -9,6 +9,7 @@ import WhatsAppFloat from "./components/WhatsAppFloat";
 import Home from "./pages/Home";
 import Mentoria from "./pages/Mentoria";
 import Solucoes from "./pages/Solucoes";
+import Produtos from "./pages/Produtos";
 import Blog from "./pages/Blog";
 import Contato from "./pages/Contato";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/mentoria" element={<Mentoria />} />
             <Route path="/solucoes" element={<Solucoes />} />
+            <Route path="/produtos" element={<Produtos />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/contato" element={<Contato />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
