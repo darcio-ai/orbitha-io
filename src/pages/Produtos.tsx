@@ -36,10 +36,10 @@ const Produtos = () => {
         <div className="container mx-auto">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Nossos <span className="text-primary">Produtos</span>
+              Nossos <span className="text-primary">Assistentes</span>
             </h1>
             <p className="text-xl text-muted-foreground">
-              Agentes de IA especializados para transformar seu negócio
+              Assistentes de IA especializados para transformar seu negócio
             </p>
           </div>
 
