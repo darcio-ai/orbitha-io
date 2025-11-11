@@ -26,7 +26,8 @@ const Produtos = () => {
     {
       title: "Fitness Assistant",
       image: agenteFitness,
-      description: "Assistente de IA especializado em fitness e saúde",
+      description: "Alcance seus objetivos fitness com um guia completo que domina treinos, nutrição, recuperação e as últimas tendências.",
+      link: "/assistentes/fitness-assistant",
     },
   ];
 
