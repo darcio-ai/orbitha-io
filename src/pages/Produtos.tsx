@@ -6,22 +6,22 @@ import agenteViagens from "@/assets/agente_viagens.png";
 const Produtos = () => {
   const produtos = [
     {
-      title: "Financial Agent",
+      title: "Financial Assistant",
       image: agenteFinanceiro,
       description: "Agente de IA especializado em finanças",
     },
     {
-      title: "Fitness Agent",
+      title: "Fitness Assistant",
       image: agenteFitness,
       description: "Agente de IA especializado em fitness e saúde",
     },
     {
-      title: "Sales Agent",
+      title: "Sales Assistant",
       image: agenteVendas,
       description: "Agente de IA especializado em vendas",
     },
     {
-      title: "Travel Agent",
+      title: "Travel Assistant",
       image: agenteViagens,
       description: "Agente de IA especializado em viagens",
     },
