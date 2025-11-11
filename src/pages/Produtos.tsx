@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import agenteFitness from "@/assets/agente_fitness.png";
 import agenteVendas from "@/assets/agente_vendas.png";
@@ -9,6 +10,7 @@ const Produtos = () => {
       title: "Financial Assistant",
       image: agenteFinanceiro,
       description: "Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.",
+      link: "/produtos/financial-assistant",
     },
     {
       title: "Sales Assistant",
@@ -43,24 +45,28 @@ const Produtos = () => {
 
           {/* Products Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {produtos.map((produto, index) => (
-              <div
-                key={index}
-                className="group relative overflow-hidden rounded-2xl"
-              >
-                <img
-                  src={produto.image}
-                  alt={produto.title}
-                  className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-8">
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold mb-2">{produto.title}</h3>
-                    <p className="text-muted-foreground">{produto.description}</p>
+            {produtos.map((produto, index) => {
+              const CardWrapper = produto.link ? Link : "div";
+              return (
+                <CardWrapper
+                  key={index}
+                  to={produto.link}
+                  className="group relative overflow-hidden rounded-2xl block cursor-pointer"
+                >
+                  <img
+                    src={produto.image}
+                    alt={produto.title}
+                    className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-8">
+                    <div className="text-center px-4">
+                      <h3 className="text-2xl font-bold mb-2">{produto.title}</h3>
+                      <p className="text-muted-foreground">{produto.description}</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </CardWrapper>
+              );
+            })}
           </div>
         </div>
       </section>
