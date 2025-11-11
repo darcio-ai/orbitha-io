@@ -8,7 +8,7 @@ const Produtos = () => {
     {
       title: "Financial Assistant",
       image: agenteFinanceiro,
-      description: "Assistente de IA especializado em finanças",
+      description: "Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.",
     },
     {
       title: "Sales Assistant",
