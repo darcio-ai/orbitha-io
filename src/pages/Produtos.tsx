@@ -8,22 +8,22 @@ const Produtos = () => {
     {
       title: "Financial Assistant",
       image: agenteFinanceiro,
-      description: "Agente de IA especializado em finanças",
+      description: "Assistente de IA especializado em finanças",
     },
     {
       title: "Sales Assistant",
       image: agenteVendas,
-      description: "Agente de IA especializado em vendas",
+      description: "Assistente de IA especializado em vendas",
     },
     {
       title: "Travel Assistant",
       image: agenteViagens,
-      description: "Agente de IA especializado em viagens",
+      description: "Assistente de IA especializado em viagens",
     },
     {
       title: "Fitness Assistant",
       image: agenteFitness,
-      description: "Agente de IA especializado em fitness e saúde",
+      description: "Assistente de IA especializado em fitness e saúde",
     },
   ];
 
