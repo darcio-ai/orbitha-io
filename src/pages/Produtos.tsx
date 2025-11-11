@@ -15,7 +15,8 @@ const Produtos = () => {
     {
       title: "Sales Assistant",
       image: agenteVendas,
-      description: "Assistente de IA especializado em vendas",
+      description: "Venda mais, venda melhor: domine metodologias, CRMs, KPIs e estratégias que transformam vendedores comuns em top performers.",
+      link: "/assistentes/sales-assistant",
     },
     {
       title: "Travel Assistant",
