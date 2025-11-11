@@ -11,11 +11,6 @@ const Produtos = () => {
       description: "Agente de IA especializado em finanças",
     },
     {
-      title: "Fitness Assistant",
-      image: agenteFitness,
-      description: "Agente de IA especializado em fitness e saúde",
-    },
-    {
       title: "Sales Assistant",
       image: agenteVendas,
       description: "Agente de IA especializado em vendas",
@@ -24,6 +19,11 @@ const Produtos = () => {
       title: "Travel Assistant",
       image: agenteViagens,
       description: "Agente de IA especializado em viagens",
+    },
+    {
+      title: "Fitness Assistant",
+      image: agenteFitness,
+      description: "Agente de IA especializado em fitness e saúde",
     },
   ];
 
