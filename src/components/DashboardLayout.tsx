@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Bot } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardLayout = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    const saved = localStorage.getItem("sidebarCollapsed");
+    return saved === "true";
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -55,6 +59,12 @@ const DashboardLayout = () => {
     navigate("/login");
   };
 
+  const toggleSidebar = () => {
+    const newState = !sidebarCollapsed;
+    setSidebarCollapsed(newState);
+    localStorage.setItem("sidebarCollapsed", String(newState));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -91,9 +101,11 @@ const DashboardLayout = () => {
   return (
     <div className="flex min-h-screen bg-muted/10">
       {/* Sidebar */}
-      <aside className="w-64 bg-card border-r border-border flex flex-col">
-        <div className="p-6 border-b border-border">
-          <Link to="/" className="flex items-center space-x-3">
+      <aside className={`bg-card border-r border-border flex flex-col transition-all duration-300 ${
+        sidebarCollapsed ? "w-16" : "w-64"
+      }`}>
+        <div className="p-6 border-b border-border flex items-center justify-between">
+          <Link to="/" className={`flex items-center space-x-3 ${sidebarCollapsed ? "opacity-0 w-0" : "opacity-100"} transition-opacity duration-300`}>
             <img 
               src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
               alt="Orbitha Logo" 
@@ -101,6 +113,19 @@ const DashboardLayout = () => {
             />
             <span className="text-xl font-bold">Orbitha.io</span>
           </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="shrink-0"
+            title={sidebarCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="h-5 w-5" />
+            ) : (
+              <PanelLeftClose className="h-5 w-5" />
+            )}
+          </Button>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
@@ -117,9 +142,10 @@ const DashboardLayout = () => {
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted"
                 }`}
+                title={item.name}
               >
-                <Icon className="h-5 w-5" />
-                <span className="font-medium">{item.name}</span>
+                <Icon className="h-5 w-5 shrink-0" />
+                <span className={`font-medium ${sidebarCollapsed ? "opacity-0 w-0" : "opacity-100"} transition-opacity duration-300 overflow-hidden`}>{item.name}</span>
               </Link>
             );
           })}
@@ -130,9 +156,10 @@ const DashboardLayout = () => {
             variant="ghost"
             className="w-full justify-start"
             onClick={handleLogout}
+            title="Sair"
           >
-            <LogOut className="mr-3 h-5 w-5" />
-            Sair
+            <LogOut className="h-5 w-5 shrink-0" />
+            <span className={`ml-3 ${sidebarCollapsed ? "opacity-0 w-0" : "opacity-100"} transition-opacity duration-300 overflow-hidden`}>Sair</span>
           </Button>
         </div>
       </aside>
