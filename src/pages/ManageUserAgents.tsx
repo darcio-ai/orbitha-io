@@ -180,7 +180,7 @@ const ManageUserAgents = () => {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-8">
       <div className="mb-6">
         <Button
           variant="ghost"
