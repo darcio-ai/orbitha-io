@@ -376,7 +376,7 @@ const DashboardAgents = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => window.open(`/chat/${agent.url}`, '_blank')}
+                        onClick={() => window.location.href = `/chat/${agent.url}`}
                         title="Abrir chat"
                       >
                         <MessageSquare className="h-4 w-4" />
