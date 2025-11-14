@@ -63,10 +63,16 @@ Deno.serve(async (req) => {
 
     if (userError) throw userError
 
-    // Set user role
+    // Delete existing role (created by trigger)
+    await supabaseAdmin
+      .from('user_roles')
+      .delete()
+      .eq('user_id', userData.user.id)
+
+    // Insert the desired role
     const { error: roleError } = await supabaseAdmin
       .from('user_roles')
-      .upsert({
+      .insert({
         user_id: userData.user.id,
         role: role || 'user'
       })
