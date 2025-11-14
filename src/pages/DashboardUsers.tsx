@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Edit, Ban, Key, Trash2, Plus, Search } from "lucide-react";
+import { Edit, Ban, Key, Trash2, Plus, Search, Users } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 
 interface Profile {
@@ -21,6 +22,14 @@ interface Profile {
   user_roles: Array<{ role: string }>;
 }
 
+interface Agent {
+  id: string;
+  name: string;
+  description: string | null;
+  avatar_url: string | null;
+  status: string;
+}
+
 const DashboardUsers = () => {
   const [users, setUsers] = useState<Profile[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<Profile[]>([]);
@@ -31,7 +40,10 @@ const DashboardUsers = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isAgentsOpen, setIsAgentsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
+  const [availableAgents, setAvailableAgents] = useState<Agent[]>([]);
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   
   const [formData, setFormData] = useState({
     firstname: "",
@@ -315,6 +327,97 @@ const DashboardUsers = () => {
     }
   };
 
+  const openAgentsDialog = async (user: Profile) => {
+    setSelectedUser(user);
+    
+    // Carregar todos os agentes disponíveis
+    const { data: agents, error: agentsError } = await supabase
+      .from("agents")
+      .select("id, name, description, avatar_url, status")
+      .neq("status", "deleted")
+      .order("name");
+
+    if (agentsError) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar agentes",
+        description: agentsError.message,
+      });
+      return;
+    }
+
+    setAvailableAgents(agents || []);
+
+    // Carregar os agentes que o usuário já tem acesso
+    const { data: userAgents, error: userAgentsError } = await supabase
+      .from("agents_users")
+      .select("agent_id")
+      .eq("user_id", user.id);
+
+    if (userAgentsError) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar agentes do usuário",
+        description: userAgentsError.message,
+      });
+      return;
+    }
+
+    setSelectedAgents(userAgents?.map(ua => ua.agent_id) || []);
+    setIsAgentsOpen(true);
+  };
+
+  const handleSaveAgents = async () => {
+    if (!selectedUser) return;
+
+    try {
+      // Remover todas as associações antigas do usuário
+      const { error: deleteError } = await supabase
+        .from("agents_users")
+        .delete()
+        .eq("user_id", selectedUser.id);
+
+      if (deleteError) throw deleteError;
+
+      // Inserir as novas associações
+      if (selectedAgents.length > 0) {
+        const { error: insertError } = await supabase
+          .from("agents_users")
+          .insert(
+            selectedAgents.map(agentId => ({
+              user_id: selectedUser.id,
+              agent_id: agentId,
+            }))
+          );
+
+        if (insertError) throw insertError;
+      }
+
+      toast({
+        title: "Agentes atualizados",
+        description: "Os agentes foram atribuídos com sucesso.",
+      });
+
+      setIsAgentsOpen(false);
+      setSelectedUser(null);
+      setSelectedAgents([]);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao atribuir agentes",
+        description: error.message,
+      });
+    }
+  };
+
+  const toggleAgent = (agentId: string) => {
+    setSelectedAgents(prev =>
+      prev.includes(agentId)
+        ? prev.filter(id => id !== agentId)
+        : [...prev, agentId]
+    );
+  };
+
   const openEditDialog = (user: Profile) => {
     setSelectedUser(user);
     setFormData({
@@ -494,6 +597,14 @@ const DashboardUsers = () => {
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => openAgentsDialog(user)}
+                        title="Gerenciar Agentes"
+                      >
+                        <Users className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => {
                           setSelectedUser(user);
                           setIsDeleteOpen(true);
@@ -651,6 +762,75 @@ const DashboardUsers = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Manage Agents Dialog */}
+      <Dialog open={isAgentsOpen} onOpenChange={setIsAgentsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Gerenciar Agentes</DialogTitle>
+            <DialogDescription>
+              Selecione os agentes que {selectedUser?.firstname} {selectedUser?.lastname} terá acesso.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {availableAgents.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8">
+                Nenhum agente disponível
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {availableAgents.map((agent) => (
+                  <div
+                    key={agent.id}
+                    className="flex items-start space-x-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+                  >
+                    <Checkbox
+                      id={agent.id}
+                      checked={selectedAgents.includes(agent.id)}
+                      onCheckedChange={() => toggleAgent(agent.id)}
+                    />
+                    <div className="flex-1 space-y-1">
+                      <label
+                        htmlFor={agent.id}
+                        className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {agent.name}
+                      </label>
+                      {agent.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {agent.description}
+                        </p>
+                      )}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                        agent.status === 'active' 
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                      }`}>
+                        {agent.status === 'active' ? 'Ativo' : 'Suspenso'}
+                      </span>
+                    </div>
+                    {agent.avatar_url && (
+                      <img
+                        src={agent.avatar_url}
+                        alt={agent.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAgentsOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveAgents}>
+              Salvar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
