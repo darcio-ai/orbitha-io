@@ -51,37 +51,43 @@ const DashboardAgentsForUser = () => {
       console.log('=== FETCH USER AGENTS ===');
       console.log('User ID:', session.user.id);
 
-      // Fetch agents that the user has access to
-      const { data, error } = await supabase
+      // First get agent IDs the user has access to
+      const { data: agentAccess, error: accessError } = await supabase
         .from("agents_users")
-        .select(`
-          agent_id,
-          agents (
-            id,
-            name,
-            description,
-            avatar_url,
-            model,
-            url,
-            status
-          )
-        `)
+        .select("agent_id")
         .eq("user_id", session.user.id);
+
+      if (accessError) {
+        console.error('Erro ao buscar acesso aos agentes:', accessError);
+        throw accessError;
+      }
+
+      if (!agentAccess || agentAccess.length === 0) {
+        console.log('Usuário não tem acesso a nenhum agente');
+        setAgents([]);
+        setLoading(false);
+        return;
+      }
+
+      const agentIds = agentAccess.map(a => a.agent_id);
+      console.log('Agent IDs com acesso:', agentIds);
+
+      // Now fetch the actual agent details
+      const { data, error } = await supabase
+        .from("agents")
+        .select("id, name, description, avatar_url, model, url, status")
+        .eq("status", "active")
+        .in("id", agentIds);
 
       console.log('Query result:', { data, error });
 
       if (error) {
-        console.error('Erro na query:', error);
+        console.error('Erro na query de agentes:', error);
         throw error;
       }
 
-      // Transform the data to extract agent information
-      const userAgents = data
-        ?.map((item: any) => item.agents)
-        .filter((agent: Agent) => agent && agent.status === "active") || [];
-
-      console.log('User agents (filtrados):', userAgents);
-      setAgents(userAgents);
+      console.log('Agentes encontrados:', data);
+      setAgents(data || []);
     } catch (error: any) {
       console.error('Erro ao carregar agentes:', error);
       toast({
