@@ -106,27 +106,18 @@ const DashboardUsers = () => {
     }
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            firstname: formData.firstname,
-            lastname: formData.lastname,
-            phone: phoneValidation.cleaned,
-          },
+      const { data, error } = await supabase.functions.invoke('admin-create-user', {
+        body: {
+          email: formData.email,
+          password: formData.password,
+          firstname: formData.firstname,
+          lastname: formData.lastname,
+          phone: phoneValidation.cleaned,
+          role: formData.role,
         },
       });
 
-      if (authError) throw authError;
-
-      if (authData.user && formData.role === "admin") {
-        await supabase.from("user_roles").delete().eq("user_id", authData.user.id);
-        await supabase.from("user_roles").insert({
-          user_id: authData.user.id,
-          role: "admin",
-        });
-      }
+      if (error) throw error;
 
       toast({
         title: "Usuário criado com sucesso!",
@@ -205,10 +196,12 @@ const DashboardUsers = () => {
     }
 
     try {
-      const { error } = await supabase.auth.admin.updateUserById(
-        selectedUser.id,
-        { password: newPassword }
-      );
+      const { data, error } = await supabase.functions.invoke('admin-update-password', {
+        body: {
+          userId: selectedUser.id,
+          newPassword: newPassword,
+        },
+      });
 
       if (error) throw error;
 
