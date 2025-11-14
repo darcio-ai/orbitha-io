@@ -63,7 +63,10 @@ const ChatAgent = () => {
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight;
+      }
     }
   };
 
@@ -123,7 +126,7 @@ const ChatAgent = () => {
       setMessages(data || []);
       
       // Scroll to bottom after messages load
-      setTimeout(() => scrollToBottom(), 100);
+      setTimeout(() => scrollToBottom(), 300);
 
       // Check if should send continuation message
       if (data && data.length > 0) {
