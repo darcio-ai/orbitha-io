@@ -48,6 +48,9 @@ const DashboardAgentsForUser = () => {
         return;
       }
 
+      console.log('=== FETCH USER AGENTS ===');
+      console.log('User ID:', session.user.id);
+
       // Fetch agents that the user has access to
       const { data, error } = await supabase
         .from("agents_users")
@@ -65,15 +68,22 @@ const DashboardAgentsForUser = () => {
         `)
         .eq("user_id", session.user.id);
 
-      if (error) throw error;
+      console.log('Query result:', { data, error });
+
+      if (error) {
+        console.error('Erro na query:', error);
+        throw error;
+      }
 
       // Transform the data to extract agent information
       const userAgents = data
         ?.map((item: any) => item.agents)
         .filter((agent: Agent) => agent && agent.status === "active") || [];
 
+      console.log('User agents (filtrados):', userAgents);
       setAgents(userAgents);
     } catch (error: any) {
+      console.error('Erro ao carregar agentes:', error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar agentes",
