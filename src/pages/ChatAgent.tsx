@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send, ArrowLeft } from "lucide-react";
+import { Loader2, Send, ArrowLeft, User } from "lucide-react";
 
 interface Message {
   id: string;
@@ -328,27 +328,42 @@ const ChatAgent = () => {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <div className="border-b bg-card">
+      <div className="border-b border-primary/20 bg-gradient-to-r from-background via-card to-background">
         <div className="container max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/dashboard/agents')}
-              className="px-4"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            {agent.avatar_url && (
-              <img
-                src={agent.avatar_url}
-                alt={agent.name}
-                className="h-10 w-10 rounded-full object-cover"
-              />
-            )}
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">{agent.name}</h1>
-              <p className="text-sm text-muted-foreground">{agent.description}</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/dashboard/agents')}
+                className="shrink-0"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              {agent.avatar_url && (
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-75"></div>
+                  <img
+                    src={agent.avatar_url}
+                    alt={agent.name}
+                    className="relative h-12 w-12 rounded-full object-cover border-2 border-primary/50"
+                  />
+                </div>
+              )}
+              <div>
+                <h1 className="text-lg font-semibold text-foreground">{agent.name}</h1>
+                <p className="text-sm text-muted-foreground">{agent.description}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-col items-center px-3 py-1.5 rounded-md border border-primary/30 bg-primary/10">
+                <span className="text-xs font-bold text-primary">100%</span>
+                <span className="text-[10px] text-primary/80">ATIVO</span>
+              </div>
+              <div className="flex flex-col items-center px-3 py-1.5 rounded-md border border-accent/30 bg-accent/10">
+                <span className="text-xs font-bold text-accent">24/7</span>
+                <span className="text-[10px] text-accent/80">ONLINE</span>
+              </div>
             </div>
           </div>
         </div>
@@ -370,17 +385,35 @@ const ChatAgent = () => {
             allMessages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-3 ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
               >
+                {msg.writer === 'assistant' && agent.avatar_url && (
+                  <div className="relative shrink-0">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-60"></div>
+                    <img
+                      src={agent.avatar_url}
+                      alt={agent.name}
+                      className="relative h-10 w-10 rounded-full object-cover border-2 border-primary/40"
+                    />
+                  </div>
+                )}
                 <div
-                  className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                  className={`max-w-[75%] rounded-lg px-4 py-3 ${
                     msg.writer === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-foreground'
+                      ? 'bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 text-foreground'
+                      : 'bg-gradient-to-br from-muted to-secondary border border-border/50 text-foreground'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap break-words text-[0.785rem] text-justify">{msg.message}</p>
+                  <p className="whitespace-pre-wrap break-words text-[0.875rem] leading-relaxed">{msg.message}</p>
                 </div>
+                {msg.writer === 'user' && (
+                  <div className="relative shrink-0">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent blur-sm opacity-60"></div>
+                    <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 border-2 border-primary/40 flex items-center justify-center">
+                      <User className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}
