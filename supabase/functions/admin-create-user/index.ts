@@ -61,7 +61,13 @@ Deno.serve(async (req) => {
       }
     })
 
-    if (userError) throw userError
+    if (userError) {
+      // Handle specific error cases
+      if (userError.message.includes('already been registered')) {
+        throw new Error('Este email já está cadastrado no sistema')
+      }
+      throw new Error(userError.message)
+    }
 
     // Delete existing role (created by trigger)
     await supabaseAdmin
@@ -93,8 +99,20 @@ Deno.serve(async (req) => {
     )
   } catch (error) {
     console.error('Error creating user:', error.message)
+    
+    // Return user-friendly error messages
+    let errorMessage = error.message
+    
+    if (error.message.includes('duplicate key')) {
+      errorMessage = 'Este email já está cadastrado no sistema'
+    } else if (error.message.includes('invalid email')) {
+      errorMessage = 'Email inválido'
+    } else if (error.message.includes('password')) {
+      errorMessage = 'A senha deve ter pelo menos 6 caracteres'
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,

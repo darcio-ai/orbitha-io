@@ -117,7 +117,11 @@ const DashboardUsers = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Extract error message from edge function response
+        const errorMessage = error.message || 'Erro desconhecido ao criar usuário';
+        throw new Error(errorMessage);
+      }
 
       toast({
         title: "Usuário criado com sucesso!",
@@ -127,10 +131,21 @@ const DashboardUsers = () => {
       setFormData({ firstname: "", lastname: "", phone: "", email: "", password: "", role: "user" });
       fetchUsers();
     } catch (error: any) {
+      // Handle edge function errors
+      let errorMessage = error.message;
+      
+      if (errorMessage.includes('400:')) {
+        // Extract the actual error message from edge function format
+        const match = errorMessage.match(/{"error":"([^"]+)"}/);
+        if (match) {
+          errorMessage = match[1];
+        }
+      }
+      
       toast({
         variant: "destructive",
         title: "Erro ao criar usuário",
-        description: error.message,
+        description: errorMessage,
       });
     }
   };
@@ -162,10 +177,12 @@ const DashboardUsers = () => {
       if (profileError) throw profileError;
 
       await supabase.from("user_roles").delete().eq("user_id", selectedUser.id);
-      await supabase.from("user_roles").insert({
+      const { error: roleError } = await supabase.from("user_roles").insert({
         user_id: selectedUser.id,
         role: formData.role,
       });
+
+      if (roleError) throw roleError;
 
       toast({
         title: "Usuário atualizado com sucesso!",
@@ -175,10 +192,16 @@ const DashboardUsers = () => {
       setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
+      let errorMessage = error.message;
+      
+      if (errorMessage.includes('duplicate key') && errorMessage.includes('email')) {
+        errorMessage = 'Este email já está sendo usado por outro usuário';
+      }
+      
       toast({
         variant: "destructive",
         title: "Erro ao atualizar usuário",
-        description: error.message,
+        description: errorMessage,
       });
     }
   };
@@ -189,8 +212,17 @@ const DashboardUsers = () => {
     if (newPassword !== confirmPassword) {
       toast({
         variant: "destructive",
-        title: "Erro",
-        description: "As senhas não coincidem",
+        title: "As senhas não coincidem",
+        description: "Digite a mesma senha nos dois campos",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        variant: "destructive",
+        title: "Senha muito curta",
+        description: "A senha deve ter pelo menos 6 caracteres",
       });
       return;
     }
@@ -203,7 +235,10 @@ const DashboardUsers = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        const errorMessage = error.message || 'Erro desconhecido ao alterar senha';
+        throw new Error(errorMessage);
+      }
 
       toast({
         title: "Senha alterada com sucesso!",
@@ -214,10 +249,19 @@ const DashboardUsers = () => {
       setConfirmPassword("");
       setSelectedUser(null);
     } catch (error: any) {
+      let errorMessage = error.message;
+      
+      if (errorMessage.includes('400:')) {
+        const match = errorMessage.match(/{"error":"([^"]+)"}/);
+        if (match) {
+          errorMessage = match[1];
+        }
+      }
+      
       toast({
         variant: "destructive",
         title: "Erro ao alterar senha",
-        description: error.message,
+        description: errorMessage,
       });
     }
   };
@@ -252,7 +296,7 @@ const DashboardUsers = () => {
       toast({
         variant: "destructive",
         title: "Erro ao excluir usuário",
-        description: error.message,
+        description: error.message || "Não foi possível excluir o usuário",
       });
     }
   };
