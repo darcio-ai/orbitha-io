@@ -114,35 +114,57 @@ const ManageUserAgents = () => {
     setSaving(true);
 
     try {
+      console.log('=== INÍCIO DO SALVAMENTO ===');
+      console.log('User ID:', userId);
+      console.log('Selected Agents:', selectedAgents);
+      
       // Remover todas as associações antigas do usuário
       const { error: deleteError } = await supabase
         .from("agents_users")
         .delete()
         .eq("user_id", userId);
 
-      if (deleteError) throw deleteError;
+      if (deleteError) {
+        console.error('Erro ao deletar:', deleteError);
+        throw deleteError;
+      }
+
+      console.log('Associações antigas removidas');
 
       // Inserir as novas associações
       if (selectedAgents.length > 0) {
-        const { error: insertError } = await supabase
+        console.log('Inserindo novas associações...');
+        const inserts = selectedAgents.map((agentId) => ({
+          user_id: userId,
+          agent_id: agentId,
+        }));
+        console.log('Dados a serem inseridos:', inserts);
+        
+        const { data: insertData, error: insertError } = await supabase
           .from("agents_users")
-          .insert(
-            selectedAgents.map((agentId) => ({
-              user_id: userId,
-              agent_id: agentId,
-            }))
-          );
+          .insert(inserts)
+          .select();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Erro ao inserir:', insertError);
+          throw insertError;
+        }
+        
+        console.log('Dados inseridos com sucesso:', insertData);
+      } else {
+        console.log('Nenhum agente selecionado para inserir');
       }
 
       toast({
         title: "Agentes atualizados",
-        description: "Os agentes foram atribuídos com sucesso.",
+        description: `${selectedAgents.length} agente(s) atribuído(s) com sucesso.`,
       });
 
+      console.log('=== FIM DO SALVAMENTO ===');
+      
       navigate("/dashboard/users");
     } catch (error: any) {
+      console.error('=== ERRO NO SALVAMENTO ===', error);
       toast({
         variant: "destructive",
         title: "Erro ao atribuir agentes",
@@ -154,11 +176,17 @@ const ManageUserAgents = () => {
   };
 
   const toggleAgent = (agentId: string) => {
-    setSelectedAgents((prev) =>
-      prev.includes(agentId)
+    setSelectedAgents((prev) => {
+      const newSelection = prev.includes(agentId)
         ? prev.filter((id) => id !== agentId)
-        : [...prev, agentId]
-    );
+        : [...prev, agentId];
+      
+      console.log('Toggle Agent:', agentId);
+      console.log('Previous selection:', prev);
+      console.log('New selection:', newSelection);
+      
+      return newSelection;
+    });
   };
 
   const toggleAll = () => {
@@ -228,7 +256,12 @@ const ManageUserAgents = () => {
         </div>
 
         <div className="text-sm text-muted-foreground mb-4">
-          {selectedAgents.length} de {availableAgents.length} agentes selecionados
+          <strong>{selectedAgents.length}</strong> de {availableAgents.length} agentes selecionados
+          {selectedAgents.length > 0 && (
+            <span className="ml-2 text-primary">
+              • Clique em "Salvar Alterações" para confirmar
+            </span>
+          )}
         </div>
 
         {filteredAgents.length === 0 ? (
