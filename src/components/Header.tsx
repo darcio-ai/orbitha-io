@@ -48,8 +48,11 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex">
+          {/* CTA Buttons */}
+          <div className="hidden md:flex gap-3">
+            <Button variant="outline" asChild>
+              <Link to="/login">Login</Link>
+            </Button>
             <Button variant="default" asChild>
               <a
                 href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
