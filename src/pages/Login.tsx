@@ -56,63 +56,6 @@ const Login = () => {
     }
   };
 
-  const handleSignup = async () => {
-    if (email !== "mvnpereira@gmail.com") {
-      toast({
-        variant: "destructive",
-        title: "Acesso restrito",
-        description: "Apenas o administrador pode criar conta por aqui.",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: "mvnpereira@gmail.com",
-        password: "123456789",
-        options: {
-          data: {
-            firstname: "Marcos",
-            lastname: "Pereira",
-            phone: "5548991893313",
-          },
-        },
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        // Promote to admin
-        await supabase
-          .from("user_roles")
-          .delete()
-          .eq("user_id", data.user.id);
-
-        await supabase
-          .from("user_roles")
-          .insert({
-            user_id: data.user.id,
-            role: "admin",
-          });
-
-        toast({
-          title: "Conta admin criada!",
-          description: "Faça login com suas credenciais.",
-        });
-        setEmail("mvnpereira@gmail.com");
-        setPassword("");
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erro ao criar conta",
-        description: error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
@@ -159,17 +102,6 @@ const Login = () => {
                 "Entrar"
               )}
             </Button>
-            {email === "mvnpereira@gmail.com" && (
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleSignup}
-                disabled={loading}
-              >
-                Criar Conta Admin (Primeira vez)
-              </Button>
-            )}
           </form>
         </CardContent>
       </Card>
