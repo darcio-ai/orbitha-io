@@ -1,0 +1,414 @@
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2, Send, ArrowLeft } from "lucide-react";
+
+interface Message {
+  id: string;
+  message: string;
+  writer: 'user' | 'assistant';
+  created_at: string;
+}
+
+interface Agent {
+  id: string;
+  name: string;
+  description: string;
+  prompt: string;
+  avatar_url: string;
+  model: string;
+  temperature: number;
+}
+
+const ChatAgent = () => {
+  const { url } = useParams<{ url: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [agent, setAgent] = useState<Agent | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [streamingMessage, setStreamingMessage] = useState("");
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (userId && url) {
+      loadAgent();
+      loadMessages();
+    }
+  }, [userId, url]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, streamingMessage]);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+    setUserId(session.user.id);
+  };
+
+  const scrollToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
+
+  const loadAgent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('url', url)
+        .eq('status', 'active')
+        .single();
+
+      if (error) throw error;
+      if (!data) {
+        toast({
+          title: "Agente não encontrado",
+          description: "Este agente não existe ou está inativo.",
+          variant: "destructive",
+        });
+        navigate('/dashboard/agents');
+        return;
+      }
+
+      setAgent(data);
+    } catch (error) {
+      console.error('Error loading agent:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar o agente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadMessages = async () => {
+    if (!userId) return;
+
+    try {
+      const { data: agentData } = await supabase
+        .from('agents')
+        .select('id')
+        .eq('url', url)
+        .single();
+
+      if (!agentData) return;
+
+      const { data, error } = await supabase
+        .from('agent_messages')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('agent_id', agentData.id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+
+      // Check if should send continuation message
+      if (data && data.length > 0) {
+        const lastMessage = data[data.length - 1];
+        if (lastMessage.writer === 'user') {
+          // Last message was from user, send continuation
+          setTimeout(() => {
+            sendContinuationMessage(agentData.id);
+          }, 500);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const sendContinuationMessage = async (agentId: string) => {
+    if (!userId) return;
+    
+    setIsSending(true);
+    setStreamingMessage("");
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-agent`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            agentId: agentId,
+            message: "Vamos continuar de onde paramos?",
+            userId: userId,
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to send message');
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) throw new Error('No reader available');
+
+      let fullMessage = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.content) {
+                fullMessage += parsed.content;
+                setStreamingMessage(fullMessage);
+              }
+            } catch (e) {
+              console.error('Error parsing chunk:', e);
+            }
+          }
+        }
+      }
+
+      // Reload messages to get the saved response
+      await loadMessages();
+      setStreamingMessage("");
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível enviar a mensagem.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || !agent || !userId || isSending) return;
+
+    const userMessage = input.trim();
+    setInput("");
+    setIsSending(true);
+    setStreamingMessage("");
+
+    // Add user message optimistically
+    const tempUserMessage: Message = {
+      id: crypto.randomUUID(),
+      message: userMessage,
+      writer: 'user',
+      created_at: new Date().toISOString(),
+    };
+    setMessages(prev => [...prev, tempUserMessage]);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-agent`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({
+            agentId: agent.id,
+            message: userMessage,
+            userId: userId,
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to send message');
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+
+      if (!reader) throw new Error('No reader available');
+
+      let fullMessage = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.content) {
+                fullMessage += parsed.content;
+                setStreamingMessage(fullMessage);
+              }
+            } catch (e) {
+              console.error('Error parsing chunk:', e);
+            }
+          }
+        }
+      }
+
+      // Reload messages to get the saved response
+      await loadMessages();
+      setStreamingMessage("");
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível enviar a mensagem.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!agent) return null;
+
+  const allMessages = [...messages];
+  if (streamingMessage) {
+    allMessages.push({
+      id: 'streaming',
+      message: streamingMessage,
+      writer: 'assistant',
+      created_at: new Date().toISOString(),
+    });
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-background">
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="container max-w-4xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/dashboard/agents')}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            {agent.avatar_url && (
+              <img
+                src={agent.avatar_url}
+                alt={agent.name}
+                className="h-10 w-10 rounded-full object-cover"
+              />
+            )}
+            <div>
+              <h1 className="text-lg font-semibold text-foreground">{agent.name}</h1>
+              <p className="text-sm text-muted-foreground">{agent.description}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <ScrollArea className="flex-1 container max-w-4xl mx-auto px-4" ref={scrollRef}>
+        <div className="py-6 space-y-4">
+          {allMessages.length === 0 ? (
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-semibold mb-2 text-foreground">
+                Olá! Sou {agent.name}
+              </h2>
+              <p className="text-muted-foreground">
+                {agent.description || "Como posso ajudar você hoje?"}
+              </p>
+            </div>
+          ) : (
+            allMessages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                    msg.writer === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground'
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </ScrollArea>
+
+      {/* Input */}
+      <div className="border-t bg-card">
+        <div className="container max-w-4xl mx-auto px-4 py-4">
+          <div className="flex gap-2">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Digite sua mensagem..."
+              className="min-h-[60px] max-h-[200px] resize-none"
+              disabled={isSending}
+            />
+            <Button
+              onClick={sendMessage}
+              disabled={!input.trim() || isSending}
+              size="icon"
+              className="h-[60px] w-[60px]"
+            >
+              {isSending ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Send className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChatAgent;

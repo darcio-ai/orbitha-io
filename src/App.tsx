@@ -22,6 +22,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardUsers from "./pages/DashboardUsers";
 import DashboardAgents from "./pages/DashboardAgents";
 import DashboardLayout from "./components/DashboardLayout";
+import ChatAgent from "./pages/ChatAgent";
 import NotFound from "./pages/NotFound";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -73,6 +74,9 @@ function AppRoutes() {
         <Route path="users" element={<DashboardUsers />} />
         <Route path="agents" element={<DashboardAgents />} />
       </Route>
+      
+      {/* Chat route */}
+      <Route path="/chat/:url" element={<ChatAgent />} />
       
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<><Header /><NotFound /><Footer /></>} />

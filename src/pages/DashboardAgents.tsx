@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Pencil, Pause, Trash2, Play } from "lucide-react";
+import { Plus, Pencil, Pause, Trash2, Play, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Agent {
@@ -373,6 +373,14 @@ const DashboardAgents = () => {
                   <TableCell className="text-sm">{agent.temperature}</TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => window.open(`/chat/${agent.url}`, '_blank')}
+                        title="Abrir chat"
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
