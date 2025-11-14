@@ -51,12 +51,25 @@ const DashboardLayout = () => {
   }, [navigate, location.pathname]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logout realizado",
-      description: "Você saiu do sistema com sucesso.",
-    });
-    navigate("/login");
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Erro no logout:', error);
+        // Mesmo com erro, limpar o estado local
+      }
+      
+      toast({
+        title: "Logout realizado",
+        description: "Você saiu do sistema com sucesso.",
+      });
+      
+      navigate("/login");
+    } catch (error) {
+      console.error('Erro inesperado no logout:', error);
+      // Forçar navegação para login mesmo com erro
+      navigate("/login");
+    }
   };
 
   const toggleSidebar = () => {
