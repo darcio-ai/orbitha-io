@@ -137,7 +137,9 @@ const DashboardLayout = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center py-3 rounded-lg transition-colors ${
+                  sidebarCollapsed ? "justify-center px-0" : "space-x-3 px-4"
+                } ${
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted"
@@ -145,7 +147,7 @@ const DashboardLayout = () => {
                 title={item.name}
               >
                 <Icon className="h-5 w-5 shrink-0" />
-                <span className={`font-medium ${sidebarCollapsed ? "opacity-0 w-0" : "opacity-100"} transition-opacity duration-300 overflow-hidden`}>{item.name}</span>
+                {!sidebarCollapsed && <span className="font-medium">{item.name}</span>}
               </Link>
             );
           })}
@@ -154,12 +156,12 @@ const DashboardLayout = () => {
         <div className="p-4 border-t border-border">
           <Button
             variant="ghost"
-            className="w-full justify-start"
+            className={`w-full transition-all ${sidebarCollapsed ? "justify-center px-0" : "justify-start"}`}
             onClick={handleLogout}
             title="Sair"
           >
             <LogOut className="h-5 w-5 shrink-0" />
-            <span className={`ml-3 ${sidebarCollapsed ? "opacity-0 w-0" : "opacity-100"} transition-opacity duration-300 overflow-hidden`}>Sair</span>
+            {!sidebarCollapsed && <span className="ml-3">Sair</span>}
           </Button>
         </div>
       </aside>
