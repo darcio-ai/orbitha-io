@@ -177,10 +177,10 @@ const DashboardUsers = () => {
       if (profileError) throw profileError;
 
       await supabase.from("user_roles").delete().eq("user_id", selectedUser.id);
-      const { error: roleError } = await supabase.from("user_roles").insert({
+      const { error: roleError } = await supabase.from("user_roles").insert([{
         user_id: selectedUser.id,
-        role: formData.role,
-      });
+        role: formData.role as "admin" | "user",
+      }]);
 
       if (roleError) throw roleError;
 
