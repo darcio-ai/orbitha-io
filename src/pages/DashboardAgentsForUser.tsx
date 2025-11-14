@@ -51,33 +51,15 @@ const DashboardAgentsForUser = () => {
       console.log('=== FETCH USER AGENTS ===');
       console.log('User ID:', session.user.id);
 
-      // First get agent IDs the user has access to
-      const { data: agentAccess, error: accessError } = await supabase
-        .from("agents_users")
-        .select("agent_id")
-        .eq("user_id", session.user.id);
+      // Use secure RPC to fetch agents accessible to the current user
+      const { data, error } = await supabase.rpc('get_user_agents');
 
-      if (accessError) {
-        console.error('Erro ao buscar acesso aos agentes:', accessError);
-        throw accessError;
+      console.log('RPC result:', { data, error });
+
+      if (error) {
+        console.error('Erro na RPC get_user_agents:', error);
+        throw error;
       }
-
-      if (!agentAccess || agentAccess.length === 0) {
-        console.log('Usuário não tem acesso a nenhum agente');
-        setAgents([]);
-        setLoading(false);
-        return;
-      }
-
-      const agentIds = agentAccess.map(a => a.agent_id);
-      console.log('Agent IDs com acesso:', agentIds);
-
-      // Now fetch the actual agent details
-      const { data, error } = await supabase
-        .from("agents")
-        .select("id, name, description, avatar_url, model, url, status")
-        .eq("status", "active")
-        .in("id", agentIds);
 
       console.log('Query result:', { data, error });
 
