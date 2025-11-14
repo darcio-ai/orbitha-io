@@ -21,6 +21,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import DashboardUsers from "./pages/DashboardUsers";
 import DashboardAgents from "./pages/DashboardAgents";
+import DashboardAgentsForUser from "./pages/DashboardAgentsForUser";
 import DashboardLayout from "./components/DashboardLayout";
 import ChatAgent from "./pages/ChatAgent";
 import NotFound from "./pages/NotFound";
@@ -73,6 +74,7 @@ function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="users" element={<DashboardUsers />} />
         <Route path="agents" element={<DashboardAgents />} />
+        <Route path="agents-for-user" element={<DashboardAgentsForUser />} />
       </Route>
       
       {/* Chat route */}

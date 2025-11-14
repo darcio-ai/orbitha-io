@@ -92,11 +92,20 @@ const DashboardLayout = () => {
       path: "/dashboard/agents",
       adminOnly: true,
     },
+    {
+      name: "Agentes",
+      icon: Bot,
+      path: "/dashboard/agents-for-user",
+      adminOnly: false,
+      userOnly: true,
+    },
   ];
 
-  const visibleMenuItems = menuItems.filter(
-    (item) => !item.adminOnly || userRole === "admin"
-  );
+  const visibleMenuItems = menuItems.filter((item) => {
+    if (item.adminOnly && userRole !== "admin") return false;
+    if (item.userOnly && userRole === "admin") return false;
+    return true;
+  });
 
   return (
     <div className="flex min-h-screen bg-muted/10">
