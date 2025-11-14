@@ -121,6 +121,9 @@ const ChatAgent = () => {
 
       if (error) throw error;
       setMessages(data || []);
+      
+      // Scroll to bottom after messages load
+      setTimeout(() => scrollToBottom(), 100);
 
       // Check if should send continuation message
       if (data && data.length > 0) {
@@ -372,7 +375,7 @@ const ChatAgent = () => {
                       : 'bg-muted text-foreground'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                  <p className="whitespace-pre-wrap break-words text-[0.785rem] text-justify">{msg.message}</p>
                 </div>
               </div>
             ))
