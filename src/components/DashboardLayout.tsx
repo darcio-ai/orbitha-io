@@ -104,20 +104,22 @@ const DashboardLayout = () => {
       <aside className={`bg-card border-r border-border flex flex-col transition-all duration-300 ${
         sidebarCollapsed ? "w-16" : "w-64"
       }`}>
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <Link to="/" className={`flex items-center space-x-3 ${sidebarCollapsed ? "opacity-0 w-0" : "opacity-100"} transition-opacity duration-300`}>
-            <img 
-              src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
-              alt="Orbitha Logo" 
-              className="w-8 h-8 object-contain"
-            />
-            <span className="text-xl font-bold">Orbitha.io</span>
-          </Link>
+        <div className="p-6 border-b border-border flex items-center justify-between relative">
+          {!sidebarCollapsed && (
+            <Link to="/" className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
+                alt="Orbitha Logo" 
+                className="w-8 h-8 object-contain"
+              />
+              <span className="text-xl font-bold">Orbitha.io</span>
+            </Link>
+          )}
           <Button
             variant="ghost"
             size="icon"
             onClick={toggleSidebar}
-            className="shrink-0"
+            className={`shrink-0 transition-all duration-300 ${sidebarCollapsed ? "-ml-[13px]" : ""}`}
             title={sidebarCollapsed ? "Expandir sidebar" : "Recolher sidebar"}
           >
             {sidebarCollapsed ? (
