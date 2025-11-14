@@ -278,25 +278,39 @@ const DashboardUsers = () => {
     if (!selectedUser) return;
 
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", selectedUser.id);
+      const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+        body: {
+          userId: selectedUser.id,
+        },
+      });
 
-      if (error) throw error;
+      if (error) {
+        const errorMessage = error.message || 'Erro desconhecido ao excluir usuário';
+        throw new Error(errorMessage);
+      }
 
       toast({
         title: "Usuário excluído com sucesso!",
+        description: "O usuário foi removido do sistema completamente.",
       });
 
       setIsDeleteOpen(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (error: any) {
+      let errorMessage = error.message;
+      
+      if (errorMessage.includes('400:')) {
+        const match = errorMessage.match(/{"error":"([^"]+)"}/);
+        if (match) {
+          errorMessage = match[1];
+        }
+      }
+      
       toast({
         variant: "destructive",
         title: "Erro ao excluir usuário",
-        description: error.message || "Não foi possível excluir o usuário",
+        description: errorMessage,
       });
     }
   };
