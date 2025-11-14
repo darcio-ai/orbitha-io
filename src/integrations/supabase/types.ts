@@ -189,6 +189,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_agents: {
+        Args: never
+        Returns: {
+          avatar_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          model: string
+          name: string
+          owner_id: string
+          prompt: string | null
+          status: Database["public"]["Enums"]["agent_status"]
+          temperature: number | null
+          updated_at: string
+          url: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "agents"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
