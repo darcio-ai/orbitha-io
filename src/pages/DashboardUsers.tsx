@@ -598,7 +598,8 @@ const DashboardUsers = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => openAgentsDialog(user)}
-                        title="Gerenciar Agentes"
+                        title={user.user_roles.some(r => r.role === 'admin') ? "Administradores têm acesso a todos os agentes" : "Gerenciar Agentes"}
+                        disabled={user.user_roles.some(r => r.role === 'admin')}
                       >
                         <Users className="h-4 w-4" />
                       </Button>
