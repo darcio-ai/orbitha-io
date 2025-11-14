@@ -335,6 +335,7 @@ const ChatAgent = () => {
               variant="ghost"
               size="icon"
               onClick={() => navigate('/dashboard/agents')}
+              className="px-4"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
