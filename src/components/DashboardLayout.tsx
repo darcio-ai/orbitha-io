@@ -21,7 +21,7 @@ const DashboardLayout = () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        navigate("/login");
+        navigate("/login", { state: { from: location.pathname } });
         return;
       }
 
@@ -43,12 +43,12 @@ const DashboardLayout = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        navigate("/login");
+        navigate("/login", { state: { from: location.pathname } });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
