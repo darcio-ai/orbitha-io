@@ -26,15 +26,24 @@ Deno.serve(async (req) => {
     // Verify the caller is authenticated
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
+      console.error('No authorization header present')
       throw new Error('No authorization header')
     }
 
     const token = authHeader.replace('Bearer ', '')
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
     
-    if (authError || !user) {
-      throw new Error('Unauthorized')
+    if (authError) {
+      console.error('Auth error:', authError)
+      throw new Error(`Auth error: ${authError.message}`)
     }
+    
+    if (!user) {
+      console.error('No user found from token')
+      throw new Error('User not found')
+    }
+    
+    console.log('Authenticated user:', user.id)
 
     // Verify the caller is an admin
     const { data: roleData } = await supabaseAdmin
