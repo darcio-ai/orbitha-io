@@ -108,6 +108,13 @@ const DashboardUsers = () => {
     }
 
     try {
+      // Refresh session before calling admin function
+      const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+
       const { data, error } = await supabase.functions.invoke('admin-create-user', {
         body: {
           email: formData.email,
@@ -230,6 +237,13 @@ const DashboardUsers = () => {
     }
 
     try {
+      // Refresh session before calling admin function
+      const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+
       const { data, error } = await supabase.functions.invoke('admin-update-password', {
         body: {
           userId: selectedUser.id,
@@ -280,6 +294,13 @@ const DashboardUsers = () => {
     if (!selectedUser) return;
 
     try {
+      // Refresh session before calling admin function
+      const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+
       const { data, error } = await supabase.functions.invoke('admin-delete-user', {
         body: {
           userId: selectedUser.id,
