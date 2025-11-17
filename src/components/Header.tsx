@@ -90,7 +90,10 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="px-3 py-2">
+              <div className="px-3 py-2 space-y-2">
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/login">Login</Link>
+                </Button>
                 <Button variant="default" className="w-full" asChild>
                   <a
                     href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
