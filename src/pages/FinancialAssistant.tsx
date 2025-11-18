@@ -329,6 +329,79 @@ const FinancialAssistant = () => {
               </CardContent>
             </Card>
 
+            {/* Produtos Priorizados 2025 */}
+            <Card className="mb-16 bg-gradient-to-br from-green-500/5 to-background border-2">
+              <CardHeader>
+                <CardTitle className="text-3xl">💰 Produtos Priorizados 2025 - Pessoas Físicas</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                <div className="space-y-6">
+                  {/* Iniciante PF */}
+                  <div className="p-6 rounded-lg bg-background border-2 border-green-500/30">
+                    <h4 className="font-bold text-xl mb-4 text-green-700 dark:text-green-400">🔰 INICIANTE PF:</h4>
+                    <ul className="space-y-3 text-muted-foreground">
+                      <li className="flex gap-3">
+                        <span className="text-green-600 dark:text-green-400">•</span>
+                        <span><strong>Nubank</strong> (conta + cartão sem tarifas, cashback 1%)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="text-green-600 dark:text-green-400">•</span>
+                        <span><strong>CDB 100% CDI</strong> (proteção FGC, sem IR até R$ 35k/ano)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="text-green-600 dark:text-green-400">•</span>
+                        <span><strong>Tesouro Selic</strong> (liquidez diária, 100% Selic)</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Crescimento PF */}
+                  <div className="p-6 rounded-lg bg-background border-2 border-yellow-500/30">
+                    <h4 className="font-bold text-xl mb-4 text-yellow-700 dark:text-yellow-400">📈 CRESCIMENTO PF:</h4>
+                    <ul className="space-y-3 text-muted-foreground">
+                      <li className="flex gap-3">
+                        <span className="text-yellow-600 dark:text-yellow-400">•</span>
+                        <span><strong>IVVB11 - ETF S&P 500</strong> (diversificação internacional)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="text-yellow-600 dark:text-yellow-400">•</span>
+                        <span><strong>BOVA11 - ETF Ibovespa</strong> (ações brasileiras)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="text-yellow-600 dark:text-yellow-400">•</span>
+                        <span><strong>Tesouro IPCA+ 2029</strong> (6,0% + inflação garantida)</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Consolidado PF */}
+                  <div className="p-6 rounded-lg bg-background border-2 border-blue-500/30">
+                    <h4 className="font-bold text-xl mb-4 text-blue-700 dark:text-blue-400">🏆 CONSOLIDADO PF:</h4>
+                    <ul className="space-y-3 text-muted-foreground">
+                      <li className="flex gap-3">
+                        <span className="text-blue-600 dark:text-blue-400">•</span>
+                        <span><strong>FIIs diversificados</strong> (HGLG11, XPML11, KNRI11 - renda passiva)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="text-blue-600 dark:text-blue-400">•</span>
+                        <span><strong>Multimercados premium</strong> (8-12% a.a. histórico)</span>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="text-blue-600 dark:text-blue-400">•</span>
+                        <span><strong>Private Banking</strong> (XP Private, BTG Wealth)</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-lg bg-primary/10 border-l-4 border-primary">
+                  <p className="font-semibold">
+                    <span className="text-primary">Base atualizada 2025:</span> Selic 10,75% | CDI 10,50% | Inflação 4,5%
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Introduction */}
             <div className="prose prose-lg max-w-none mb-16">
               <p className="text-lg text-muted-foreground">
