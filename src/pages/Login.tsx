@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import orbithaLogo from "@/assets/orbitha-logo.png";
 
 const Login = () => {
   const [emailOrWhatsApp, setEmailOrWhatsApp] = useState("");
@@ -120,9 +119,9 @@ const Login = () => {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <img 
-              src={orbithaLogo} 
+              src="/favicon.png" 
               alt="Orbitha Logo" 
-              className="h-8 w-auto"
+              className="h-8 w-8"
             />
             <span className="text-xl font-bold text-foreground">Orbitha.io</span>
           </Link>
