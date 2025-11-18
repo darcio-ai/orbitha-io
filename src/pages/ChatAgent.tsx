@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Send, ArrowLeft, User } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -416,7 +418,39 @@ const ChatAgent = () => {
                       : 'bg-gradient-to-br from-muted to-secondary border border-border/50 text-foreground'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap break-words text-[0.875rem] leading-relaxed">{msg.message}</p>
+                  {msg.writer === 'assistant' ? (
+                    <div className="prose prose-sm prose-invert max-w-none">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          a: ({ node, ...props }) => (
+                            <a
+                              {...props}
+                              className="text-primary hover:text-primary/80 underline font-semibold"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          ),
+                          h3: ({ node, ...props }) => (
+                            <h3 {...props} className="text-lg font-bold mt-4 mb-2" />
+                          ),
+                          hr: ({ node, ...props }) => (
+                            <hr {...props} className="my-4 border-border" />
+                          ),
+                          ul: ({ node, ...props }) => (
+                            <ul {...props} className="list-none space-y-1 my-2" />
+                          ),
+                          p: ({ node, ...props }) => (
+                            <p {...props} className="text-[0.875rem] leading-relaxed mb-2" />
+                          ),
+                        }}
+                      >
+                        {msg.message}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap break-words text-[0.875rem] leading-relaxed">{msg.message}</p>
+                  )}
                 </div>
                 {msg.writer === 'user' && (
                   <div className="relative shrink-0">
