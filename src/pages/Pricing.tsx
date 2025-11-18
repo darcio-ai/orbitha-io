@@ -34,7 +34,7 @@ const Pricing = () => {
     if (planName === "Gratuito") {
       // Se usuário já está logado, redirecionar para assistente
       if (user) {
-        navigate("/assistente-financeiro");
+        navigate("/assistentes/financial-assistant");
       } else {
         // Caso contrário, redirecionar para cadastro gratuito
         navigate("/cadastro-gratuito");
