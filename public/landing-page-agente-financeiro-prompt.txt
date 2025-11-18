@@ -1,15 +1,18 @@
 ===============================================
-LANDING PAGE - AGENTE FINANCEIRO 2.0
+LANDING PAGE - FINANCIAL ASSISTANT PREMIUM
 Prompt Completo de Conteúdo
 ===============================================
 
 === SEÇÃO HERO ===
 
 TÍTULO PRINCIPAL:
-Agente Financeiro 2.0 - Seu Consultor Pessoal com IA
+Financial Assistant Premium - Score Patrimonial 0-100
 
 SUBTÍTULO:
-Transforme suas finanças com inteligência artificial treinada no mercado brasileiro. Do básico ao avançado, decisões inteligentes em segundos.
+Score Patrimonial 0-100 | Análise em 60 segundos | Compliance Integrado
+
+DESCRIÇÃO:
+Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.
 
 CTA PRINCIPAL:
 🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
