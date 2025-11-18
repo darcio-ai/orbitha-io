@@ -220,6 +220,60 @@ const FinancialAssistant = () => {
               </div>
             </div>
 
+            {/* Metodologia Smart Finance Analysis */}
+            <Card className="mb-16 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+              <CardHeader>
+                <CardTitle className="text-3xl font-bold">🔬 Metodologia Smart Finance Analysis</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <p className="text-lg font-semibold">
+                  Única IA que calcula seu Score Patrimonial baseado em 5 pilares:
+                </p>
+                <div className="grid gap-4">
+                  <div className="flex gap-3 items-start p-4 rounded-lg bg-background/50 border border-border">
+                    <span className="text-2xl">💧</span>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Liquidez (25%)</h4>
+                      <p className="text-muted-foreground">Reserva de emergência vs gastos mensais</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 items-start p-4 rounded-lg bg-background/50 border border-border">
+                    <span className="text-2xl">📊</span>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Diversificação (20%)</h4>
+                      <p className="text-muted-foreground">Quantidade de tipos de ativos diferentes</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 items-start p-4 rounded-lg bg-background/50 border border-border">
+                    <span className="text-2xl">🛡️</span>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Proteção (20%)</h4>
+                      <p className="text-muted-foreground">Renda Fixa + Seguros + Previdência</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 items-start p-4 rounded-lg bg-background/50 border border-border">
+                    <span className="text-2xl">📈</span>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Crescimento (20%)</h4>
+                      <p className="text-muted-foreground">Renda Variável + Investimentos</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 items-start p-4 rounded-lg bg-background/50 border border-border">
+                    <span className="text-2xl">🎯</span>
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">Planejamento (15%)</h4>
+                      <p className="text-muted-foreground">Metas definidas + Aportes regulares</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 bg-primary/10 rounded-lg border-l-4 border-primary">
+                  <p className="font-semibold text-lg">
+                    <span className="text-primary">Resultado:</span> Classificação automática + Plano de ação personalizado
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Introduction */}
             <div className="prose prose-lg max-w-none mb-16">
               <p className="text-lg text-muted-foreground">
