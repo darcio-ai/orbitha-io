@@ -199,7 +199,7 @@ const FinancialAssistant = () => {
             <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
               <div>
                 <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                  Financial <span className="text-primary">Assistant</span>
+                  Financial Assistant Premium - <span className="text-primary">Score Patrimonial 0-100</span>
                 </h1>
                 <p className="text-xl text-muted-foreground mb-8">
                   Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.
