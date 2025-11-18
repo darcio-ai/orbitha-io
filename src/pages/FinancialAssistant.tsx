@@ -204,7 +204,7 @@ const FinancialAssistant = () => {
                 <p className="text-xl text-muted-foreground mb-8">
                   Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.
                 </p>
-                <Button size="lg" className="text-lg" onClick={() => navigate('/cadastro-gratuito')}>
+                <Button size="lg" className="text-lg" onClick={() => navigate('/pricing')}>
                   🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
                 </Button>
               </div>
@@ -915,7 +915,7 @@ const FinancialAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Não deixe seu dinheiro parado. Transforme suas finanças hoje.
               </p>
-              <Button size="lg" className="text-lg" onClick={() => navigate('/cadastro-gratuito')}>
+              <Button size="lg" className="text-lg" onClick={() => navigate('/pricing')}>
                 🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
               </Button>
             </div>
