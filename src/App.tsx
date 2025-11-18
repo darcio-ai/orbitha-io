@@ -18,6 +18,7 @@ import TravelAssistant from "./pages/TravelAssistant";
 import FitnessAssistant from "./pages/FitnessAssistant";
 import SalesAssistant from "./pages/SalesAssistant";
 import Login from "./pages/Login";
+import RecuperarSenha from "./pages/RecuperarSenha";
 import Pricing from "./pages/Pricing";
 import SignupFree from "./pages/SignupFree";
 import Dashboard from "./pages/Dashboard";
@@ -74,6 +75,7 @@ function AppRoutes() {
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
+      <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro-gratuito" element={<SignupFree />} />
       <Route path="/admin/setup" element={<AdminSetup />} />
       
