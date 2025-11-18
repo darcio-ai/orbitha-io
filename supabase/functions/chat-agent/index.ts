@@ -259,26 +259,27 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
 
 ## 🚀 Quer Desbloquear Todo o Potencial?
 
-### 💎 Plano Premium
-**R$ 97/mês**
+### 🚀 Plano Premium
+**R$ 29,90/mês**
 
-✅ Análises ilimitadas e personalizadas  
-✅ Relatórios detalhados de investimentos  
-✅ Recomendações avançadas de otimização  
-✅ Suporte prioritário  
+✅ Score detalhado com 5 pilares  
+✅ Conversas ilimitadas  
+✅ Produtos específicos por patrimônio  
+✅ Planos de ação personalizados  
+✅ Casos familiares básicos  
 
 [🎯 ASSINAR PREMIUM](https://pay.kiwify.com.br/seu-link-premium)
 
 ---
 
-### 🏢 Plano Enterprise
-**R$ 297/mês**
+### 💎 Plano Enterprise
+**R$ 97/mês**
 
 ✅ Tudo do Premium +  
-✅ Consultoria financeira personalizada  
-✅ Gestão completa de patrimônio  
-✅ Análise de risco avançada  
-✅ Acesso direto ao especialista  
+✅ Relatórios de evolução patrimonial  
+✅ Simulações de aposentadoria avançadas  
+✅ Múltiplos cenários financeiros  
+✅ Suporte prioritário  
 
 [💼 ASSINAR ENTERPRISE](https://pay.kiwify.com.br/seu-link-enterprise)
 
