@@ -198,9 +198,12 @@ const FinancialAssistant = () => {
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
               <div>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                <h1 className="text-4xl md:text-6xl font-bold mb-4">
                   Financial Assistant Premium - <span className="text-primary">Score Patrimonial 0-100</span>
                 </h1>
+                <p className="text-lg font-semibold text-primary/80 mb-6">
+                  Score Patrimonial 0-100 | Análise em 60 segundos | Compliance Integrado
+                </p>
                 <p className="text-xl text-muted-foreground mb-8">
                   Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.
                 </p>
