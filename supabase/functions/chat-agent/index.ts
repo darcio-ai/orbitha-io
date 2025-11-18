@@ -283,7 +283,7 @@ ${planInfo}
 
           // Add upgrade cards for free plan users (but NOT on first message)
           // Only show upgrades after initial welcome to avoid overwhelming new users
-          const isFirstMessage = conversationHistory.length === 0;
+          // isFirstMessage already defined above at line 171
           
           if (userPlan === 'free' && fullResponse && !isFirstMessage) {
             const upgradeCards = `
