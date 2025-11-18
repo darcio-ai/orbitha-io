@@ -67,36 +67,28 @@ const FinancialAssistant = () => {
 
   const incomePlans = [
     {
-      range: "Até R$ 2.000",
-      priority: "Eliminar dívidas",
-      reserve: "R$ 3.000 (3 meses)",
-      investment: "R$ 50/mês Tesouro Selic",
-      goal: "Sair do vermelho + R$ 600 guardados",
+      range: "🟢 INICIANTE PF",
+      subtitle: "Até R$ 10k patrimônio",
+      priority: "Organização + Reserva + Primeiros investimentos",
+      products: "Nubank, CDB 100% CDI, Tesouro Selic",
+      focus: "Foco: Organização básica e primeiros investimentos",
       color: "from-green-500/20 to-green-500/5"
     },
     {
-      range: "R$ 2.000 a R$ 5.000",
-      priority: "Reserva completa",
-      reserve: "R$ 12.000 (6 meses)",
-      investment: "70% Tesouro + 30% CDB",
-      goal: "3 meses reserva + começar PGBL",
+      range: "🟡 CRESCIMENTO PF",
+      subtitle: "R$ 10k a R$ 100k",
+      priority: "Diversificação + Otimização + Metas",
+      products: "ETFs (IVVB11, BOVA11), Tesouro IPCA+, Previdência, FIIs",
+      focus: "Foco: Diversificação e otimização patrimonial",
+      color: "from-yellow-500/20 to-yellow-500/5"
+    },
+    {
+      range: "🔵 CONSOLIDADO PF",
+      subtitle: "Acima de R$ 100k",
+      priority: "Sofisticação + Proteção patrimonial",
+      products: "Multimercados premium, Private Banking, estruturas complexas",
+      focus: "Foco: Sofisticação e proteção patrimonial",
       color: "from-blue-500/20 to-blue-500/5"
-    },
-    {
-      range: "R$ 5.000 a R$ 10.000",
-      priority: "Diversificação",
-      reserve: "R$ 30.000",
-      investment: "RF + iniciar RV (10%)",
-      goal: "Reserva completa + R$ 5.000 em ações",
-      color: "from-purple-500/20 to-purple-500/5"
-    },
-    {
-      range: "Acima de R$ 10.000",
-      priority: "Otimização fiscal + patrimônio",
-      reserve: "R$ 60.000",
-      investment: "40% RF + 40% RV + 20% Alternativos",
-      goal: "Patrimônio crescer 15-20%",
-      color: "from-orange-500/20 to-orange-500/5"
     }
   ];
 
@@ -411,33 +403,29 @@ const FinancialAssistant = () => {
               </div>
             </div>
 
-            {/* Planos Personalizados por Renda */}
+            {/* Segmentação por Patrimônio */}
             <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-2">Seu Plano Personalizado por Renda</h2>
+              <h2 className="text-3xl font-bold mb-2">🎯 Segmentação Inteligente por Patrimônio</h2>
               <p className="text-muted-foreground mb-8">
-                Estratégias específicas para cada momento da sua vida financeira
+                Estratégias específicas para cada nível patrimonial
               </p>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-3 gap-6">
                 {incomePlans.map((plan, index) => (
                   <Card key={index} className={`bg-gradient-to-br ${plan.color} border-2`}>
                     <CardHeader>
                       <CardTitle className="text-xl">{plan.range}</CardTitle>
                       <CardDescription className="text-base font-semibold text-foreground">
-                        Prioridade: {plan.priority}
+                        {plan.subtitle}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-3">
+                    <CardContent className="space-y-4">
                       <div>
-                        <div className="text-sm text-muted-foreground">Reserva Ideal</div>
-                        <div className="font-bold">{plan.reserve}</div>
+                        <div className="text-sm text-muted-foreground mb-1">Foco</div>
+                        <div className="font-bold text-sm">{plan.priority}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Estratégia de Investimento</div>
-                        <div className="font-bold">{plan.investment}</div>
-                      </div>
-                      <div className="pt-3 border-t border-border">
-                        <div className="text-sm text-muted-foreground">Meta em 12 meses</div>
-                        <div className="font-bold text-primary">{plan.goal}</div>
+                        <div className="text-sm text-muted-foreground mb-1">Produtos</div>
+                        <div className="text-sm leading-relaxed">{plan.products}</div>
                       </div>
                     </CardContent>
                   </Card>
