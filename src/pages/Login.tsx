@@ -114,17 +114,36 @@ const Login = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      {/* Logo da Orbitha */}
-      <Link to="/" className="mb-8 transition-opacity hover:opacity-80">
-        <img 
-          src={orbithaLogo} 
-          alt="Orbitha Logo" 
-          className="h-16 w-auto"
-        />
-      </Link>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-muted">
+      {/* Header com Logo e Navegação */}
+      <header className="bg-background border-b border-border">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+            <img 
+              src={orbithaLogo} 
+              alt="Orbitha Logo" 
+              className="h-8 w-auto"
+            />
+            <span className="text-xl font-bold text-foreground">Orbitha.io</span>
+          </Link>
+          
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Home
+            </Link>
+            <Link to="/mentoria" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Mentoria
+            </Link>
+            <Link to="/solucoes" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Soluções
+            </Link>
+          </nav>
+        </div>
+      </header>
       
-      <Card className="w-full max-w-md">
+      {/* Conteúdo da página de login */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Entre na sua conta</CardTitle>
           <CardDescription className="text-center">
@@ -198,6 +217,7 @@ const Login = () => {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
