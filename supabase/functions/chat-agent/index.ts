@@ -116,6 +116,25 @@ serve(async (req) => {
       );
     }
 
+    // Get user profile to check plan - SECURITY: Always fetch from database
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('plan, firstname, lastname')
+      .eq('id', userId)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Profile not found:', profileError);
+      return new Response(
+        JSON.stringify({ error: 'User profile not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userPlan = profile.plan || 'free';
+    const userName = `${profile.firstname} ${profile.lastname}`.trim();
+    console.log('User plan:', userPlan, 'Name:', userName);
+
     // Save user message
     const { error: saveError } = await supabase
       .from('agent_messages')
@@ -147,9 +166,17 @@ serve(async (req) => {
         content: msg.message
       }));
 
+    // SECURITY: Inject user plan and name into system prompt (prevent user fraud)
+    const enhancedPrompt = `${agent.prompt || 'You are a helpful assistant.'}
+
+INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
+- Nome: ${userName}
+- Plano contratado: ${userPlan.toUpperCase()}
+- IMPORTANTE: O usuário está no plano ${userPlan.toUpperCase()}. Ajuste suas respostas e funcionalidades de acordo com o plano dele. Não pergunte qual plano ele tem, você já sabe.`;
+
     // Prepare OpenAI request
     const messages = [
-      { role: 'system', content: agent.prompt || 'You are a helpful assistant.' },
+      { role: 'system', content: enhancedPrompt },
       ...conversationHistory,
       { role: 'user', content: message }
     ];
