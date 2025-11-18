@@ -266,6 +266,69 @@ const FinancialAssistant = () => {
               </CardContent>
             </Card>
 
+            {/* Casos Familiares Específicos */}
+            <Card className="mb-16 bg-gradient-to-br from-primary/5 to-background border-2">
+              <CardHeader>
+                <CardTitle className="text-3xl">🏠 Casos Familiares Específicos</CardTitle>
+                <CardDescription className="text-base">
+                  Soluções personalizadas para cada fase da sua vida
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-6">
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border hover:border-primary/50 transition-colors">
+                    <span className="text-3xl">👫</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">PLANEJAMENTO CASAL</h4>
+                      <p className="text-muted-foreground">
+                        Organização financeira conjunta + Metas compartilhadas + Declaração IRPF otimizada
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border hover:border-primary/50 transition-colors">
+                    <span className="text-3xl">👶</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">EDUCAÇÃO FILHOS</h4>
+                      <p className="text-muted-foreground">
+                        Cálculo automático: R$ 150-300k necessários por filho para ensino superior
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border hover:border-primary/50 transition-colors">
+                    <span className="text-3xl">🏡</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">CASA PRÓPRIA</h4>
+                      <p className="text-muted-foreground">
+                        Análise completa: Financiamento vs. Aluguel + Investimento da diferença
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border hover:border-primary/50 transition-colors">
+                    <span className="text-3xl">✈️</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">OBJETIVOS PESSOAIS</h4>
+                      <p className="text-muted-foreground">
+                        Viagem dos sonhos, carro novo, MBA - Planejamento específico com prazos realistas
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border hover:border-primary/50 transition-colors">
+                    <span className="text-3xl">💼</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">APOSENTADORIA INTELIGENTE</h4>
+                      <p className="text-muted-foreground">
+                        Regra 25x: Patrimônio necessário + Estratégias PGBL/VGBL otimizadas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Introduction */}
             <div className="prose prose-lg max-w-none mb-16">
               <p className="text-lg text-muted-foreground">
