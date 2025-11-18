@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
+import { useNavigate } from "react-router-dom";
 
 const FinancialAssistant = () => {
+  const navigate = useNavigate();
   const benefits = [
     {
       icon: "💰",
@@ -202,7 +204,7 @@ const FinancialAssistant = () => {
                 <p className="text-xl text-muted-foreground mb-8">
                   Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.
                 </p>
-                <Button size="lg" className="text-lg">
+                <Button size="lg" className="text-lg" onClick={() => navigate('/cadastro-gratuito')}>
                   🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
                 </Button>
               </div>
@@ -913,7 +915,7 @@ const FinancialAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Não deixe seu dinheiro parado. Transforme suas finanças hoje.
               </p>
-              <Button size="lg" className="text-lg">
+              <Button size="lg" className="text-lg" onClick={() => navigate('/cadastro-gratuito')}>
                 🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
               </Button>
             </div>
