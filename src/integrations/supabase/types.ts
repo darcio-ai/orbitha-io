@@ -133,28 +133,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age: number | null
           created_at: string
           email: string
+          financial_goal: string | null
           firstname: string
           id: string
           lastname: string
+          monthly_income: number | null
           phone: string
+          plan: string | null
         }
         Insert: {
+          age?: number | null
           created_at?: string
           email: string
+          financial_goal?: string | null
           firstname: string
           id: string
           lastname: string
+          monthly_income?: number | null
           phone: string
+          plan?: string | null
         }
         Update: {
+          age?: number | null
           created_at?: string
           email?: string
+          financial_goal?: string | null
           firstname?: string
           id?: string
           lastname?: string
+          monthly_income?: number | null
           phone?: string
+          plan?: string | null
         }
         Relationships: []
       }

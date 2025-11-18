@@ -36,8 +36,8 @@ const Pricing = () => {
       if (user) {
         navigate("/assistente-financeiro");
       } else {
-        // Caso contrário, redirecionar para login/registro
-        navigate("/login");
+        // Caso contrário, redirecionar para cadastro gratuito
+        navigate("/cadastro-gratuito");
       }
     } else if (planName === "Premium") {
       toast({

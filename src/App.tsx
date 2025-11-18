@@ -19,6 +19,7 @@ import FitnessAssistant from "./pages/FitnessAssistant";
 import SalesAssistant from "./pages/SalesAssistant";
 import Login from "./pages/Login";
 import Pricing from "./pages/Pricing";
+import SignupFree from "./pages/SignupFree";
 import Dashboard from "./pages/Dashboard";
 import DashboardUsers from "./pages/DashboardUsers";
 import DashboardAgents from "./pages/DashboardAgents";
@@ -71,6 +72,7 @@ function AppRoutes() {
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
+      <Route path="/cadastro-gratuito" element={<SignupFree />} />
       
       {/* Dashboard routes with sidebar */}
       <Route path="/dashboard" element={<DashboardLayout />}>
