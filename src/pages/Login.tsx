@@ -1,22 +1,33 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrWhatsApp, setEmailOrWhatsApp] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
   
   const from = (location.state as any)?.from || "/dashboard";
+
+  const isEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
+  const isWhatsApp = (value: string) => {
+    // Accepts formats: +55 (11) 99999-9999, +5511999999999, etc.
+    return /^\+?[\d\s()-]+$/.test(value) && value.replace(/\D/g, '').length >= 10;
+  };
 
   useEffect(() => {
     // Check if user is already logged in
@@ -34,14 +45,41 @@ const Login = () => {
     setLoading(true);
 
     try {
+      let loginEmail = emailOrWhatsApp.trim();
+
+      // If input is WhatsApp, fetch associated email
+      if (isWhatsApp(emailOrWhatsApp)) {
+        const cleanWhatsApp = emailOrWhatsApp.replace(/\D/g, '');
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('whatsapp', cleanWhatsApp)
+          .single();
+
+        if (profileError || !profile) {
+          throw new Error("WhatsApp não encontrado. Use o email cadastrado ou verifique o número.");
+        }
+
+        loginEmail = profile.email;
+      } else if (!isEmail(emailOrWhatsApp)) {
+        throw new Error("Por favor, insira um email ou WhatsApp válido.");
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password,
       });
 
       if (error) throw error;
 
       if (data.session) {
+        // Store remember me preference
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('rememberMe');
+        }
+
         toast({
           title: "Login realizado com sucesso!",
           description: "Redirecionando...",
@@ -64,21 +102,21 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Entre na sua conta</CardTitle>
           <CardDescription className="text-center">
-            Entre com suas credenciais para acessar o sistema
+            Acesse seu Score Patrimonial
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="emailOrWhatsApp">Email ou WhatsApp</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="emailOrWhatsApp"
+                type="text"
+                placeholder="seu@email.com ou +55 (11) 99999-9999"
+                value={emailOrWhatsApp}
+                onChange={(e) => setEmailOrWhatsApp(e.target.value)}
                 required
                 disabled={loading}
               />
@@ -95,6 +133,20 @@ const Login = () => {
                 disabled={loading}
               />
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="rememberMe"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                disabled={loading}
+              />
+              <Label
+                htmlFor="rememberMe"
+                className="text-sm font-normal cursor-pointer"
+              >
+                Lembrar de mim
+              </Label>
+            </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>
@@ -105,6 +157,20 @@ const Login = () => {
                 "Entrar"
               )}
             </Button>
+            <div className="flex items-center justify-between text-sm">
+              <Link
+                to="/recuperar-senha"
+                className="text-primary hover:underline"
+              >
+                Esqueceu a senha?
+              </Link>
+              <Link
+                to="/cadastro-gratuito"
+                className="text-primary hover:underline"
+              >
+                Não tem conta? Cadastre-se
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
