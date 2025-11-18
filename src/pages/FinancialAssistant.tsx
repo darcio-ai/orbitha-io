@@ -914,7 +914,7 @@ const FinancialAssistant = () => {
                 Não deixe seu dinheiro parado. Transforme suas finanças hoje.
               </p>
               <Button size="lg" className="text-lg">
-                Começar agora
+                🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
               </Button>
             </div>
           </div>
