@@ -18,6 +18,7 @@ import TravelAssistant from "./pages/TravelAssistant";
 import FitnessAssistant from "./pages/FitnessAssistant";
 import SalesAssistant from "./pages/SalesAssistant";
 import Login from "./pages/Login";
+import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import DashboardUsers from "./pages/DashboardUsers";
 import DashboardAgents from "./pages/DashboardAgents";
@@ -66,6 +67,7 @@ function AppRoutes() {
       <Route path="/assistentes/sales-assistant" element={<><Header /><SalesAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/blog" element={<><Header /><Blog /><Footer /><WhatsAppFloat /></>} />
       <Route path="/contato" element={<><Header /><Contato /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
