@@ -143,6 +143,7 @@ export type Database = {
           monthly_income: number | null
           phone: string
           plan: string | null
+          whatsapp: string
         }
         Insert: {
           age?: number | null
@@ -155,6 +156,7 @@ export type Database = {
           monthly_income?: number | null
           phone: string
           plan?: string | null
+          whatsapp?: string
         }
         Update: {
           age?: number | null
@@ -167,6 +169,7 @@ export type Database = {
           monthly_income?: number | null
           phone?: string
           plan?: string | null
+          whatsapp?: string
         }
         Relationships: []
       }
