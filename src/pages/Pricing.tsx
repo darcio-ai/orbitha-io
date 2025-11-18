@@ -2,8 +2,21 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useEffect } from "react";
 
 const Pricing = () => {
+  useEffect(() => {
+    document.title = "Planos | Financial Assistant Premium";
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute("content", "Score Patrimonial 0-100. Planos Premium e Enterprise com conversas ilimitadas, produtos específicos e suporte prioritário.");
+    } else {
+      const meta = document.createElement("meta");
+      meta.name = "description";
+      meta.content = "Score Patrimonial 0-100. Planos Premium e Enterprise com conversas ilimitadas, produtos específicos e suporte prioritário.";
+      document.head.appendChild(meta);
+    }
+  }, []);
   const handlePlanClick = (planName: string) => {
     alert(`${planName} - Em breve!`);
   };
