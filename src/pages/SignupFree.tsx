@@ -120,6 +120,27 @@ const SignupFree = () => {
           throw profileError;
         }
 
+        // Get Financial Assistant agent ID and give user access
+        const { data: agents } = await supabase
+          .from("agents")
+          .select("id")
+          .eq("name", "Financial Assistant Premium")
+          .eq("status", "active")
+          .single();
+
+        if (agents) {
+          const { error: agentAccessError } = await supabase
+            .from("agents_users")
+            .insert({
+              user_id: authData.user.id,
+              agent_id: agents.id,
+            });
+
+          if (agentAccessError) {
+            console.error("Agent access error:", agentAccessError);
+          }
+        }
+
         toast({
           title: "Bem-vindo ao Financial Assistant Premium!",
           description: "Sua conta gratuita foi criada com sucesso.",
