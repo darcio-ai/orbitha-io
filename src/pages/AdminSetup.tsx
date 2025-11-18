@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { AdminGuard } from "@/components/AdminGuard";
 
-export default function AdminSetup() {
+function AdminSetup() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -132,3 +133,11 @@ export default function AdminSetup() {
     </div>
   );
 }
+
+const AdminSetupPage = () => (
+  <AdminGuard>
+    <AdminSetup />
+  </AdminGuard>
+);
+
+export default AdminSetupPage;

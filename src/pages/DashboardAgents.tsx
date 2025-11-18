@@ -40,6 +40,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Pencil, Pause, Trash2, Play, MessageSquare } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AdminGuard } from "@/components/AdminGuard";
 
 interface Agent {
   id: string;
@@ -589,4 +590,10 @@ const DashboardAgents = () => {
   );
 };
 
-export default DashboardAgents;
+const DashboardAgentsPage = () => (
+  <AdminGuard>
+    <DashboardAgents />
+  </AdminGuard>
+);
+
+export default DashboardAgentsPage;
