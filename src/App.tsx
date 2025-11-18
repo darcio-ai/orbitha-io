@@ -63,6 +63,7 @@ function AppRoutes() {
       <Route path="/solucoes" element={<><Header /><Solucoes /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes" element={<><Header /><Produtos /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/financial-assistant" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistente-financeiro" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/travel-assistant" element={<><Header /><TravelAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/fitness-assistant" element={<><Header /><FitnessAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/sales-assistant" element={<><Header /><SalesAssistant /><Footer /><WhatsAppFloat /></>} />
