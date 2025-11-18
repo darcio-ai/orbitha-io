@@ -21,6 +21,17 @@ const signupSchema = z.object({
     .trim()
     .email("Email inválido")
     .max(255, "Email muito longo"),
+  whatsapp: z.string()
+    .trim()
+    .min(1, "WhatsApp é obrigatório")
+    .refine((val) => {
+      // Remove all non-digit characters except +
+      const cleaned = val.replace(/[^\d+]/g, '');
+      // Check if it has at least 8 digits and starts with + or (
+      return cleaned.length >= 10 && (cleaned.startsWith('+') || val.startsWith('('));
+    }, {
+      message: "Formato inválido. Use +55 (11) 99999-9999 ou internacional +xx"
+    }),
   password: z.string()
     .min(6, "Senha deve ter pelo menos 6 caracteres")
     .max(100, "Senha muito longa"),
@@ -52,6 +63,19 @@ const SignupFree = () => {
 
   const financialGoal = watch("financialGoal");
 
+  // Format WhatsApp to international format
+  const formatWhatsApp = (value: string): string => {
+    // Remove all non-digit characters except +
+    let cleaned = value.replace(/[^\d+]/g, '');
+    
+    // If starts with ( assume Brazilian format and add +55
+    if (value.trim().startsWith('(') && !cleaned.startsWith('+')) {
+      cleaned = '+55' + cleaned;
+    }
+    
+    return cleaned;
+  };
+
   const onSubmit = async (data: SignupFormData) => {
     setIsLoading(true);
 
@@ -59,6 +83,9 @@ const SignupFree = () => {
       const nameParts = data.fullName.trim().split(" ");
       const firstname = nameParts[0];
       const lastname = nameParts.slice(1).join(" ") || "";
+      
+      // Format WhatsApp to international standard
+      const formattedWhatsApp = formatWhatsApp(data.whatsapp);
 
       // Create user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -76,10 +103,11 @@ const SignupFree = () => {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Update profile with optional data
+        // Update profile with all data including whatsapp
         const { error: profileError } = await supabase
           .from("profiles")
           .update({
+            whatsapp: formattedWhatsApp,
             plan: "free",
             age: data.age ? parseInt(data.age) : null,
             monthly_income: data.monthlyIncome ? parseFloat(data.monthlyIncome) : null,
@@ -96,8 +124,8 @@ const SignupFree = () => {
           description: "Sua conta gratuita foi criada com sucesso.",
         });
 
-        // Navigate to success page or assistant
-        navigate("/assistente-financeiro");
+        // Navigate to assistant
+        navigate("/assistentes/financial-assistant");
       }
     } catch (error: any) {
       toast({
@@ -151,6 +179,23 @@ const SignupFree = () => {
                 {errors.email && (
                   <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
                 )}
+              </div>
+
+              <div>
+                <Label htmlFor="whatsapp">WhatsApp *</Label>
+                <Input
+                  id="whatsapp"
+                  type="tel"
+                  {...register("whatsapp")}
+                  placeholder="+55 (11) 99999-9999"
+                  disabled={isLoading}
+                />
+                {errors.whatsapp && (
+                  <p className="text-sm text-destructive mt-1">{errors.whatsapp.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  Formatos aceitos: +55 (11) 99999-9999 ou internacional +xx
+                </p>
               </div>
 
               <div>
