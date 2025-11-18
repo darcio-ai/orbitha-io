@@ -251,7 +251,49 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
             }
           }
 
-          // Save assistant response
+          // Add upgrade cards for free plan users
+          if (userPlan === 'free' && fullResponse) {
+            const upgradeCards = `
+
+---
+
+## 🚀 Quer Desbloquear Todo o Potencial?
+
+### 💎 Plano Premium
+**R$ 97/mês**
+
+✅ Análises ilimitadas e personalizadas  
+✅ Relatórios detalhados de investimentos  
+✅ Recomendações avançadas de otimização  
+✅ Suporte prioritário  
+
+[🎯 ASSINAR PREMIUM](https://pay.kiwify.com.br/seu-link-premium)
+
+---
+
+### 🏢 Plano Enterprise
+**R$ 297/mês**
+
+✅ Tudo do Premium +  
+✅ Consultoria financeira personalizada  
+✅ Gestão completa de patrimônio  
+✅ Análise de risco avançada  
+✅ Acesso direto ao especialista  
+
+[💼 ASSINAR ENTERPRISE](https://pay.kiwify.com.br/seu-link-enterprise)
+
+---`;
+
+            // Stream the upgrade cards
+            const upgradeLines = upgradeCards.split('\n');
+            for (const line of upgradeLines) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: line + '\n' })}\n\n`));
+            }
+            
+            fullResponse += upgradeCards;
+          }
+
+          // Save assistant response (with upgrade cards if applicable)
           if (fullResponse) {
             await supabase
               .from('agent_messages')
