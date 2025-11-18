@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { Edit, Ban, Key, Trash2, Plus, Search, Users } from "lucide-react";
 import { format } from "date-fns";
+import { AdminGuard } from "@/components/AdminGuard";
 
 interface Profile {
   id: string;
@@ -687,4 +688,10 @@ const DashboardUsers = () => {
   );
 };
 
-export default DashboardUsers;
+const DashboardUsersPage = () => (
+  <AdminGuard>
+    <DashboardUsers />
+  </AdminGuard>
+);
+
+export default DashboardUsersPage;

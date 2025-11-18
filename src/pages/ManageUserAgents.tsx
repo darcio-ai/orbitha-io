@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { AdminGuard } from "@/components/AdminGuard";
 
 interface Agent {
   id: string;
@@ -321,4 +322,10 @@ const ManageUserAgents = () => {
   );
 };
 
-export default ManageUserAgents;
+const ManageUserAgentsPage = () => (
+  <AdminGuard>
+    <ManageUserAgents />
+  </AdminGuard>
+);
+
+export default ManageUserAgentsPage;
