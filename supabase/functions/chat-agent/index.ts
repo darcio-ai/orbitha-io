@@ -149,29 +149,59 @@ serve(async (req) => {
       console.error('Error saving user message:', saveError);
     }
 
-    // Get last 50 messages for context
+    // Get last 50 messages for context (excluding current user message)
     const { data: previousMessages } = await supabase
       .from('agent_messages')
       .select('*')
       .eq('user_id', userId)
       .eq('agent_id', agentId)
       .order('created_at', { ascending: false })
-      .limit(50);
+      .limit(51); // Get 51 to account for the message we just saved
 
-    // Build conversation history (reverse to get chronological order)
+    // Build conversation history (reverse to get chronological order, exclude the last message which is the current one)
     const conversationHistory = (previousMessages || [])
+      .slice(1) // Remove the current message we just saved
       .reverse()
       .map(msg => ({
         role: msg.writer === 'user' ? 'user' : 'assistant',
         content: msg.message
       }));
 
+    // Check if this is the first message (welcome message)
+    const isFirstMessage = conversationHistory.length === 0;
+
     // SECURITY: Inject user plan and name into system prompt (prevent user fraud)
+    // Show detailed plan info only on first message, simplified on subsequent messages
+    let planInfo = '';
+    if (isFirstMessage) {
+      // Detailed plan description for welcome message
+      if (userPlan === 'free') {
+        planInfo = `- Plano contratado: GRATUITO
+- Funcionalidades disponíveis no plano gratuito:
+  • Análise básica de Score Patrimonial
+  • 3 conversas por mês
+  • Recomendações gerais de investimentos`;
+      } else if (userPlan === 'premium') {
+        planInfo = `- Plano contratado: PREMIUM
+- Funcionalidades premium:
+  • Score detalhado com 5 pilares
+  • Conversas ilimitadas
+  • Produtos específicos por patrimônio
+  • Planos de ação personalizados
+  • Casos familiares básicos`;
+      } else {
+        planInfo = `- Plano contratado: ${userPlan.toUpperCase()}`;
+      }
+    } else {
+      // Simplified plan info for subsequent messages
+      planInfo = `- Plano: ${userPlan.toUpperCase()}`;
+    }
+
     const enhancedPrompt = `${agent.prompt || 'You are a helpful assistant.'}
 
 INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
 - Nome: ${userName}
-- Plano contratado: ${userPlan.toUpperCase()}
+${planInfo}
 - IMPORTANTE: O usuário está no plano ${userPlan.toUpperCase()}. Ajuste suas respostas e funcionalidades de acordo com o plano dele. Não pergunte qual plano ele tem, você já sabe.`;
 
     // Prepare OpenAI request

@@ -59,6 +59,11 @@ const DashboardLayout = () => {
         // Mesmo com erro, limpar o estado local
       }
       
+      // Clear saved login credentials
+      localStorage.removeItem('rememberMe');
+      localStorage.removeItem('savedEmail');
+      localStorage.removeItem('savedPassword');
+      
       toast({
         title: "Logout realizado",
         description: "Você saiu do sistema com sucesso.",
