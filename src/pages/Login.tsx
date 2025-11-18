@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import orbithaLogo from "@/assets/orbitha-logo.png";
 
 const Login = () => {
   const [emailOrWhatsApp, setEmailOrWhatsApp] = useState("");
@@ -113,7 +114,16 @@ const Login = () => {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+      {/* Logo da Orbitha */}
+      <Link to="/" className="mb-8 transition-opacity hover:opacity-80">
+        <img 
+          src={orbithaLogo} 
+          alt="Orbitha Logo" 
+          className="h-16 w-auto"
+        />
+      </Link>
+      
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Entre na sua conta</CardTitle>
