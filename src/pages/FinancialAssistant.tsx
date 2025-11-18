@@ -149,17 +149,20 @@ const FinancialAssistant = () => {
   ];
 
   const glossary = [
+    { term: "CDI (Certificado de Depósito Interbancário)", definition: "Principal taxa de referência para investimentos de renda fixa no Brasil. Hoje está em ~10,50% ao ano." },
+    { term: "Selic (Taxa Básica de Juros)", definition: "Taxa definida pelo Banco Central que influencia todos os juros do país. Hoje está em 10,75% ao ano." },
+    { term: "CDB (Certificado de Depósito Bancário)", definition: "Empréstimo que você faz ao banco. Retorno: 100-130% do CDI. Protegido pelo FGC até R$ 250 mil." },
+    { term: "Tesouro Direto", definition: "Emprestar dinheiro para o governo federal. 3 tipos: Selic (liquidez), IPCA+ (inflação), Prefixado (taxa fixa)." },
+    { term: "Renda Variável", definition: "Investimentos cujo retorno não é garantido: ações, fundos imobiliários (FIIs), ETFs." },
+    { term: "ETF (Exchange Traded Fund)", definition: "\"Cesta\" de ações que você compra de uma vez. Ex: BOVA11 (Ibovespa), IVVB11 (S&P 500)." },
+    { term: "FGC (Fundo Garantidor de Créditos)", definition: "Seguro que protege até R$ 250 mil por CPF em investimentos como CDB, LCI, LCA." },
+    { term: "Perfil de Investidor", definition: "Conservador (só RF), Moderado (RF + RV equilibrado), Arrojado (mais RV)." },
+    { term: "Reserva de Emergência", definition: "3-6 meses de gastos guardados em investimento líquido (Tesouro Selic, CDB com liquidez diária)." },
+    { term: "Liquidez", definition: "Facilidade de transformar investimento em dinheiro na mão. Alta = rápido. Baixa = demora." },
     { term: "Ações", definition: "Parcela de uma empresa que você compra e se torna sócio" },
-    { term: "CDI", definition: "Taxa de empréstimo entre bancos, referência para investimentos" },
-    { term: "CDB", definition: "Certificado de Depósito Bancário - empréstimo que você faz ao banco" },
-    { term: "FGC", definition: "Fundo Garantidor de Créditos - protege até R$ 250 mil por CPF/banco" },
     { term: "Ibovespa", definition: "Índice da bolsa brasileira - média das principais ações" },
     { term: "LCI/LCA", definition: "Letras de crédito imobiliário/agrícola - isentas de IR" },
-    { term: "Liquidez", definition: "Facilidade de resgatar seu dinheiro rapidamente" },
     { term: "Renda Fixa", definition: "Investimentos com rentabilidade previsível (Tesouro, CDB)" },
-    { term: "Renda Variável", definition: "Investimentos com rentabilidade imprevisível (ações, FIIs)" },
-    { term: "Selic", definition: "Taxa básica de juros da economia brasileira" },
-    { term: "Tesouro Direto", definition: "Empréstimo que você faz ao governo federal" },
     { term: "PGBL/VGBL", definition: "Planos de previdência privada com benefícios fiscais" }
   ];
 
@@ -168,8 +171,8 @@ const FinancialAssistant = () => {
     { label: "Gastam mais do que ganham", value: "40%" },
     { label: "Entendem POUCO de finanças", value: "76%" },
     { label: "Planejam finanças mensalmente", value: "64%" },
-    { label: "Taxa Selic atual (nov 2025)", value: "14,65%" },
-    { label: "Taxa CDI atual", value: "14,40%" },
+    { label: "Taxa Selic atual (nov 2025)", value: "10,75%" },
+    { label: "Taxa CDI atual", value: "10,50%" },
     { label: "Usuários mobile banking", value: "70M+" },
     { label: "Inadimplência fintechs", value: "9,5%" }
   ];
@@ -494,7 +497,7 @@ const FinancialAssistant = () => {
               </div>
               <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border">
                 <p className="text-sm text-muted-foreground">
-                  <strong>Dados de mercado:</strong> Selic 14,65% a.a. | CDI 14,40% a.a. | Inflação projetada ~4,5% a.a.
+                  <strong>Dados de mercado:</strong> Selic 10,75% a.a. | CDI 10,50% a.a. | Inflação projetada ~4,5% a.a.
                 </p>
               </div>
             </div>
