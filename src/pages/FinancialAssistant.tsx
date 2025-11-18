@@ -208,7 +208,7 @@ const FinancialAssistant = () => {
                   Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.
                 </p>
                 <Button size="lg" className="text-lg">
-                  Comece agora a construir seu futuro financeiro
+                  🚀 DESCOBRIR MEU SCORE PATRIMONIAL AGORA
                 </Button>
               </div>
               <div className="relative">
