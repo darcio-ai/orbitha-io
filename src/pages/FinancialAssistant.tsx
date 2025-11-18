@@ -408,7 +408,7 @@ const FinancialAssistant = () => {
             {/* Introduction */}
             <div className="prose prose-lg max-w-none mb-16">
               <p className="text-lg text-muted-foreground">
-                Imagine ter um especialista financeiro disponível 24/7, conhecedor profundo do mercado brasileiro, pronto para te guiar em cada decisão sobre seu dinheiro. O <strong>Agente Financeiro 2.0</strong> é isso e muito mais.
+                Imagine ter um especialista financeiro disponível 24/7, conhecedor profundo do mercado brasileiro, pronto para te guiar em cada decisão sobre seu dinheiro. O <strong>Financial Assistant Premium</strong> é isso e muito mais.
               </p>
             </div>
 
