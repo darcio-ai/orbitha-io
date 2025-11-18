@@ -117,6 +117,27 @@ const ChatAgent = () => {
 
       if (!agentData) return;
 
+      // Check if this is a fresh login by checking sessionStorage
+      const isNewSession = !sessionStorage.getItem(`chat_session_${agentData.id}`);
+      
+      if (isNewSession) {
+        // Clear old messages from database on fresh login
+        await supabase
+          .from('agent_messages')
+          .delete()
+          .eq('user_id', userId)
+          .eq('agent_id', agentData.id);
+        
+        // Mark this session as active
+        sessionStorage.setItem(`chat_session_${agentData.id}`, 'active');
+        
+        // No messages to load since we cleared them
+        setMessages([]);
+        setTimeout(() => scrollToBottom(), 300);
+        return;
+      }
+
+      // Load existing messages from current session
       const { data, error } = await supabase
         .from('agent_messages')
         .select('*')
@@ -366,7 +387,7 @@ const ChatAgent = () => {
               )}
               <div>
                 <h1 className="text-lg font-semibold text-foreground">{agent.name}</h1>
-                <p className="text-sm text-muted-foreground">{agent.description}</p>
+                <p className="text-sm text-muted-foreground">Assistente Financeiro</p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
