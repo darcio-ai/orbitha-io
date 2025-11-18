@@ -31,18 +31,12 @@ const Pricing = () => {
   }, []);
 
   const handlePlanClick = (planName: string) => {
-    console.log('Plano clicado:', planName, 'Usuário:', user);
+    console.log('Plano clicado:', planName);
     
     if (planName === "Gratuito") {
-      // Se usuário já está logado, redirecionar para assistente
-      if (user) {
-        console.log('Redirecionando para assistente...');
-        navigate("/assistentes/financial-assistant");
-      } else {
-        // Caso contrário, redirecionar para cadastro gratuito
-        console.log('Redirecionando para cadastro...');
-        navigate("/cadastro-gratuito");
-      }
+      // Sempre redirecionar para cadastro gratuito
+      console.log('Redirecionando para cadastro...');
+      navigate("/cadastro-gratuito");
     } else if (planName === "Premium") {
       toast({
         title: "Redirecionando para checkout Premium...",
