@@ -38,6 +38,16 @@ const Login = () => {
       }
     };
     checkUser();
+
+    // Load saved credentials if remember me was checked
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+    if (savedRememberMe) {
+      const savedEmail = localStorage.getItem('savedEmail');
+      const savedPassword = localStorage.getItem('savedPassword');
+      if (savedEmail) setEmailOrWhatsApp(savedEmail);
+      if (savedPassword) setPassword(savedPassword);
+      setRememberMe(true);
+    }
   }, [navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -73,11 +83,15 @@ const Login = () => {
       if (error) throw error;
 
       if (data.session) {
-        // Store remember me preference
+        // Store remember me preference and credentials
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
+          localStorage.setItem('savedEmail', emailOrWhatsApp);
+          localStorage.setItem('savedPassword', password);
         } else {
           localStorage.removeItem('rememberMe');
+          localStorage.removeItem('savedEmail');
+          localStorage.removeItem('savedPassword');
         }
 
         toast({
