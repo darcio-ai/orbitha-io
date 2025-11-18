@@ -836,6 +836,72 @@ const FinancialAssistant = () => {
               </div>
             </div>
 
+            {/* Compliance Integrado */}
+            <Card className="mb-16 bg-gradient-to-br from-blue-500/5 to-background border-2 border-blue-500/30">
+              <CardHeader>
+                <CardTitle className="text-3xl">🛡️ Compliance Integrado - Segurança Máxima</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-6">
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border">
+                    <span className="text-3xl">⚖️</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">REGULAMENTAÇÃO</h4>
+                      <p className="text-muted-foreground">
+                        Conformidade total com CVM e políticas financeiras brasileiras
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border">
+                    <span className="text-3xl">📋</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">DISCLAIMERS AUTOMÁTICOS</h4>
+                      <p className="text-muted-foreground">
+                        Proteção legal integrada em todas as recomendações
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border">
+                    <span className="text-3xl">🎯</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">LIMITAÇÕES CLARAS</h4>
+                      <p className="text-muted-foreground">
+                        Consultoria educativa, não substitui planejamento personalizado
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border">
+                    <span className="text-3xl">🔒</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">PRIVACIDADE GARANTIDA</h4>
+                      <p className="text-muted-foreground">
+                        Dados financeiros pessoais 100% protegidos e não compartilhados
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start p-5 rounded-lg bg-background border-2 border-border">
+                    <span className="text-3xl">💼</span>
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-lg">IDEAL PARA B2B</h4>
+                      <p className="text-muted-foreground">
+                        Fintechs e consultorias que precisam de conformidade regulatória integrada
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-lg bg-muted/50 border border-border text-center">
+                  <p className="text-sm text-muted-foreground italic">
+                    *Desenvolvido com metodologia própria para escalabilidade comercial*
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* CTA Final */}
             <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
