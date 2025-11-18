@@ -2,9 +2,16 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Pricing = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     document.title = "Planos | Financial Assistant Premium";
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -16,9 +23,33 @@ const Pricing = () => {
       meta.content = "Score Patrimonial 0-100. Planos Premium e Enterprise com conversas ilimitadas, produtos específicos e suporte prioritário.";
       document.head.appendChild(meta);
     }
+
+    // Verificar se usuário está logado
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
   }, []);
+
   const handlePlanClick = (planName: string) => {
-    alert(`${planName} - Em breve!`);
+    if (planName === "Gratuito") {
+      // Se usuário já está logado, redirecionar para assistente
+      if (user) {
+        navigate("/assistente-financeiro");
+      } else {
+        // Caso contrário, redirecionar para login/registro
+        navigate("/login");
+      }
+    } else if (planName === "Premium") {
+      toast({
+        title: "Redirecionando para checkout Premium...",
+        description: "Aguarde um momento.",
+      });
+    } else if (planName === "Enterprise") {
+      toast({
+        title: "Redirecionando para checkout Enterprise...",
+        description: "Aguarde um momento.",
+      });
+    }
   };
 
   const plans = [
