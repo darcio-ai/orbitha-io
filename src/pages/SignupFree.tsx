@@ -121,24 +121,32 @@ const SignupFree = () => {
         }
 
         // Get Financial Assistant agent ID and give user access
-        const { data: agents } = await supabase
+        const { data: agents, error: agentError } = await supabase
           .from("agents")
           .select("id")
           .eq("name", "Financial Assistant Premium")
           .eq("status", "active")
           .single();
 
-        if (agents) {
-          const { error: agentAccessError } = await supabase
-            .from("agents_users")
-            .insert({
-              user_id: authData.user.id,
-              agent_id: agents.id,
-            });
+        if (agentError) {
+          console.error("Agent error:", agentError);
+          throw new Error("Erro ao buscar agente. Por favor, contate o suporte.");
+        }
 
-          if (agentAccessError) {
-            console.error("Agent access error:", agentAccessError);
-          }
+        if (!agents) {
+          throw new Error("Agente Financial Assistant Premium não encontrado. Por favor, contate o suporte.");
+        }
+
+        const { error: agentAccessError } = await supabase
+          .from("agents_users")
+          .insert({
+            user_id: authData.user.id,
+            agent_id: agents.id,
+          });
+
+        if (agentAccessError) {
+          console.error("Agent access error:", agentAccessError);
+          throw new Error("Falha ao atribuir acesso ao agente. Por favor, contate o suporte.");
         }
 
         toast({
