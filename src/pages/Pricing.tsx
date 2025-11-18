@@ -31,12 +31,16 @@ const Pricing = () => {
   }, []);
 
   const handlePlanClick = (planName: string) => {
+    console.log('Plano clicado:', planName, 'Usuário:', user);
+    
     if (planName === "Gratuito") {
       // Se usuário já está logado, redirecionar para assistente
       if (user) {
+        console.log('Redirecionando para assistente...');
         navigate("/assistentes/financial-assistant");
       } else {
         // Caso contrário, redirecionar para cadastro gratuito
+        console.log('Redirecionando para cadastro...');
         navigate("/cadastro-gratuito");
       }
     } else if (planName === "Premium") {
@@ -44,11 +48,15 @@ const Pricing = () => {
         title: "Redirecionando para checkout Premium...",
         description: "Aguarde um momento.",
       });
+      // TODO: Adicionar link real de checkout Premium
+      window.open("https://pay.kiwify.com.br/seu-link-premium", "_blank");
     } else if (planName === "Enterprise") {
       toast({
         title: "Redirecionando para checkout Enterprise...",
         description: "Aguarde um momento.",
       });
+      // TODO: Adicionar link real de checkout Enterprise
+      window.open("https://pay.kiwify.com.br/seu-link-enterprise", "_blank");
     }
   };
 
