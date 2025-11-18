@@ -28,6 +28,7 @@ import ManageUserAgents from "./pages/ManageUserAgents";
 import DashboardLayout from "./components/DashboardLayout";
 import ChatAgent from "./pages/ChatAgent";
 import NotFound from "./pages/NotFound";
+import AdminSetup from "./pages/AdminSetup";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ function AppRoutes() {
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro-gratuito" element={<SignupFree />} />
+      <Route path="/admin/setup" element={<AdminSetup />} />
       
       {/* Dashboard routes with sidebar */}
       <Route path="/dashboard" element={<DashboardLayout />}>
