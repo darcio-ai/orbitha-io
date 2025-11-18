@@ -117,6 +117,7 @@ const SignupFree = () => {
 
         if (profileError) {
           console.error("Profile update error:", profileError);
+          throw profileError;
         }
 
         toast({
