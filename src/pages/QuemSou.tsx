@@ -36,16 +36,13 @@ const QuemSou = () => {
 
         {/* Bloco principal com foto + texto */}
         <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl sr-fade-up">
-          {/* Foto com neon */}
+          {/* FOTO LIMPA, SEM EFEITO */}
           <div className="w-full flex justify-center mb-10">
-            <div className="relative group">
-          <img 
-            src="/img/darcio.jpg" 
-            alt="Darcio Galaverna" 
-            className="w-44 h-44 rounded-full object-cover border border-border shadow-md"
-          />
-              <div className="absolute inset-0 rounded-full blur-xl opacity-30 group-hover:opacity-80 transition-all duration-500 bg-primary"></div>
-            </div>
+            <img 
+              src="/img/darcio.jpg"
+              alt="Foto de Darcio Galaverna"
+              className="w-44 h-44 rounded-full object-cover border border-border shadow-lg"
+            />
           </div>
 
           {/* Texto discursivo original */}
