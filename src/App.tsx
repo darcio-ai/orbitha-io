@@ -8,6 +8,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 import Home from "./pages/Home";
+import QuemSou from "./pages/QuemSou";
 import Mentoria from "./pages/Mentoria";
 import Solucoes from "./pages/Solucoes";
 import Produtos from "./pages/Produtos";
@@ -61,6 +62,7 @@ function AppRoutes() {
     <Routes>
       {/* Public routes with Header/Footer */}
       <Route path="/" element={<><Header /><Home /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/quem-sou" element={<><Header /><QuemSou /><Footer /><WhatsAppFloat /></>} />
       <Route path="/mentoria" element={<><Header /><Mentoria /><Footer /><WhatsAppFloat /></>} />
       <Route path="/solucoes" element={<><Header /><Solucoes /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes" element={<><Header /><Produtos /><Footer /><WhatsAppFloat /></>} />
