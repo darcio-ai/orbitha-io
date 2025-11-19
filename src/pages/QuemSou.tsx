@@ -39,9 +39,11 @@ const QuemSou = () => {
           {/* Foto com neon */}
           <div className="w-full flex justify-center mb-10">
             <div className="relative group">
-              <div className="w-44 h-44 rounded-full bg-muted border border-border overflow-hidden shadow-md flex items-center justify-center text-muted-foreground">
-                Foto Aqui
-              </div>
+          <img 
+            src="/img/darcio.jpg" 
+            alt="Darcio Galaverna" 
+            className="w-44 h-44 rounded-full object-cover border border-border shadow-md"
+          />
               <div className="absolute inset-0 rounded-full blur-xl opacity-30 group-hover:opacity-80 transition-all duration-500 bg-primary"></div>
             </div>
           </div>
