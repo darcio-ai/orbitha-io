@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const QuemSou = () => {
   useEffect(() => {
-    const revealElements = document.querySelectorAll('.sr-fade-up, .sr-left, .sr-right, .sr-zoom');
+    const revealElements = document.querySelectorAll('.sr-fade-up');
 
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -23,12 +23,8 @@ const QuemSou = () => {
     <div className="min-h-screen pt-20">
       <style>{`
         .sr-fade-up { opacity: 0; transform: translateY(20px); }
-        .sr-left { opacity: 0; transform: translateX(-40px); }
-        .sr-right { opacity: 0; transform: translateX(40px); }
-        .sr-zoom { opacity: 0; transform: scale(0.8); }
-
         @keyframes reveal {
-          to { opacity: 1; transform: translate(0,0) scale(1); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
 
@@ -38,9 +34,9 @@ const QuemSou = () => {
           Quem Sou
         </h1>
 
-        {/* Bloco principal */}
+        {/* Bloco principal com foto + texto */}
         <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl sr-fade-up">
-          {/* Foto */}
+          {/* Foto com neon */}
           <div className="w-full flex justify-center mb-10">
             <div className="relative group">
               <div className="w-44 h-44 rounded-full bg-muted border border-border overflow-hidden shadow-md flex items-center justify-center text-muted-foreground">
@@ -50,129 +46,44 @@ const QuemSou = () => {
             </div>
           </div>
 
-          {/* Texto */}
+          {/* Texto discursivo original */}
           <p className="text-muted-foreground leading-relaxed mb-6">
             Deixa eu te contar um pouco sobre quem está por trás de tudo isso…
           </p>
 
           <p className="text-muted-foreground leading-relaxed mb-6">
-            Eu sou o <strong className="text-primary">Darcio Galaverna</strong> — casado, canceriano, apaixonado por trabalhos manuais,
-            viagens, séries (especialmente GOT e Marvel) e filmes de ação.
+            Eu sou o <strong className="text-primary">Darcio Galaverna</strong> — casado, canceriano, apaixonado por trabalhos manuais, viagens,
+            séries (especialmente GOT e Marvel) e filmes de ação.
           </p>
 
           <p className="text-muted-foreground leading-relaxed mb-6">
-            Comecei cedo: entregando pizza aos 12 anos e, aos 14, trabalhando como office-boy.
-            Passei grande parte da minha adolescência mexendo com computadores (alguém lembra do 386 e 486?),
-            minha primeira paixão. Mas a vida me levou por outros caminhos e, em 2000, comecei como operador de telemarketing.
-            Eu mal sabia falar ao telefone rsrs. Entrei no atendimento receptivo, mas um ano depois descobri a área de vendas —
-            minha segunda grande paixão — e dali não saí mais.
+            Comecei cedo: entregando pizza aos 12 anos e, aos 14, trabalhando como office-boy. Passei grande parte da minha
+            adolescência mexendo com computadores (alguém lembra do 386 e 486?), minha primeira paixão. Mas a vida me levou por
+            outros caminhos e, em 2000, comecei como operador de telemarketing. Eu mal sabia falar ao telefone rsrs.
+            Entrei no atendimento receptivo, mas um ano depois descobri a área de vendas — minha segunda grande paixão — e dali
+            não saí mais.
+          </p>
+
+          <p className="text-muted-foreground leading-relaxed mb-6">
+            Passei por diversos segmentos: cartão de crédito, título de capitalização, provedor de internet (UOL?),
+            jornais de economia, jardim vertical, entre outros. Nos últimos anos, tive a oportunidade de atuar diretamente com
+            startups — SaaS, pagamentos, automação e IA.
+          </p>
+
+          <p className="text-muted-foreground leading-relaxed">
+            Hoje, com mais de 25 anos de experiência em vendas, continuo completamente apaixonado por tecnologia e inovação.
+            Decidi unir minha bagagem comercial à automação e à inteligência artificial para criar soluções que facilitam a vida
+            de quem empreende, atende e vende. 🚀
           </p>
         </div>
 
-        {/* Timeline */}
-        <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl">
-          <h2 className="text-2xl font-semibold text-primary mb-8 sr-fade-up">
-            Linha do Tempo Profissional
-          </h2>
-
-          <div className="space-y-10">
-            <div className="flex items-start gap-6 sr-left">
-              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
-              <div>
-                <h3 className="text-foreground font-semibold">1996 – 2000</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Primeiro contato com tecnologia: computadores antigos, internet discada e muita curiosidade.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-6 sr-right">
-              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
-              <div>
-                <h3 className="text-foreground font-semibold">2000 – 2001</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Início no telemarketing. Atendimento receptivo e primeiros aprendizados sobre comunicação.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-6 sr-left">
-              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
-              <div>
-                <h3 className="text-foreground font-semibold">2001 – 2015</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Transição para vendas: cartões, títulos, UOL, jornais, serviços e outros segmentos.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-6 sr-right">
-              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
-              <div>
-                <h3 className="text-foreground font-semibold">2015 – 2023</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Atuação com startups: SaaS, automação, meios de pagamento e IA.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-6 sr-left">
-              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
-              <div>
-                <h3 className="text-foreground font-semibold">2023 – Atual</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  25 anos de vendas + tecnologia = nascimento da Orbitha.io 🚀
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Habilidades */}
-        <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl">
-          <h2 className="text-2xl font-semibold text-primary mb-8 sr-fade-up">Minhas Habilidades</h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center sr-zoom">
-              <p className="text-primary text-xl mb-2">🤝</p>
-              <h4 className="text-foreground font-semibold">Vendas & Negociação</h4>
-            </div>
-
-            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center sr-zoom">
-              <p className="text-primary text-xl mb-2">⚙️</p>
-              <h4 className="text-foreground font-semibold">Automação</h4>
-            </div>
-
-            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center sr-zoom">
-              <p className="text-primary text-xl mb-2">🤖</p>
-              <h4 className="text-foreground font-semibold">Inteligência Artificial</h4>
-            </div>
-
-            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center sr-zoom">
-              <p className="text-primary text-xl mb-2">📈</p>
-              <h4 className="text-foreground font-semibold">Performance</h4>
-            </div>
-
-            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center sr-zoom">
-              <p className="text-primary text-xl mb-2">💡</p>
-              <h4 className="text-foreground font-semibold">Inovação</h4>
-            </div>
-
-            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center sr-zoom">
-              <p className="text-primary text-xl mb-2">🧩</p>
-              <h4 className="text-foreground font-semibold">Solução de Problemas</h4>
-            </div>
-          </div>
-        </div>
-
-        {/* Orbitha.io */}
+        {/* Bloco Orbitha.io */}
         <div className="bg-card/60 border border-border rounded-xl p-10 shadow-xl sr-fade-up">
           <h2 className="text-2xl font-semibold text-primary mb-4">Orbitha.io</h2>
 
           <p className="text-muted-foreground leading-relaxed mb-8">
-            Atualmente, estou à frente da <strong className="text-primary">Orbitha.io</strong>,
-            ajudando empresas a integrarem IA em seus atendimentos e processos, com foco em performance,
-            simplicidade e resultado.
+            Atualmente, estou à frente da <strong className="text-primary">Orbitha.io</strong>, ajudando empresas a integrarem IA em seus
+            atendimentos e processos, sempre com foco em performance, simplicidade e resultado.
           </p>
 
           {/* CTA Contato */}
