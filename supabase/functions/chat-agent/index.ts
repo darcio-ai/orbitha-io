@@ -281,12 +281,34 @@ ${planInfo}
             }
           }
 
-          // Add upgrade cards for free plan users (but NOT on first message)
-          // Only show upgrades after initial welcome to avoid overwhelming new users
+          // Add plan information for free users
           // isFirstMessage already defined above at line 171
           
-          if (userPlan === 'free' && fullResponse && !isFirstMessage) {
-            const upgradeCards = `
+          if (userPlan === 'free' && fullResponse) {
+            let freeUserInfo = '';
+            
+            // Show detailed plan info on first message
+            if (isFirstMessage) {
+              freeUserInfo = `
+
+---
+
+**No plano Gratuito, você tem acesso a:**
+
+**Score Patrimonial Básico:** Apenas o número consolidado (por exemplo, "73/100 - Consolidado PF").
+
+**Máximo de 3 Perguntas por Sessão:** Você pode fazer até três perguntas por sessão.
+
+**Sem Detalhamento dos 5 Pilares:** Não há detalhamento dos pilares da metodologia Smart Finance Analysis.
+
+**Sem Listagem de Produtos Específicos:** Não são fornecidos produtos financeiros específicos.
+
+Para uma análise mais detalhada e acesso a funcionalidades adicionais, você pode considerar fazer um upgrade para os planos Premium ou Enterprise. Se tiver mais perguntas dentro do que o plano gratuito oferece, estou à disposição!
+
+---`;
+            } else {
+              // Show upgrade cards on subsequent messages
+              freeUserInfo = `
 
 ---
 
@@ -317,14 +339,15 @@ ${planInfo}
 [💼 ASSINAR ENTERPRISE](https://pay.kiwify.com.br/seu-link-enterprise)
 
 ---`;
+            }
 
-            // Stream the upgrade cards
-            const upgradeLines = upgradeCards.split('\n');
-            for (const line of upgradeLines) {
+            // Stream the free user info
+            const infoLines = freeUserInfo.split('\n');
+            for (const line of infoLines) {
               controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: line + '\n' })}\n\n`));
             }
             
-            fullResponse += upgradeCards;
+            fullResponse += freeUserInfo;
           }
 
           // Save assistant response (with upgrade cards if applicable)
