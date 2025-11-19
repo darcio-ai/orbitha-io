@@ -1,29 +1,35 @@
 const QuemSou = () => {
   return (
     <div className="min-h-screen pt-20">
-      <section className="max-w-4xl mx-auto py-16 px-6">
+      <section className="max-w-5xl mx-auto py-16 px-6">
         {/* Título principal */}
-        <h1 className="text-4xl font-bold text-center mb-12 text-foreground">
+        <h1 className="text-4xl font-bold text-center mb-14 text-foreground animate-fade-in">
           Quem Sou
         </h1>
 
-        {/* Card principal */}
-        <div className="bg-card/60 border border-border rounded-xl p-8 mb-10 shadow-lg">
-          {/* Foto futura */}
-          <div className="w-full flex justify-center mb-8">
-            <div className="w-40 h-40 rounded-full bg-muted border border-border flex items-center justify-center text-muted-foreground text-sm">
-              Foto Aqui
+        {/* Bloco principal com foto + texto */}
+        <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl animate-fade-in">
+          {/* Foto com borda neon */}
+          <div className="w-full flex justify-center mb-10">
+            <div className="relative group">
+              {/* FOTO – substituir depois */}
+              <div className="w-44 h-44 rounded-full bg-muted border border-border overflow-hidden shadow-md flex items-center justify-center text-muted-foreground">
+                Foto Aqui
+              </div>
+
+              {/* Glow neon */}
+              <div className="absolute inset-0 rounded-full blur-xl opacity-30 group-hover:opacity-80 transition-all duration-500 bg-primary"></div>
             </div>
           </div>
 
-          {/* Apresentação */}
+          {/* Texto */}
           <p className="text-muted-foreground leading-relaxed mb-6">
             Deixa eu te contar um pouco sobre quem está por trás de tudo isso…
           </p>
 
           <p className="text-muted-foreground leading-relaxed mb-6">
-            Eu sou o <strong className="text-primary">Darcio Galaverna</strong> — casado, canceriano, apaixonado por trabalhos manuais, viagens,
-            séries (especialmente GOT e Marvel) e filmes de ação.
+            Eu sou o <strong className="text-primary">Darcio Galaverna</strong> — casado, canceriano, apaixonado por trabalhos manuais,
+            viagens, séries (especialmente GOT e Marvel) e filmes de ação.
           </p>
 
           <p className="text-muted-foreground leading-relaxed mb-6">
@@ -35,25 +41,102 @@ const QuemSou = () => {
           </p>
         </div>
 
-        {/* Trajetória Profissional */}
-        <div className="bg-card/60 border border-border rounded-xl p-8 mb-10 shadow-lg">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Trajetória Profissional</h2>
+        {/* Timeline */}
+        <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl animate-fade-in">
+          <h2 className="text-2xl font-semibold text-primary mb-8">Linha do Tempo Profissional</h2>
 
-          <p className="text-muted-foreground leading-relaxed mb-6">
-            Passei por diversos segmentos: cartão de crédito, título de capitalização, provedor de internet (UOL?),
-            jornais de economia, jardim vertical, entre outros. Nos últimos anos, tive a oportunidade de atuar diretamente
-            com startups — SaaS, pagamentos, automação e IA.
-          </p>
+          <div className="space-y-10">
+            <div className="flex items-start gap-6">
+              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
+              <div>
+                <h3 className="text-foreground font-semibold">1996 – 2000</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Primeiro contato com tecnologia: computadores antigos, internet discada e muita curiosidade.
+                </p>
+              </div>
+            </div>
 
-          <p className="text-muted-foreground leading-relaxed mb-2">
-            Hoje, com mais de 25 anos de experiência em vendas, continuo completamente apaixonado por tecnologia e inovação.
-            Decidi unir minha bagagem comercial à automação e à inteligência artificial para criar soluções que facilitam
-            a vida de quem empreende, atende e vende. 🚀
-          </p>
+            <div className="flex items-start gap-6">
+              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
+              <div>
+                <h3 className="text-foreground font-semibold">2000 – 2001</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Início no telemarketing. Atendimento receptivo e primeiros aprendizados sobre comunicação.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-6">
+              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
+              <div>
+                <h3 className="text-foreground font-semibold">2001 – 2015</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Transição para vendas: cartões de crédito, títulos, UOL, jornais, serviços e outros segmentos.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-6">
+              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
+              <div>
+                <h3 className="text-foreground font-semibold">2015 – 2023</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Atuação direta com startups: SaaS, automação, meios de pagamento e inteligência artificial.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-6">
+              <div className="w-4 h-4 bg-primary rounded-full mt-1"></div>
+              <div>
+                <h3 className="text-foreground font-semibold">2023 – Atual</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Mais de 25 anos de vendas + tecnologia e inovação = surgimento da Orbitha.io 🚀
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Habilidades */}
+        <div className="bg-card/60 border border-border rounded-xl p-10 mb-14 shadow-xl animate-fade-in">
+          <h2 className="text-2xl font-semibold text-primary mb-8">Minhas Habilidades</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center hover-scale">
+              <p className="text-primary text-xl mb-2">🤝</p>
+              <h4 className="text-foreground font-semibold">Vendas & Negociação</h4>
+            </div>
+
+            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center hover-scale">
+              <p className="text-primary text-xl mb-2">⚙️</p>
+              <h4 className="text-foreground font-semibold">Automação</h4>
+            </div>
+
+            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center hover-scale">
+              <p className="text-primary text-xl mb-2">🤖</p>
+              <h4 className="text-foreground font-semibold">Inteligência Artificial</h4>
+            </div>
+
+            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center hover-scale">
+              <p className="text-primary text-xl mb-2">📈</p>
+              <h4 className="text-foreground font-semibold">Crescimento & Performance</h4>
+            </div>
+
+            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center hover-scale">
+              <p className="text-primary text-xl mb-2">💡</p>
+              <h4 className="text-foreground font-semibold">Inovação</h4>
+            </div>
+
+            <div className="bg-muted/50 border border-border p-6 rounded-xl text-center hover-scale">
+              <p className="text-primary text-xl mb-2">🧩</p>
+              <h4 className="text-foreground font-semibold">Solução de Problemas</h4>
+            </div>
+          </div>
         </div>
 
         {/* Orbitha.io */}
-        <div className="bg-card/60 border border-border rounded-xl p-8 shadow-lg">
+        <div className="bg-card/60 border border-border rounded-xl p-10 shadow-xl animate-fade-in">
           <h2 className="text-2xl font-semibold text-primary mb-4">Orbitha.io</h2>
 
           <p className="text-muted-foreground leading-relaxed">
