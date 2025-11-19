@@ -117,8 +117,13 @@ const ChatAgent = () => {
 
       if (!agentData) return;
 
-      // Check if this is a fresh login by checking sessionStorage
-      const isNewSession = !sessionStorage.getItem(`chat_session_${agentData.id}`);
+      // Check if this is a fresh login by checking localStorage
+      const lastLoginKey = `last_login_${agentData.id}`;
+      const lastLogin = localStorage.getItem(lastLoginKey);
+      const now = new Date().getTime();
+      
+      // Consider it a new session if no login timestamp or last login was over 1 hour ago
+      const isNewSession = !lastLogin || (now - parseInt(lastLogin)) > 3600000;
       
       if (isNewSession) {
         // Clear old messages from database on fresh login
@@ -128,8 +133,8 @@ const ChatAgent = () => {
           .eq('user_id', userId)
           .eq('agent_id', agentData.id);
         
-        // Mark this session as active
-        sessionStorage.setItem(`chat_session_${agentData.id}`, 'active');
+        // Mark this login time
+        localStorage.setItem(lastLoginKey, now.toString());
         
         // No messages to load since we cleared them
         setMessages([]);
@@ -151,16 +156,7 @@ const ChatAgent = () => {
       // Scroll to bottom after messages load
       setTimeout(() => scrollToBottom(), 300);
 
-      // Check if should send continuation message
-      if (data && data.length > 0) {
-        const lastMessage = data[data.length - 1];
-        if (lastMessage.writer === 'user') {
-          // Last message was from user, send continuation
-          setTimeout(() => {
-            sendContinuationMessage(agentData.id);
-          }, 500);
-        }
-      }
+      // Don't send continuation message on reload
     } catch (error) {
       console.error('Error loading messages:', error);
     }
