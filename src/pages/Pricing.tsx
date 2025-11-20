@@ -33,7 +33,7 @@ const Pricing = () => {
   useEffect(() => {
     // Inicializar MercadoPago após o componente montar
     const initMercadoPago = () => {
-      const PUBLIC_KEY = "APP_USR-0923df9f-cf1a-42ca-ba0a-98549cc23162";
+      const PUBLIC_KEY = "TEST-c639b934-1134-4a25-8ed4-7912b5cea5c2";
       const PREF_PREMIUM = "94896762-701fde35-114d-4505-b991-a067eb0bf85b";
       const PREF_ENTERPRISE = "94896762-8076e775-0b16-412f-a12c-6b821c3eb177";
 
