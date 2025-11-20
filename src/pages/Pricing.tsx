@@ -30,28 +30,57 @@ const Pricing = () => {
     });
   }, []);
 
+  useEffect(() => {
+    // Inicializar MercadoPago após o componente montar
+    const initMercadoPago = () => {
+      const PUBLIC_KEY = "APP_USR-0923df9f-cf1a-42ca-ba0a-98549cc23162";
+      const PREF_PREMIUM = "94896762-701fde35-114d-4505-b991-a067eb0bf85b";
+      const PREF_ENTERPRISE = "94896762-8076e775-0b16-412f-a12c-6b821c3eb177";
+
+      if (typeof window !== 'undefined' && (window as any).MercadoPago) {
+        const mp = new (window as any).MercadoPago(PUBLIC_KEY, { locale: "pt-BR" });
+
+        const btnPremium = document.getElementById("btn-premium");
+        if (btnPremium) {
+          btnPremium.addEventListener("click", () => {
+            mp.checkout({
+              preference: { id: PREF_PREMIUM },
+              autoOpen: true
+            });
+          });
+        }
+
+        const btnEnterprise = document.getElementById("btn-enterprise");
+        if (btnEnterprise) {
+          btnEnterprise.addEventListener("click", () => {
+            mp.checkout({
+              preference: { id: PREF_ENTERPRISE },
+              autoOpen: true
+            });
+          });
+        }
+      }
+    };
+
+    // Aguardar o SDK do MercadoPago carregar
+    const checkMercadoPago = setInterval(() => {
+      if ((window as any).MercadoPago) {
+        initMercadoPago();
+        clearInterval(checkMercadoPago);
+      }
+    }, 100);
+
+    return () => clearInterval(checkMercadoPago);
+  }, []);
+
   const handlePlanClick = (planName: string) => {
     console.log('Plano clicado:', planName);
     
     if (planName === "Gratuito") {
-      // Sempre redirecionar para cadastro gratuito
       console.log('Redirecionando para cadastro...');
       navigate("/cadastro-gratuito");
-    } else if (planName === "Premium") {
-      toast({
-        title: "Redirecionando para checkout Premium...",
-        description: "Aguarde um momento.",
-      });
-      // TODO: Adicionar link real de checkout Premium
-      window.open("https://pay.kiwify.com.br/seu-link-premium", "_blank");
-    } else if (planName === "Enterprise") {
-      toast({
-        title: "Redirecionando para checkout Enterprise...",
-        description: "Aguarde um momento.",
-      });
-      // TODO: Adicionar link real de checkout Enterprise
-      window.open("https://pay.kiwify.com.br/seu-link-enterprise", "_blank");
     }
+    // Premium e Enterprise são tratados pelo MercadoPago via IDs dos botões
   };
 
   const plans = [
@@ -82,7 +111,8 @@ const Pricing = () => {
       ],
       buttonText: "Assinar Premium",
       buttonVariant: "default" as const,
-      popular: true
+      popular: true,
+      buttonId: "btn-premium"
     },
     {
       name: "Enterprise",
@@ -97,7 +127,8 @@ const Pricing = () => {
       ],
       buttonText: "Assinar Enterprise",
       buttonVariant: "outline" as const,
-      popular: false
+      popular: false,
+      buttonId: "btn-enterprise"
     }
   ];
 
@@ -157,6 +188,7 @@ const Pricing = () => {
                   variant={plan.buttonVariant}
                   size="lg"
                   onClick={() => handlePlanClick(plan.name)}
+                  id={(plan as any).buttonId}
                 >
                   {plan.buttonText}
                 </Button>
