@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import orbithaLogo from "@/assets/orbitha-logo-new.png";
 
 const Footer = () => {
   return (
@@ -10,7 +11,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
           <div className="flex items-center space-x-2 mb-4">
             <img 
-              src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
+              src={orbithaLogo} 
               alt="Orbitha Logo" 
               className="h-8 w-auto object-contain"
             />
