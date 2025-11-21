@@ -14,7 +14,7 @@ const Footer = () => {
                 alt="Orbitha Logo" 
                 className="w-8 h-8 object-contain"
               />
-              <span className="text-xl font-bold">Orbitha.io</span>
+              <span className="text-xl font-bold">Orbitha</span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
               Ajudamos pequenas e médias empresas a integrarem inteligência artificial em seus 
@@ -79,7 +79,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; 2024 Orbitha.io. Todos os direitos reservados.</p>
+          <p>&copy; 2024 Orbitha. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

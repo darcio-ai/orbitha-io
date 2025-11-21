@@ -76,12 +76,12 @@ const QuemSou = () => {
           </p>
         </div>
 
-        {/* Bloco Orbitha.io */}
+        {/* Bloco Orbitha */}
         <div className="bg-card/60 border border-border rounded-xl p-10 shadow-xl sr-fade-up">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Orbitha.io</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-4">Orbitha</h2>
 
           <p className="text-muted-foreground leading-relaxed mb-8">
-            Atualmente, estou à frente da <strong className="text-primary">Orbitha.io</strong>, ajudando empresas a integrarem IA em seus
+            Atualmente, estou à frente da <strong className="text-primary">Orbitha</strong>, ajudando empresas a integrarem IA em seus
             atendimentos e processos, sempre com foco em performance, simplicidade e resultado.
           </p>
 

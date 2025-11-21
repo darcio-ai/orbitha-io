@@ -123,7 +123,7 @@ const Login = () => {
               alt="Orbitha Logo" 
               className="h-8 w-8"
             />
-            <span className="text-xl font-bold text-foreground">Orbitha.io</span>
+            <span className="text-xl font-bold text-foreground">Orbitha</span>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
