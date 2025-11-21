@@ -9,36 +9,40 @@ const Header = () => {
   const location = useLocation();
 
   const navigation = [
-    { name: "Recursos", href: "/recursos" },
+    { name: "Home", href: "/" },
+    { name: "Quem Sou", href: "/quem-sou" },
+    { name: "Mentoria", href: "/mentoria" },
     { name: "Soluções", href: "/solucoes" },
-    { name: "Sobre Nós", href: "/quem-sou" },
+    { name: "Assistentes de IA", href: "/assistentes" },
+    { name: "Planos", href: "/pricing" },
+    { name: "Blog", href: "/blog" },
     { name: "Contato", href: "/contato" },
   ];
 
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <header className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl bg-background/10 backdrop-blur-md border border-white/20 rounded-full z-50 shadow-cyber-glow">
-      <div className="px-6 py-3">
+    <header className="fixed top-0 w-full bg-background/80 backdrop-blur-xl border-b border-border z-50">
+      <div className="container mx-auto px-4 lg:px-6 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
               alt="Orbitha Logo" 
               className="w-8 h-8 object-contain"
             />
-            <span className="text-lg font-bold text-white">Orbitha</span>
+            <span className="text-xl font-bold">Orbitha.io</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-cyber-cyan ${
-                  isActive(item.href) ? "text-cyber-cyan" : "text-gray-300"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive(item.href) ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 {item.name}
@@ -46,49 +50,69 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Profile Icon */}
-          <div className="hidden md:flex">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10" asChild>
-              <Link to="/login">
-                <User className="h-5 w-5 text-gray-300" />
-              </Link>
+          {/* CTA Buttons */}
+          <div className="hidden md:flex gap-3">
+            <Button variant="outline" asChild>
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button variant="default" asChild>
+              <a
+                href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Fale com a Dora
+              </a>
             </Button>
           </div>
 
           {/* Mobile buttons */}
           <div className="md:hidden flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10" asChild>
+            <Button variant="ghost" size="icon" asChild>
               <Link to="/login">
-                <User className="h-5 w-5 text-gray-300" />
+                <User className="h-5 w-5" />
               </Link>
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full hover:bg-white/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <X className="h-6 w-6 text-gray-300" /> : <Menu className="h-6 w-6 text-gray-300" />}
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-white/20">
-            <div className="space-y-2">
+          <div className="md:hidden border-t border-border">
+            <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`block px-3 py-2 text-base font-medium transition-colors rounded-lg ${
-                    isActive(item.href) ? "text-cyber-cyan bg-white/10" : "text-gray-300 hover:bg-white/5"
+                  className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    isActive(item.href) ? "text-primary" : "text-muted-foreground"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
+              <div className="px-3 py-2 space-y-2">
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button variant="default" className="w-full" asChild>
+                  <a
+                    href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Fale com a Dora
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         )}
