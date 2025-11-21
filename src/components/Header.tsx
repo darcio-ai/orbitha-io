@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User } from "lucide-react";
@@ -9,113 +8,109 @@ const Header = () => {
   const location = useLocation();
 
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Quem Sou", href: "/quem-sou" },
-    { name: "Mentoria", href: "/mentoria" },
-    { name: "Soluções", href: "/solucoes" },
-    { name: "Assistentes de IA", href: "/assistentes" },
-    { name: "Planos", href: "/pricing" },
-    { name: "Blog", href: "/blog" },
+    { name: "Recursos", href: "#recursos" },
+    { name: "Soluções", href: "#solucoes" },
+    { name: "Sobre Nós", href: "/quem-sou" },
     { name: "Contato", href: "/contato" },
   ];
 
-  const isActive = (href: string) => location.pathname === href;
+  const isActive = (href: string) => location.pathname === href || location.hash === href;
 
   return (
-    <header className="fixed top-0 w-full bg-background/80 backdrop-blur-xl border-b border-border z-50">
-      <div className="container mx-auto px-4 lg:px-6 py-3">
-        <div className="flex items-center justify-between">
+    <header className="fixed top-6 left-0 right-0 z-50 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Desktop Navigation - Glass Capsule */}
+        <nav className="hidden md:flex items-center justify-between h-16 px-6 rounded-full backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <img 
-              src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
-              alt="Orbitha Logo" 
-              className="w-8 h-8 object-contain"
-            />
-            <span className="text-xl font-bold">Orbitha.io</span>
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center">
+              <div className="w-4 h-4 rounded-full border-2 border-primary-foreground"/>
+            </div>
+            <span className="text-xl font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Orbitha
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          {/* Navigation Links */}
+          <div className="flex items-center gap-8">
             {navigation.map((item) => (
-              <Link
+              <a
                 key={item.name}
-                to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
+                href={item.href}
+                className={`text-sm font-medium transition-all hover:text-primary relative group ${
                   isActive(item.href) ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 {item.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* CTA Buttons */}
-          <div className="hidden md:flex gap-3">
-            <Button variant="outline" asChild>
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button variant="default" asChild>
-              <a
-                href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Fale com a Dora
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-primary group-hover:w-full transition-all duration-300"/>
               </a>
-            </Button>
+            ))}
           </div>
 
-          {/* Mobile buttons */}
-          <div className="md:hidden flex items-center gap-2">
-            <Button variant="ghost" size="icon" asChild>
-              <Link to="/login">
-                <User className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          </div>
-        </div>
+          {/* Profile Icon */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="rounded-full w-10 h-10 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all"
+            asChild
+          >
+            <Link to="/login">
+              <User className="h-5 w-5 text-primary" />
+            </Link>
+          </Button>
+        </nav>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t border-border">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`block px-3 py-2 text-base font-medium transition-colors ${
-                    isActive(item.href) ? "text-primary" : "text-muted-foreground"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              <div className="px-3 py-2 space-y-2">
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button variant="default" className="w-full" asChild>
-                  <a
-                    href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Fale com a Dora
-                  </a>
-                </Button>
+        <div className="md:hidden">
+          <div className="flex items-center justify-between h-14 px-4 rounded-full backdrop-blur-xl bg-card/10 border border-border/20">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-primary flex items-center justify-center">
+                <div className="w-3 h-3 rounded-full border-2 border-primary-foreground"/>
               </div>
+              <span className="text-lg font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Orbitha
+              </span>
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="rounded-full" asChild>
+                <Link to="/login">
+                  <User className="h-5 w-5 text-primary" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
             </div>
           </div>
-        )}
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="mt-2 p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20">
+              <div className="space-y-2">
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className={`block px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                      isActive(item.href) 
+                        ? "text-primary bg-primary/10" 
+                        : "text-muted-foreground hover:bg-card/20"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
