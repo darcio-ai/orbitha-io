@@ -12,7 +12,7 @@ const Header = () => {
     { name: "Quem Sou", href: "/quem-sou" },
     { name: "Mentoria", href: "/mentoria" },
     { name: "Soluções", href: "/solucoes" },
-    { name: "Assistentes de IA", href: "/produtos" },
+    { name: "Assistentes de IA", href: "/assistentes" },
     { name: "Planos", href: "/pricing" },
     { name: "Blog", href: "/blog" },
     { name: "Contato", href: "/contato" },
