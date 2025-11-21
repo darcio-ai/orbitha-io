@@ -57,45 +57,56 @@ const Home = () => {
         </div>
         
         <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-left">
-              Explorando o
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge variant="secondary" className="mb-6">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Inteligência Artificial para Empresas
+            </Badge>
+            
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              Transforme seu
               <span className="bg-gradient-primary bg-clip-text text-transparent block">
-                Futuro da IA
+                atendimento com IA
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl text-left">
-              Plataforma avançada para análise de dados e machine learning no espaço.
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+              Ajudamos pequenas e médias empresas a integrarem inteligência artificial 
+              em seus processos, com foco em performance, simplicidade e resultado.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 items-center mb-12 justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Button size="lg" className="text-lg px-8 py-6" asChild>
                 <a
                   href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Começar Agora
+                  <MessageSquare className="mr-2 h-5 w-5" />
+                  Fale com a Dora
                 </a>
               </Button>
               
               <Button variant="outline" size="lg" className="text-lg px-8 py-6" asChild>
                 <a href="#solucoes">
-                  Saiba Mais
+                  Ver Soluções
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
             </div>
 
-            </div>
-            
-            <div className="relative hidden lg:block">
-              <img 
-                src={heroImage} 
-                alt="Astronauta explorando IA no espaço" 
-                className="w-full h-auto object-contain"
-              />
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 justify-items-center">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
