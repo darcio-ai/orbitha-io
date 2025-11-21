@@ -1,169 +1,163 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Bot, 
-  Calendar, 
-  MessageSquare, 
-  Zap, 
-  Users, 
-  TrendingUp,
-  ArrowRight,
-  Sparkles 
-} from "lucide-react";
-import heroImage from "@/assets/hero-image.jpg";
+import heroAstronaut from "@/assets/hero-astronaut.png";
+import { TrendingUp, Activity, BarChart3 } from "lucide-react";
 
 const Home = () => {
-  const solutions = [
-    {
-      icon: <MessageSquare className="h-8 w-8" />,
-      title: "Automação de WhatsApp",
-      description: "IA conversacional para atendimento 24/7 no WhatsApp"
-    },
-    {
-      icon: <Calendar className="h-8 w-8" />,
-      title: "Integrações Inteligentes",
-      description: "Google Agenda, planilhas e sistemas via Zapier e n8n"
-    },
-    {
-      icon: <Bot className="h-8 w-8" />,
-      title: "Agentes de IA",
-      description: "Assistentes virtuais personalizados para sua empresa"
-    },
-    {
-      icon: <TrendingUp className="h-8 w-8" />,
-      title: "Automação de Vendas",
-      description: "Processos de vendas e atendimento otimizados"
-    }
-  ];
-
-  const stats = [
-    { number: "95%", label: "Redução no tempo de resposta" },
-    { number: "24/7", label: "Atendimento disponível" },
-    { number: "3x", label: "Aumento na produtividade" }
-  ];
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Hero" 
-            className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-hero" />
+        {/* Space background */}
+        <div className="absolute inset-0 z-0 bg-[#0a0e27]">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-cyan-900/20" />
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                             radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                             radial-gradient(circle at 40% 80%, rgba(168, 85, 247, 0.2) 0%, transparent 50%)`
+          }} />
         </div>
         
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Inteligência Artificial para Empresas
-            </Badge>
-            
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Transforme seu
-              <span className="bg-gradient-primary bg-clip-text text-transparent block">
-                atendimento com IA
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Ajudamos pequenas e médias empresas a integrarem inteligência artificial 
-              em seus processos, com foco em performance, simplicidade e resultado.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button size="lg" className="text-lg px-8 py-6" asChild>
-                <a
-                  href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MessageSquare className="mr-2 h-5 w-5" />
-                  Fale com a Dora
-                </a>
-              </Button>
+        <div className="container mx-auto px-4 lg:px-6 relative z-10 py-20">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Text Content */}
+            <div className="space-y-8">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="text-white">Explorando o</span>
+                <span className="block bg-gradient-cyber bg-clip-text text-transparent">
+                  Futuro da IA
+                </span>
+              </h1>
               
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6" asChild>
-                <a href="#solucoes">
-                  Ver Soluções
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
+              <p className="text-lg md:text-xl text-gray-300 max-w-xl">
+                Plataforma avançada para análise de dados e machine learning no espaço.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg" 
+                  className="text-lg px-8 py-6 bg-gradient-to-r from-cyber-cyan to-cyber-blue hover:shadow-cyber-glow transition-all duration-300"
+                  asChild
+                >
+                  <a
+                    href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Começar Agora
+                  </a>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-lg px-8 py-6 border-cyber-cyan/50 text-cyber-cyan hover:bg-cyber-cyan/10 hover:border-cyber-cyan backdrop-blur-sm"
+                  asChild
+                >
+                  <a href="#solucoes">
+                    Saiba Mais
+                  </a>
+                </Button>
+              </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 justify-items-center">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
-                    {stat.number}
+            {/* Right Column - Astronaut with Floating Cards */}
+            <div className="relative hidden lg:block">
+              <img 
+                src={heroAstronaut} 
+                alt="Astronauta explorando IA no espaço" 
+                className="w-full h-auto object-contain relative z-10"
+              />
+              
+              {/* Floating Card 1 - Growth Chart */}
+              <Card className="absolute top-8 left-0 w-48 bg-background/10 backdrop-blur-md border-white/20 animate-float shadow-cyber-glow">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-4 w-4 text-cyber-cyan" />
+                    <span className="text-xs text-gray-300">Crescimento de Dados (TB)</span>
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {stat.label}
+                  <div className="h-16 flex items-end gap-1">
+                    <div className="flex-1 bg-gradient-to-t from-cyber-cyan to-cyber-blue h-8 rounded-sm opacity-60" />
+                    <div className="flex-1 bg-gradient-to-t from-cyber-cyan to-cyber-blue h-12 rounded-sm opacity-70" />
+                    <div className="flex-1 bg-gradient-to-t from-cyber-cyan to-cyber-blue h-10 rounded-sm opacity-80" />
+                    <div className="flex-1 bg-gradient-to-t from-cyber-cyan to-cyber-blue h-16 rounded-sm" />
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Solutions Section */}
-      <section id="solucoes" className="py-24 bg-card">
-        <div className="container mx-auto px-4 lg:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Nossas <span className="bg-gradient-primary bg-clip-text text-transparent">Soluções</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Automatize processos, melhore o atendimento e aumente a produtividade 
-              da sua empresa com nossas soluções de IA.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {solutions.map((solution, index) => (
-              <Card key={index} className="bg-secondary/50 border-border hover:shadow-glow transition-all duration-300 group">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <div className="text-primary-foreground">
-                      {solution.icon}
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3">{solution.title}</h3>
-                  <p className="text-muted-foreground">{solution.description}</p>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-primary relative overflow-hidden">
-        <div className="container mx-auto px-4 lg:px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
-              Vamos conversar?
-            </h2>
-            <p className="text-xl text-primary-foreground/80 mb-8 max-w-3xl mx-auto">
-              Me conta: o que tá tirando o seu sono ou te dando dor de cabeça aí no dia a dia? 
-              Vamos descobrir juntos como a automação pode te ajudar a resolver isso. 💡
-            </p>
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
-              <a
-                href="https://wa.me/5513991497873?text=Oi! Quero descobrir como a automação pode ajudar minha empresa"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Conversar com a Dora
-              </a>
-            </Button>
+              {/* Floating Card 2 - Neural Processing */}
+              <Card className="absolute bottom-32 left-4 w-44 bg-background/10 backdrop-blur-md border-white/20 shadow-cyber-glow" style={{ animationDelay: '0.5s' }}>
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Activity className="h-4 w-4 text-cyber-purple" />
+                    <span className="text-xs text-gray-300">Processamento Neural</span>
+                  </div>
+                  <div className="relative w-20 h-20 mx-auto">
+                    <svg className="transform -rotate-90 w-20 h-20">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="32"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        fill="transparent"
+                        className="text-gray-700"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="32"
+                        stroke="url(#gradient)"
+                        strokeWidth="6"
+                        fill="transparent"
+                        strokeDasharray={2 * Math.PI * 32}
+                        strokeDashoffset={2 * Math.PI * 32 * (1 - 0.94)}
+                        strokeLinecap="round"
+                      />
+                      <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="hsl(var(--cyber-cyan))" />
+                          <stop offset="100%" stopColor="hsl(var(--cyber-purple))" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-cyber-neon">94%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Floating Card 3 - Model Efficiency */}
+              <Card className="absolute bottom-8 right-0 w-52 bg-background/10 backdrop-blur-md border-white/20 shadow-cyber-glow" style={{ animationDelay: '1s' }}>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <BarChart3 className="h-4 w-4 text-cyber-blue" />
+                    <span className="text-xs text-gray-300">Eficiência do Modelo (RL)</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-cyber-purple to-cyber-cyan w-[85%]" />
+                      </div>
+                      <span className="text-xs text-gray-400">85%</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-cyber-purple to-cyber-cyan w-[92%]" />
+                      </div>
+                      <span className="text-xs text-gray-400">92%</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-3 bg-gray-700 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-cyber-purple to-cyber-cyan w-[78%]" />
+                      </div>
+                      <span className="text-xs text-gray-400">78%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
