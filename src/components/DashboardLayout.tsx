@@ -139,7 +139,7 @@ const DashboardLayout = () => {
                 alt="Orbitha Logo" 
                 className="w-8 h-8 object-contain"
               />
-              <span className="text-xl font-bold">Orbitha.io</span>
+              <span className="text-xl font-bold">Orbitha</span>
             </Link>
           )}
           <Button
