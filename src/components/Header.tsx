@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import orbithaLogo from "@/assets/orbitha-logo.png";
+import orbithaLogo from "@/assets/orbitha-logo-new.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
