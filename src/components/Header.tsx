@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import orbithaLogo from "@/assets/orbitha-logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,9 +28,11 @@ const Header = () => {
         <nav className="hidden md:flex items-center justify-between h-16 px-6 rounded-full backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center">
-              <div className="w-4 h-4 rounded-full border-2 border-primary-foreground"/>
-            </div>
+            <img 
+              src={orbithaLogo} 
+              alt="Orbitha Logo" 
+              className="h-8 w-auto"
+            />
             <span className="text-xl font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
               Orbitha
             </span>
@@ -68,9 +71,11 @@ const Header = () => {
         <div className="md:hidden">
           <div className="flex items-center justify-between h-14 px-4 rounded-full backdrop-blur-xl bg-card/10 border border-border/20">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-7 h-7 rounded-full bg-gradient-primary flex items-center justify-center">
-                <div className="w-3 h-3 rounded-full border-2 border-primary-foreground"/>
-              </div>
+              <img 
+                src={orbithaLogo} 
+                alt="Orbitha Logo" 
+                className="h-7 w-auto"
+              />
               <span className="text-lg font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
                 Orbitha
               </span>
