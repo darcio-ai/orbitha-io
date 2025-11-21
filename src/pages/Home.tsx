@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import heroAstronaut from "@/assets/hero-astronaut.png";
+import astronautFuturistic from "@/assets/astronaut-futuristic.png";
 import { TrendingUp, Activity, BarChart3 } from "lucide-react";
 
 const Home = () => {
@@ -64,7 +64,7 @@ const Home = () => {
             {/* Right Column - Astronaut with Floating Cards */}
             <div className="relative hidden lg:block">
               <img 
-                src={heroAstronaut} 
+                src={astronautFuturistic} 
                 alt="Astronauta explorando IA no espaço" 
                 className="w-full h-auto object-contain relative z-10"
               />
