@@ -43,9 +43,9 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       {/* Animated Space Background */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-hero" />
         <div className="absolute inset-0 opacity-30">
           {[...Array(50)].map((_, i) => (
