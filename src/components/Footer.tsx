@@ -9,13 +9,15 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo e Descrição */}
           <div className="col-span-1 md:col-span-2">
-          <div className="flex items-center space-x-2 mb-4">
+          <div className="flex items-center space-x-3 mb-4">
             <img 
               src={orbithaLogo} 
               alt="Orbitha Logo" 
-              className="h-8 w-auto object-contain"
+              className="h-8 w-auto"
             />
-            <span className="text-2xl font-bold tracking-tight">Orbitha</span>
+            <span className="text-xl font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Orbitha
+            </span>
           </div>
             <p className="text-muted-foreground mb-4 max-w-md">
               Ajudamos pequenas e médias empresas a integrarem inteligência artificial em seus 
