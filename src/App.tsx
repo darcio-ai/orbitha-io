@@ -35,6 +35,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import ChatAgent from "./pages/ChatAgent";
 import NotFound from "./pages/NotFound";
 import AdminSetup from "./pages/AdminSetup";
+import ScrollToTop from "./components/ScrollToTop";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -114,6 +115,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <AppRoutes />
       </BrowserRouter>
     </TooltipProvider>
