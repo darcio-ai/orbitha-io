@@ -82,6 +82,7 @@ function AppRoutes() {
       <Route path="/blog" element={<><Header /><Blog /><Footer /><WhatsAppFloat /></>} />
       <Route path="/contato" element={<><Header /><Contato /><Footer /><WhatsAppFloat /></>} />
       <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/planos" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
