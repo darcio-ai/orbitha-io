@@ -163,10 +163,19 @@ const DemoAssistant = () => {
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm as any]}
                             components={{
-                              p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-1">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1">{children}</ol>,
-                              li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                              // Mudança 1: De 'mb-1' para 'mb-0' ou 'mb-0.5' (via classe arbitrária do Tailwind)
+                              // Isso remove o espaço extra entre blocos de texto
+                              p: ({ children }) => <p className="mb-0 last:mb-0">{children}</p>,
+
+                              // Mudança 2: Ajuste opcional no 'space-y-1' para 'space-y-0' ou 'space-y-0.5'
+                              // Isso controla a distância entre o item 1, 2 e 3
+                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-0">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-0">{children}</ol>,
+
+                              // Mudança 3: De 'leading-relaxed' para 'leading-snug' ou 'leading-normal'
+                              // Isso "aperta" o texto dentro da própria frase
+                              li: ({ children }) => <li className="leading-snug mb-1">{children}</li>,
+
                               strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             }}
                           >
