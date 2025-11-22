@@ -16,7 +16,7 @@ const Produtos = () => {
     {
       title: "Business Assistant",
       image: agenteBusiness,
-      description: "Eleve sua gestão empresarial: dashboards inteligentes, KPIs estratégicos e pipelines otimizados para decisões mais assertivas.",
+      description: "IA para MEI e pequenos negócios: PF x PJ, fluxo de caixa, precificação, margem e checklists de obrigações — com plano de ação claro.",
       link: "/assistentes/business-assistant",
     },
     {
