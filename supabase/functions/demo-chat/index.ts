@@ -66,16 +66,23 @@ FOCO: treino, nutrição geral, hábitos.
 `,
 };
 
-// 3) SYSTEM final = BASE + específico
+// 3) SYSTEM final = BASE + especifico
 const SYSTEMS: Record<string, string> = {
   financeiro: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.financeiro,
-  business: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.business,
-  vendas: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.vendas,
-  marketing: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.marketing,
-  suporte: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.suporte,
-  viagens: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.viagens,
-  fitness: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.fitness,
+  business:   BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.business,
+  vendas:     BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.vendas,
+  marketing:  BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.marketing,
+  suporte:    BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.suporte,
+  viagens:    BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.viagens,
+  fitness:    BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.fitness,
 };
+
+...
+
+const { assistantId, userText, history } = body;
+
+// ✅ fallback correto
+const system = SYSTEMS[assistantId] || BASE_SYSTEM;
 
 Deno.serve(async (req) => {
   // CORS preflight
@@ -87,7 +94,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { assistantId, userText, history } = body;
 
-    const system = SYSTEMS[assistantId] || "Você é um assistente da Orbitha. Seja objetivo e útil.";
+    const system = SYSTEMS[assistantId] || BASE_SYSTEM;
 
     // histórico curtinho pra economizar token
     const safeHistory = Array.isArray(history) ? history.slice(-6) : [];
