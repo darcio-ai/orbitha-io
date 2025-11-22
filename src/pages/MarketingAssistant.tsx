@@ -12,6 +12,11 @@ import { useNavigate } from "react-router-dom";
 const MarketingAssistant = () => {
   const navigate = useNavigate();
 
+  const scrollToPremium = () => {
+    const premiumSection = document.getElementById('premium-section');
+    premiumSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const steps = [
     {
       icon: "1️⃣",
@@ -142,9 +147,9 @@ const MarketingAssistant = () => {
                     size="lg"
                     variant="outline"
                     className="text-lg"
-                    onClick={() => navigate("/pricing")}
+                    onClick={scrollToPremium}
                   >
-                    Ver planos Premium
+                    Ver Premium
                   </Button>
                 </div>
 
@@ -187,7 +192,7 @@ const MarketingAssistant = () => {
             </div>
 
             {/* O que você recebe no Premium */}
-            <Card className="mb-16 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+            <Card id="premium-section" className="mb-16 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background scroll-mt-20">
               <CardHeader>
                 <CardTitle className="text-3xl font-bold flex items-center gap-2">
                   <Megaphone className="w-7 h-7 text-primary" />
