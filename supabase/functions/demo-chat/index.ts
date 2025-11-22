@@ -11,8 +11,7 @@ const openai = new OpenAI({
 });
 
 // 1) BASE padrão (igual pra todos)
-const BASE_SYSTEM = `
-Você é um Assistente de IA da Orbitha. Seu objetivo é ajudar o usuário de forma prática, clara e acionável.
+const system = SYSTEMS[assistantId] || BASE_SYSTEM;
 
 TOM & VOZ:
 - Português do Brasil, humano, direto e cordial.
