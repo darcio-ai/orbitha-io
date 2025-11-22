@@ -52,7 +52,7 @@ const DemoAssistant = () => {
     // manda só um histórico curtinho pra reduzir tokens
     const trimmedHistory = history.slice(-6);
 
-    const res = await fetch("/api/demo-chat", {
+    const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/demo-chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
