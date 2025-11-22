@@ -14,7 +14,7 @@ const Header = () => {
     { name: "Mentoria", href: "/mentoria" },
     { name: "Soluções", href: "/solucoes" },
     { name: "Assistentes de IA", href: "/assistentes" },
-    { name: "Planos", href: "/pricing" },
+    { name: "Preços", href: "/pricing" },
     { name: "Blog", href: "/blog" },
     { name: "Contato", href: "/contato" },
   ];
