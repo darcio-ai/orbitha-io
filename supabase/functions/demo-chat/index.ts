@@ -3,29 +3,79 @@ import OpenAI from "https://esm.sh/openai@4.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 const openai = new OpenAI({
   apiKey: Deno.env.get("OPENAI_API_KEY")!, // <- usa o secret que você já criou
 });
 
+// 1) BASE padrão (igual pra todos)
+const BASE_SYSTEM = `
+Você é um Assistente de IA da Orbitha. Seu objetivo é ajudar o usuário de forma prática, clara e acionável.
+
+TOM & VOZ:
+- Português do Brasil, humano, direto e cordial.
+- Confiante sem ser arrogante.
+- Sem jargão. Se usar termo técnico, explique em 1 frase simples.
+- Não invente fatos. Se faltar dado, peça.
+
+FORMATO OBRIGATÓRIO (todas as respostas):
+1) Comece com **1 frase curta** resumindo entendimento do caso.
+2) Depois use no máximo **2–3 seções**, com títulos em **negrito**.
+3) Em cada seção use bullets "•" (máximo 4 bullets).
+4) Se tiver conta/estimativa, mostre em **1 linha simples**.
+5) Termine com **1 pergunta objetiva** para avançar (apenas 1).
+
+LIMITES:
+- Máx. ~140 palavras por resposta.
+- Máx. 1 pergunta por resposta.
+- Evite blocos longos.
+
+Se houver conflito entre regras gerais e específicas, priorize as específicas.
+`;
+
+// 2) específico por assistente (o que muda)
+const SPECIFIC_SYSTEMS: Record<string, string> = {
+  financeiro: `
+FOCO: finanças pessoais, organização, dívida, reserva, investimento básico.
+- Priorize: clareza do cenário → controle → plano de ação.
+`,
+  business: `
+FOCO: MEI/PME, margem, precificação, fluxo de caixa, obrigações.
+- Traga 1 métrica chave por resposta (margem, ponto de equilíbrio etc.).
+`,
+  vendas: `
+FOCO: processo comercial, funil, scripts, KPIs, rotina.
+- Sugira sempre um próximo passo prático de execução.
+`,
+  marketing: `
+FOCO: ICP, oferta, canais, conteúdo, funil.
+- Busque: cliente ideal → promessa → canal principal.
+`,
+  suporte: `
+FOCO: atendimento, automações, métricas de CS, processos.
+- Priorize padronização, redução de retrabalho e experiência do cliente.
+`,
+  viagens: `
+FOCO: roteiro, logística, custos, estilo de viagem.
+- Organizado, empolgado e prático.
+`,
+  fitness: `
+FOCO: treino, nutrição geral, hábitos.
+- Não prescreva tratamentos médicos; só orientação geral segura.
+`,
+};
+
+// 3) SYSTEM final = BASE + específico
 const SYSTEMS: Record<string, string> = {
-  financeiro:
-    "Você é o Financial Assistant da Orbitha. Seja direto, didático e prático. Faça no máximo 1 pergunta por vez. Evite texto longo.",
-  business:
-    "Você é o Business Assistant da Orbitha para MEI/PME. Seja objetivo e prático. Faça no máximo 1 pergunta por vez.",
-  vendas:
-    "Você é o Sales Assistant da Orbitha. Ajude com funil, script e KPIs. Faça no máximo 1 pergunta por vez.",
-  marketing:
-    "Você é o Marketing Assistant da Orbitha. Ajude com ICP, oferta e rotina simples. Faça no máximo 1 pergunta por vez.",
-  suporte:
-    "Você é o Support Assistant da Orbitha. Ajude com atendimento, automação e métricas. Faça no máximo 1 pergunta por vez.",
-  viagens:
-    "Você é o Travel Assistant da Orbitha. Ajude com roteiros, custos e logística. Faça no máximo 1 pergunta por vez.",
-  fitness:
-    "Você é o Fitness Assistant da Orbitha. Ajude com treino/nutrição geral. Não dê conselhos médicos. Faça no máximo 1 pergunta por vez.",
+  financeiro: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.financeiro,
+  business: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.business,
+  vendas: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.vendas,
+  marketing: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.marketing,
+  suporte: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.suporte,
+  viagens: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.viagens,
+  fitness: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.fitness,
 };
 
 Deno.serve(async (req) => {
@@ -38,9 +88,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { assistantId, userText, history } = body;
 
-    const system =
-      SYSTEMS[assistantId] ||
-      "Você é um assistente da Orbitha. Seja objetivo e útil.";
+    const system = SYSTEMS[assistantId] || "Você é um assistente da Orbitha. Seja objetivo e útil.";
 
     // histórico curtinho pra economizar token
     const safeHistory = Array.isArray(history) ? history.slice(-6) : [];
@@ -61,20 +109,15 @@ Deno.serve(async (req) => {
       max_tokens: 220, // resposta curta = custo baixo
     });
 
-    const reply =
-      completion.choices?.[0]?.message?.content?.trim() ||
-      "Não consegui responder agora, tenta de novo 🙂";
+    const reply = completion.choices?.[0]?.message?.content?.trim() || "Não consegui responder agora, tenta de novo 🙂";
 
     return new Response(JSON.stringify({ reply }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ error: err?.message || "Erro" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return new Response(JSON.stringify({ error: err?.message || "Erro" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 });
