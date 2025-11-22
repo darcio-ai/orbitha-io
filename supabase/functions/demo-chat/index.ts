@@ -109,22 +109,76 @@ Deno.serve(async (req) => {
       { role: "user", content: String(userText || "") },
     ];
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages,
-      temperature: 0.3,
-      max_tokens: 160, // mais curto pra evitar blocão
-    });
+    // --- força o modelo a responder em JSON curto ---
+const jsonInstruction = `
+Responda APENAS em JSON válido (nada fora do JSON), neste formato:
+{
+  "summary": "1 frase curta de resumo",
+  "sections": [
+    { "title": "Título curto", "bullets": ["bullet curto", "bullet curto"] }
+  ],
+  "question": "1 pergunta objetiva"
+}
 
-    const reply = completion.choices?.[0]?.message?.content?.trim() || "Não consegui responder agora, tenta de novo 🙂";
+REGRAS:
+- Máx. 120 palavras no TOTAL.
+- Máx. 3 seções.
+- Máx. 3 bullets por seção.
+- Bullets de 1 linha.
+`;
 
-    return new Response(JSON.stringify({ reply }), {
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err?.message || "Erro" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+const completion = await openai.chat.completions.create({
+  model: "gpt-4o-mini",
+  messages: [
+    { role: "system", content: system + "\n\n" + jsonInstruction },
+    ...safeHistory.map((m: any) => ({
+      role: m.sender === "user" ? "user" : "assistant",
+      content: String(m.text || ""),
+    })),
+    { role: "user", content: String(userText || "") },
+  ],
+  response_format: { type: "json_object" },
+  temperature: 0.2,
+  max_tokens: 220, // JSON tem overhead, mas ainda barato
+});
+
+// --- converte JSON em resposta Orbitha bonita ---
+let data: any = null;
+const raw = completion.choices?.[0]?.message?.content || "";
+
+try {
+  data = JSON.parse(raw);
+} catch {
+  // fallback se vier algo fora do JSON
+  data = {
+    summary: raw.slice(0, 120),
+    sections: [],
+    question: "Quer que eu detalhe em 3 passos práticos?",
+  };
+}
+
+// sanitiza tamanho/quantidade
+const sections = Array.isArray(data.sections) ? data.sections.slice(0, 3) : [];
+const formattedSections = sections.map((s: any) => {
+  const title = String(s.title || "").trim();
+  const bullets = Array.isArray(s.bullets) ? s.bullets.slice(0, 3) : [];
+  const cleanBullets = bullets
+    .map((b: any) => String(b).trim())
+    .filter(Boolean);
+
+  if (!title && cleanBullets.length === 0) return null;
+
+  return `**${title || "Pontos principais"}**\n• ${cleanBullets.join("\n• ")}`;
+}).filter(Boolean) as string[];
+
+const replyParts = [
+  data.summary ? `**${String(data.summary).trim()}**` : null,
+  ...formattedSections,
+  data.question ? String(data.question).trim() : null,
+].filter(Boolean);
+
+const reply = replyParts.join("\n\n");
+
     });
   }
 });
