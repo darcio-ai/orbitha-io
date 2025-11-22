@@ -92,12 +92,12 @@ const Produtos = () => {
               const planFocus = assistantConfig?.planFocus || "suite";
 
               return (
-                <div key={index} className="group relative overflow-hidden rounded-2xl">
+                <div key={index} className="group relative overflow-hidden rounded-2xl min-h-[340px] bg-white/5"
                   <Link to={produto.link} className="block">
                     <img
                       src={produto.image}
                       alt={produto.title}
-                      className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </Link>
 
