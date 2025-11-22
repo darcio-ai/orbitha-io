@@ -3,14 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
+  
+  const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
   useEffect(() => {
     document.title = "Planos | Financial Assistant Premium";
@@ -96,39 +99,42 @@ const Pricing = () => {
       ],
       buttonText: "Começar Grátis",
       buttonVariant: "outline" as const,
-      popular: false
+      popular: false,
+      planType: null
     },
     {
-      name: "Premium",
+      name: "Growth Pack",
       price: "R$ 29,90",
       period: "/mês",
-      description: "Ideal para acompanhamento completo",
+      description: "Ideal para vendas, marketing e suporte",
       features: [
-        "Score Detalhado (5 pilares)",
-        "Conversas ilimitadas",
-        "Produtos específicos",
-        "Planos de ação personalizados"
+        "Sales Assistant completo",
+        "Marketing Assistant completo",
+        "Support Assistant completo",
+        "Conversas ilimitadas"
       ],
-      buttonText: "Assinar Premium",
+      buttonText: "Assinar Growth Pack",
       buttonVariant: "default" as const,
-      popular: true,
-      buttonId: "btn-premium"
+      popular: focusPlan === 'growth',
+      buttonId: "btn-premium",
+      planType: 'growth'
     },
     {
-      name: "Enterprise",
+      name: "Orbitha Suite",
       price: "R$ 97",
       period: "/mês",
-      description: "Para máximo controle financeiro",
+      description: "Todos os 7 assistentes + recursos premium",
       features: [
-        "Tudo do Premium +",
-        "Relatórios de evolução",
-        "Simulações de aposentadoria",
+        "Todos os assistentes (7)",
+        "Financial, Business, Fitness, Travel",
+        "Sales, Marketing, Support",
         "Suporte prioritário"
       ],
-      buttonText: "Assinar Enterprise",
+      buttonText: "Assinar Orbitha Suite",
       buttonVariant: "outline" as const,
-      popular: false,
-      buttonId: "btn-enterprise"
+      popular: focusPlan === 'suite',
+      buttonId: "btn-enterprise",
+      planType: 'suite'
     }
   ];
 
@@ -143,6 +149,11 @@ const Pricing = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Acesse funcionalidades exclusivas do Score Patrimonial
           </p>
+          {focusPlan && (
+            <p className="text-lg text-primary mt-4 font-semibold">
+              Você está destravando acesso ao assistente que acabou de testar.
+            </p>
+          )}
         </div>
 
         {/* Pricing Cards */}
@@ -158,7 +169,7 @@ const Pricing = () => {
             >
               {plan.popular && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
-                  MAIS POPULAR
+                  {focusPlan ? 'RECOMENDADO' : 'MAIS POPULAR'}
                 </Badge>
               )}
               
