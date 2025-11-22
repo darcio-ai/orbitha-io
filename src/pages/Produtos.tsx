@@ -57,7 +57,7 @@ const Produtos = () => {
       title: "Business Assistant",
       subtitle: "Gestão PJ/MEI e crescimento",
       image: assistenteBusiness,
-      hoverImage: assistenteBusinessHover,
+      hoverImage: assistenteBusinessHover, // troca depois pela versão hover real
       description:
         "Copiloto de negócios para MEIs e PMEs: fluxo de caixa, precificação, indicadores, rotinas financeiras e plano 7/30/90 dias para crescer com segurança.",
       link: "/assistentes/business-assistant",
@@ -87,7 +87,12 @@ const Produtos = () => {
                 <CardWrapper
                   key={index}
                   to={produto.link}
-                  className="group relative overflow-hidden rounded-2xl block cursor-pointer border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:border-primary/40"
+                  className="
+                    group relative overflow-hidden rounded-2xl block cursor-pointer
+                    border border-border bg-card
+                    transition-all duration-300
+                    hover:-translate-y-1 hover:shadow-2xl hover:border-primary/40
+                  "
                 >
                   {/* Área da imagem */}
                   <div className="relative w-full aspect-[16/10] md:aspect-[16/9]">
@@ -95,35 +100,8 @@ const Produtos = () => {
                     <img
                       src={produto.image}
                       alt={produto.title}
-                      className="absolute inset-0 w-full h-full object-contain transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-0"
-                    />
-                    {/* Imagem HOVER */}
-                    <img
-                      src={produto.hoverImage}
-                      alt={`${produto.title} hover`}
-                      className="absolute inset-0 w-full h-full object-contain transition-all duration-700 ease-out opacity-0 group-hover:opacity-100 group-hover:scale-105"
-                    />
-                  </div>
-
-                  {/* Conteúdo */}
-                  <div className="p-6 relative">
-                    {produto.badge && (
-                      <span className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                        {produto.badge}
-                      </span>
-                    )}
-                    <h3 className="text-2xl font-bold mb-2">{produto.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">{produto.subtitle}</p>
-                    <p className="text-foreground/80 leading-relaxed">{produto.description}</p>
-                  </div>
-                </CardWrapper>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default Produtos;
+                      className="
+                        absolute inset-0 w-full h-full object-contain
+                        transition-all duration-700 ease-out
+                        group-hover:scale-105 gro
+::contentReference[oaicite:0]{index=0}
