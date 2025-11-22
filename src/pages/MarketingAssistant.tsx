@@ -17,7 +17,7 @@ const MarketingAssistant = () => {
       icon: "1️⃣",
       title: "Conte seu cenário",
       description:
-        "O que você vende, para quem vende, canais, orçamento e onde o marketing trava hoje.",
+        "O que você vende, pra quem vende, canais, orçamento e onde o marketing trava hoje.",
     },
     {
       icon: "2️⃣",
@@ -29,7 +29,7 @@ const MarketingAssistant = () => {
       icon: "3️⃣",
       title: "Execute com materiais prontos",
       description:
-        "Calendário de conteúdo, anúncios, copies, roteiros e páginas sob medida.",
+        "Calendário, anúncios, copies, roteiros e páginas sob medida.",
     },
   ];
 
@@ -37,7 +37,7 @@ const MarketingAssistant = () => {
     "Diagnóstico completo de marketing (oferta, ICP, canais, funil, métricas)",
     "Plano prático 7/14/30/90 dias com metas realistas",
     "Calendário de conteúdo (semanal/mensal) com temas, ganchos e CTAs",
-    "Copys prontas para anúncios (Meta/Google/LinkedIn) com variações",
+    "Copies para anúncios (Meta/Google/LinkedIn) com variações",
     "Roteiros para Reels/TikTok/YouTube (30–90s) alinhados ao seu ICP",
     "Estrutura de landing pages que convertem (headline → prova → oferta → CTA)",
     "Sequências de e-mail/WhatsApp para nutrição e venda",
@@ -57,32 +57,32 @@ const MarketingAssistant = () => {
     },
     {
       icon: "🗓️",
-      title: "Rotina de marketing pronta",
+      title: "Rotina pronta",
       description: "Conteúdo organizado sem depender de inspiração.",
     },
     {
       icon: "✍️",
-      title: "Copy e campanhas sob medida",
-      description: "Textos prontos pra usar em cada canal.",
+      title: "Copy sob medida",
+      description: "Textos prontos por canal e objetivo.",
     },
     {
       icon: "💰",
       title: "Melhor uso do orçamento",
-      description: "Prioriza o que dá retorno de verdade.",
+      description: "Prioriza o que dá ROI de verdade.",
     },
     {
       icon: "⚡",
       title: "Velocidade de execução",
-      description: "Sai do 'planejar' pro 'publicar' em minutos.",
+      description: "Do plano à publicação em minutos.",
     },
   ];
 
   const perfectFor = [
-    "MEIs e pequenos negócios que querem marketing sem complicação",
+    "MEIs e pequenos negócios sem time de marketing",
     "Quem posta muito e vende pouco",
     "Quem quer começar tráfego pago com segurança",
     "Negócios que precisam gerar leads toda semana",
-    "Times pequenos (ou solo) sem estrutura de marketing",
+    "Times pequenos (ou solo) sem estrutura de funil",
     "Quem quer crescer com consistência, não com sorte",
   ];
 
@@ -127,9 +127,7 @@ const MarketingAssistant = () => {
                 </h1>
 
                 <p className="text-xl text-muted-foreground mb-8">
-                  Seu estrategista de marketing 24/7: ICP, funil, conteúdo,
-                  anúncios e copy prontos para atrair e converter mais clientes
-                  com consistência.
+                  Seu estrategista 24/7 para ICP, funil simples, conteúdo e anúncios prontos que atraem e convertem clientes com consistência.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -249,11 +247,11 @@ const MarketingAssistant = () => {
 
             {/* Aprenda mais (opcional) */}
             <div className="mb-16">
-              <h2 className="text-2xl font-bold mb-2">
+              <h2 className="text-3xl font-bold mb-2">
                 Aprenda mais (opcional)
               </h2>
               <p className="text-muted-foreground mb-6">
-                Conteúdo prático para acelerar seus resultados.
+                Conteúdo prático para acelerar seus resultados com segurança.
               </p>
 
               <Accordion type="single" collapsible className="w-full">
@@ -280,17 +278,17 @@ const MarketingAssistant = () => {
               </CardHeader>
               <CardContent className="text-muted-foreground">
                 <ul className="space-y-2 list-disc pl-5">
-                  <li>Orientação educativa baseada em boas práticas de marketing.</li>
+                  <li>Orientação baseada em boas práticas de marketing.</li>
                   <li>Não garante resultados numéricos específicos.</li>
                   <li>Não incentiva spam, compra de listas ou práticas antiéticas.</li>
-                  <li>Respeita regras de plataformas e privacidade do cliente.</li>
-                  <li>Você decide o que executar e ajusta conforme sua realidade.</li>
+                  <li>Respeita regras das plataformas e privacidade.</li>
+                  <li>Você decide o que executar e ajusta à sua realidade.</li>
                 </ul>
               </CardContent>
             </Card>
 
             {/* CTA final */}
-            <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+            <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 mt-20">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Bora destravar seu marketing?
               </h2>
@@ -302,7 +300,7 @@ const MarketingAssistant = () => {
                 className="text-lg"
                 onClick={() => navigate("/pricing")}
               >
-                Começar agora (grátis)
+                Começar minha análise agora (grátis)
               </Button>
             </div>
           </div>
