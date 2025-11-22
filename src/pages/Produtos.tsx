@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
+
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import agenteBusiness from "@/assets/agente_business.png";
 import agenteFitness from "@/assets/agente_fitness.png";
@@ -92,12 +93,12 @@ const Produtos = () => {
               const planFocus = assistantConfig?.planFocus || "suite";
 
               return (
-                <div key={index} className="group relative overflow-hidden rounded-2xl min-h-[340px] bg-white/5"
+                <div key={index} className="group relative overflow-hidden rounded-2xl">
                   <Link to={produto.link} className="block">
                     <img
                       src={produto.image}
                       alt={produto.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   </Link>
 
@@ -139,8 +140,11 @@ const Produtos = () => {
             })}
           </div>
 
+          {/* Divider suave */}
+          <div className="max-w-6xl mx-auto mt-12 mb-6 h-px bg-white/10" />
+
           {/* Pacotes / Combos */}
-          <section className="max-w-6xl mx-auto mt-14 px-2">
+          <section className="max-w-6xl mx-auto mt-6 px-2">
             <div className="text-center mb-8">
               <h2 className="text-2xl md:text-3xl font-bold">Quer destravar tudo de uma vez?</h2>
               <p className="text-sm md:text-base text-muted-foreground mt-2">
@@ -154,11 +158,10 @@ const Produtos = () => {
                 <div className="rounded-2xl bg-background/80 p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary">
-                      Para crescer mais rápido
+                      Ideal para negócios
                     </span>
                   </div>
 
-                  {/* Placeholder visual sem imagem */}
                   <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-4">
                     <p className="text-sm text-muted-foreground">Vendas • Marketing • Suporte</p>
                   </div>
@@ -186,17 +189,19 @@ const Produtos = () => {
               <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/30 via-primary/10 to-transparent">
                 <div className="rounded-2xl bg-background/80 p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs px-3 py-1 rounded-full bg-white/10">Acesso total</span>
+                    <span className="text-xs px-3 py-1 rounded-full bg-white/10">Recomendado</span>
                   </div>
 
-                  {/* Placeholder visual sem imagem */}
                   <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-4">
                     <p className="text-sm text-muted-foreground">Todos os 7 assistentes</p>
                   </div>
 
                   <h3 className="text-xl font-semibold mb-1">Orbitha Suite</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-2">
                     Produtividade + Growth. Tudo que a Orbitha oferece.
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Melhor custo-benefício para quem quer usar mais de 3 assistentes.
                   </p>
 
                   <ul className="text-sm space-y-2 mb-6">
