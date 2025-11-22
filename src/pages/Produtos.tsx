@@ -93,7 +93,10 @@ const Produtos = () => {
               const planFocus = assistantConfig?.planFocus || "suite";
 
               return (
-                <div key={index} className="group relative overflow-hidden rounded-2xl">
+                <div
+                  key={index}
+                  className="group relative overflow-hidden rounded-2xl min-h-[340px] bg-white/5 flex items-center justify-center"
+                >
                   <Link to={produto.link} className="block">
                     <img
                       src={produto.image}
