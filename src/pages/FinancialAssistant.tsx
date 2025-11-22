@@ -16,14 +16,25 @@ const FinancialAssistant = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                Descubra seu <span className="bg-gradient-primary bg-clip-text text-transparent">Score Patrimonial</span> e receba um plano de ação personalizado
+                Descubra seu <span className="bg-gradient-primary bg-clip-text text-transparent">Score Patrimonial (0–100)</span> e saiba o que fazer nos próximos <span className="text-primary">30/90/12 meses</span> para evoluir seu patrimônio
               </h1>
               <p className="text-xl text-muted-foreground mb-8">
                 Análise completa em 60 segundos. Diagnóstico financeiro + classificação automática + roadmap prático para seus objetivos.
               </p>
-              <Button size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/pricing')}>
-                🚀 Descobrir meu Score Patrimonial agora
-              </Button>
+              <div className="space-y-4">
+                <Button size="lg" className="text-lg px-8 py-6 w-full md:w-auto" onClick={() => navigate('/chat/financial-assistant')}>
+                  🚀 Começar minha análise agora (grátis)
+                </Button>
+                <div>
+                  <Button 
+                    variant="link" 
+                    className="text-muted-foreground hover:text-primary"
+                    onClick={() => navigate('/pricing')}
+                  >
+                    Ver planos Premium →
+                  </Button>
+                </div>
+              </div>
             </div>
             <div className="relative">
               <img
@@ -254,6 +265,9 @@ const FinancialAssistant = () => {
                 </CardContent>
               </Card>
             </div>
+            <p className="text-center text-lg text-muted-foreground mt-8 max-w-3xl mx-auto">
+              Em qualquer fase, você recebe um plano claro de prioridades, metas e próximas ações.
+            </p>
           </section>
 
           {/* O que o Premium Entrega */}
@@ -318,12 +332,12 @@ const FinancialAssistant = () => {
 
                   <div className="flex gap-3 items-start">
                     <CheckCircle className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-bold mb-1">Orientação por Categorias</h4>
-                      <p className="text-muted-foreground text-sm">
-                        Sugere tipos de investimentos adequados ao seu perfil (Tesouro, CDBs, ETFs, FIIs)
-                      </p>
-                    </div>
+                  <div>
+                    <h4 className="font-bold mb-1">Sugestões por tipo de investimento</h4>
+                    <p className="text-muted-foreground text-sm">
+                      Mostra caminhos possíveis conforme seu objetivo e prazo (ex.: Tesouro, CDBs, ETFs, FIIs), sempre de forma educativa
+                    </p>
+                  </div>
                   </div>
                 </div>
               </CardContent>
@@ -374,11 +388,11 @@ const FinancialAssistant = () => {
                 <p className="text-xl text-muted-foreground">
                   Descubra seu Score Patrimonial em 60 segundos e receba um plano personalizado para alcançar seus objetivos financeiros.
                 </p>
-                <Button size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/pricing')}>
-                  🚀 Descobrir meu Score Patrimonial agora
+                <Button size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/chat/financial-assistant')}>
+                  🚀 Começar minha análise agora (grátis)
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  Sem compromisso • Análise completa • Resultados imediatos
+                  Sem compromisso • Diagnóstico completo • Resultados imediatos
                 </p>
               </div>
             </Card>
