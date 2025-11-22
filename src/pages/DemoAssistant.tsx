@@ -163,18 +163,19 @@ const DemoAssistant = () => {
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm as any]}
                             components={{
-                              // Mudança 1: De 'mb-1' para 'mb-0' ou 'mb-0.5' (via classe arbitrária do Tailwind)
-                              // Isso remove o espaço extra entre blocos de texto
-                              p: ({ children }) => <p className="mb-0 last:mb-0">{children}</p>,
+                              // 1. ZERAR MARGEM DO PARÁGRAFO
+                              // Isso garante que o texto dentro do item não empurre o próximo item
+                              p: ({ children }) => <p className="m-0 p-0">{children}</p>,
 
-                              // Mudança 2: Ajuste opcional no 'space-y-1' para 'space-y-0' ou 'space-y-0.5'
-                              // Isso controla a distância entre o item 1, 2 e 3
-                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-0">{children}</ul>,
-                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-0">{children}</ol>,
+                              // 2. ZERAR ESPAÇAMENTO DA LISTA
+                              // Mudamos de 'space-y-1' para 'space-y-0'
+                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-0 m-0">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-0 m-0">{children}</ol>,
 
-                              // Mudança 3: De 'leading-relaxed' para 'leading-snug' ou 'leading-normal'
-                              // Isso "aperta" o texto dentro da própria frase
-                              li: ({ children }) => <li className="leading-snug mb-1">{children}</li>,
+                              // 3. AJUSTAR A ALTURA DA LINHA
+                              // 'leading-snug' deixa as linhas do texto mais juntas.
+                              // Removemos qualquer margem do 'li' também.
+                              li: ({ children }) => <li className="leading-snug m-0 p-0">{children}</li>,
 
                               strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                             }}
