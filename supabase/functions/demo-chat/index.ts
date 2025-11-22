@@ -6,35 +6,38 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const openai = new OpenAI({
-  apiKey: Deno.env.get("OPENAI_API_KEY")!, // <- usa o secret que você já criou
-});
+// ✅ OpenAI key segura
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+if (!OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY não configurada nos Secrets do Supabase");
+}
 
-// 1) BASE padrão (igual pra todos)
-const system = SYSTEMS[assistantId] || BASE_SYSTEM;
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-TOM & VOZ:
-- Português do Brasil, humano, direto e cordial.
-- Confiante sem ser arrogante.
-- Sem jargão. Se usar termo técnico, explique em 1 frase simples.
-- Não invente fatos. Se faltar dado, peça.
+/**
+ * 1) BASE padrão (igual pra todos)
+ *    Regras duras pra evitar blocão e deixar leitura agradável
+ */
+const BASE_SYSTEM = `
+Você é um Assistente de IA da Orbitha. Ajude de forma prática, clara e acionável.
 
-FORMATO OBRIGATÓRIO (todas as respostas):
-1) Comece com **1 frase curta** resumindo entendimento do caso.
-2) Depois use no máximo **2–3 seções**, com títulos em **negrito**.
-3) Em cada seção use bullets "•" (máximo 4 bullets).
-4) Se tiver conta/estimativa, mostre em **1 linha simples**.
-5) Termine com **1 pergunta objetiva** para avançar (apenas 1).
-
-LIMITES:
-- Máx. ~140 palavras por resposta.
-- Máx. 1 pergunta por resposta.
-- Evite blocos longos.
+ESCREVA SEMPRE EM FORMATO ESCANEÁVEL:
+- Máximo de 120 palavras.
+- Máximo de 3 seções.
+- Cada seção deve ter título em **negrito**.
+- Cada seção deve ter no máximo 3 bullets.
+- Bullets curtos (1 linha cada).
+- Proibido parágrafo longo.
+- Proibido lista numerada longa (1.,2.,3.,4...).
+- Se precisar orientar mais, priorize só o essencial.
+- Termine com 1 pergunta objetiva.
 
 Se houver conflito entre regras gerais e específicas, priorize as específicas.
 `;
 
-// 2) específico por assistente (o que muda)
+/**
+ * 2) específico por assistente (o que muda)
+ */
 const SPECIFIC_SYSTEMS: Record<string, string> = {
   financeiro: `
 FOCO: finanças pessoais, organização, dívida, reserva, investimento básico.
@@ -61,28 +64,25 @@ FOCO: roteiro, logística, custos, estilo de viagem.
 - Organizado, empolgado e prático.
 `,
   fitness: `
-FOCO: treino, nutrição geral, hábitos.
-- Não prescreva tratamentos médicos; só orientação geral segura.
+FOCO: treino, nutrição geral, hábitos para emagrecimento seguro.
+- Não prescreva dieta clínica nem tratamento médico.
+- Dê só um plano inicial simples (1 semana).
+- Linguagem motivadora e bem curta.
 `,
 };
 
-// 3) SYSTEM final = BASE + especifico
+/**
+ * 3) SYSTEM final = BASE + específico
+ */
 const SYSTEMS: Record<string, string> = {
   financeiro: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.financeiro,
-  business:   BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.business,
-  vendas:     BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.vendas,
-  marketing:  BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.marketing,
-  suporte:    BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.suporte,
-  viagens:    BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.viagens,
-  fitness:    BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.fitness,
+  business: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.business,
+  vendas: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.vendas,
+  marketing: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.marketing,
+  suporte: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.suporte,
+  viagens: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.viagens,
+  fitness: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.fitness,
 };
-
-...
-
-const { assistantId, userText, history } = body;
-
-// ✅ fallback correto
-const system = SYSTEMS[assistantId] || BASE_SYSTEM;
 
 Deno.serve(async (req) => {
   // CORS preflight
@@ -94,6 +94,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { assistantId, userText, history } = body;
 
+    // ✅ fallback correto
     const system = SYSTEMS[assistantId] || BASE_SYSTEM;
 
     // histórico curtinho pra economizar token
@@ -111,8 +112,8 @@ Deno.serve(async (req) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages,
-      temperature: 0.4,
-      max_tokens: 220, // resposta curta = custo baixo
+      temperature: 0.3,
+      max_tokens: 160, // mais curto pra evitar blocão
     });
 
     const reply = completion.choices?.[0]?.message?.content?.trim() || "Não consegui responder agora, tenta de novo 🙂";
