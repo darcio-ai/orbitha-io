@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,93 +11,6 @@ interface Message {
   sender: "user" | "assistant";
 }
 
-/**
- * Mini-fluxos de demo por assistente.
- * Cada item do array é uma função que gera resposta para aquele "passo" (step).
- * Temos 5 passos (0 a 4).
- */
-const DEMO_SCRIPTS: Record<string, Array<(input: string) => string>> = {
-  financeiro: [
-    (input) =>
-      `Show. Pelo que você disse, o primeiro passo é mapear renda e gastos. Você sabe hoje quanto sobra no mês (mesmo que aproximado)?`,
-    (input) =>
-      `Boa. Com isso já dá pra montar um orçamento simples e definir prioridades. Sua maior dor agora é: dívidas, reserva de emergência ou investir?`,
-    (input) =>
-      `Perfeito. Dependendo disso, a estratégia muda bastante. Você tem alguma dívida com juros altos (cartão/cheque especial)?`,
-    (input) =>
-      `Entendi. No plano completo eu monto um diagnóstico com score patrimonial, metas e plano de ação. Quer destravar para eu puxar isso com você?`,
-    (input) =>
-      `Top. Se você me passar renda média e gastos fixos, eu monto a primeira versão do seu plano financeiro. Quer continuar no Orbitha Suite?`,
-  ],
-
-  business: [
-    (input) => `Entendi. Pra clarear o cenário, me diz: qual sua receita média mensal e seus principais custos hoje?`,
-    (input) =>
-      `Boa. Com isso a gente calcula margem e ponto de equilíbrio. Hoje você sabe sua margem bruta aproximada?`,
-    (input) =>
-      `Perfeito. Outro ponto chave é o fluxo de caixa. Você costuma ter “sobra” no fim do mês ou aperta antes de receber?`,
-    (input) =>
-      `No plano completo eu te entrego uma planilha/rotina simples + plano de ação de caixa, precificação e obrigações. Quer destravar?`,
-    (input) =>
-      `Se você quiser, posso montar seu checklist de obrigações mensais e calendário financeiro. Quer continuar na Suite?`,
-  ],
-
-  vendas: [
-    (input) => `Legal. Pra melhorar vendas rápido: qual seu produto/serviço e ticket médio?`,
-    (input) => `Boa. Hoje seu maior gargalo é gerar leads, qualificar ou fechar?`,
-    (input) => `Entendi. A partir disso, dá pra ajustar seu funil e script. Você usa CRM? Se sim, qual?`,
-    (input) =>
-      `No Growth Pack eu monto rotina comercial, scripts e KPIs semanais. Quer destravar pra eu te entregar um plano?`,
-    (input) =>
-      `Me diga seu ciclo de vendas (quantos dias do primeiro contato até fechar) e eu sugiro ajustes no funil. Quer seguir no Growth?`,
-  ],
-
-  marketing: [
-    (input) =>
-      `Show. Seu negócio vende mais pra PF ou PJ? E qual canal você usa hoje (Instagram, tráfego pago, WhatsApp etc.)?`,
-    (input) => `Boa. Hoje sua maior dor é atrair mais gente ou converter melhor o que já chega?`,
-    (input) => `Entendi. Você já tem um ICP definido (cliente ideal)? Se tiver, descreve em 1 frase.`,
-    (input) =>
-      `No Growth Pack eu monto seu funil, calendário de conteúdo e copies iniciais. Quer destravar o acesso completo?`,
-    (input) =>
-      `Se você me disser seu principal produto e diferencial, eu te devolvo 3 ângulos de campanha. Quer continuar no Growth?`,
-  ],
-
-  suporte: [
-    (input) =>
-      `Entendi. Qual tipo de atendimento é mais comum hoje? (dúvidas, suporte técnico, vendas, agendamentos...)`,
-    (input) => `Boa. Em média, quantas conversas por dia vocês lidam no WhatsApp?`,
-    (input) =>
-      `Perfeito. No plano completo eu crio fluxos, respostas prontas e métricas. Quer destravar o Support Assistant?`,
-    (input) => `Se você me mandar 5 perguntas frequentes, eu já monto um fluxo inicial. Quer seguir no Growth Pack?`,
-    (input) => `Com acesso completo, dá pra integrar com seu WhatsApp/CRM. Quer continuar?`,
-  ],
-
-  viagens: [
-    (input) => `Top. Me fala destino, datas aproximadas e estilo de viagem (econômica, confortável, luxo).`,
-    (input) => `Boa. Quantos dias no total e quantas pessoas vão viajar?`,
-    (input) => `Entendi. Prefere base fixa com bate-voltas ou trocar de cidade?`,
-    (input) => `No plano completo eu monto roteiro dia a dia com custos e logística. Quer destravar?`,
-    (input) => `Se você me disser orçamento aproximado, eu ajusto o roteiro pro seu bolso. Quer seguir na Suite?`,
-  ],
-
-  fitness: [
-    (input) =>
-      `Beleza. Qual seu objetivo principal (emagrecer, ganhar massa, condicionamento) e quantos dias por semana você treina?`,
-    (input) => `Boa. Você treina em academia, casa ou ao ar livre?`,
-    (input) => `Entendi. Tem alguma limitação física ou dor recorrente que eu preciso considerar?`,
-    (input) => `No plano completo eu monto treino + nutrição + rotina semanal. Quer destravar o acesso completo?`,
-    (input) =>
-      `Se você me disser seu peso/altura e rotina, eu te devolvo um plano inicial personalizado. Quer continuar na Suite?`,
-  ],
-};
-
-function getDemoReply(assistantId: string, userMessage: string, step: number) {
-  const script = DEMO_SCRIPTS[assistantId] || [];
-  const fn = script[step];
-  return fn ? fn(userMessage) : "No plano completo eu continuo com você daqui. Quer destravar?";
-}
-
 const DemoAssistant = () => {
   const { assistantId } = useParams();
   const navigate = useNavigate();
@@ -108,9 +21,14 @@ const DemoAssistant = () => {
   const [inputValue, setInputValue] = useState("");
   const [messageCount, setMessageCount] = useState(0);
   const [isLimitReached, setIsLimitReached] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ força 5 interações por assistente
+  // ✅ demo real: 5 interações por assistente
   const effectiveLimit = 5;
+
+  // pra autoscroll no chat
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), [messages, isLoading]);
 
   useEffect(() => {
     if (!assistant) {
@@ -118,8 +36,10 @@ const DemoAssistant = () => {
       return;
     }
 
+    // Mensagem inicial do assistente
     setMessages([{ text: assistant.openingMessage, sender: "assistant" }]);
 
+    // Carregar contagem do localStorage
     const storageKey = `demoCount_${assistantId}`;
     const stored = localStorage.getItem(storageKey);
     const count = stored ? parseInt(stored, 10) : 0;
@@ -128,38 +48,66 @@ const DemoAssistant = () => {
     if (count >= effectiveLimit) setIsLimitReached(true);
   }, [assistant, assistantId, navigate]);
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim() || !assistant || isLimitReached) return;
+  async function callDemoLLM(userText: string, history: Message[]) {
+    // manda só um histórico curtinho pra reduzir tokens
+    const trimmedHistory = history.slice(-6);
+
+    const res = await fetch("/api/demo-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        assistantId,
+        userText,
+        history: trimmedHistory,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err || "Erro ao gerar resposta");
+    }
+
+    const data = await res.json();
+    return data.reply as string;
+  }
+
+  const handleSendMessage = async () => {
+    if (!inputValue.trim() || !assistant || isLimitReached || isLoading) return;
 
     const storageKey = `demoCount_${assistantId}`;
     const currentCount = messageCount;
 
-    // adiciona mensagem do usuário
+    // adiciona msg do usuário
     const userMessage: Message = { text: inputValue, sender: "user" };
-    setMessages((prev) => [...prev, userMessage]);
+    const nextMessages = [...messages, userMessage];
+    setMessages(nextMessages);
     setInputValue("");
-
-    // calcula resposta variável pelo passo atual
-    const replyText = getDemoReply(assistantId!, userMessage.text, currentCount);
 
     // incrementa contador
     const newCount = currentCount + 1;
     setMessageCount(newCount);
     localStorage.setItem(storageKey, newCount.toString());
 
-    // resposta do assistente (simulada, mas diferente)
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        text: replyText,
-        sender: "assistant",
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-    }, 600);
+    setIsLoading(true);
+
+    try {
+      const replyText = await callDemoLLM(userMessage.text, nextMessages);
+
+      setMessages((prev) => [...prev, { text: replyText, sender: "assistant" }]);
+    } catch (e: any) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: "Tive um probleminha pra responder agora. Tenta de novo em alguns segundos 🙂",
+          sender: "assistant",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
 
     // check limite
-    if (newCount >= effectiveLimit) {
-      setIsLimitReached(true);
-    }
+    if (newCount >= effectiveLimit) setIsLimitReached(true);
   };
 
   if (!assistant) return null;
@@ -189,10 +137,9 @@ const DemoAssistant = () => {
               <CardTitle>Chat de Demonstração</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* aviso fixo da demo */}
               {!isLimitReached && (
                 <p className="text-xs text-muted-foreground mb-3">
-                  Demo limitada. No plano completo, respostas personalizadas e ilimitadas.
+                  Demo real e limitada. No plano completo, respostas personalizadas e ilimitadas.
                 </p>
               )}
 
@@ -209,6 +156,16 @@ const DemoAssistant = () => {
                     </div>
                   </div>
                 ))}
+
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[80%] rounded-lg p-4 bg-card border border-border">
+                      <p className="text-sm text-muted-foreground">digitando…</p>
+                    </div>
+                  </div>
+                )}
+
+                <div ref={bottomRef} />
               </div>
 
               {/* Paywall */}
@@ -243,8 +200,9 @@ const DemoAssistant = () => {
                       if (e.key === "Enter") handleSendMessage();
                     }}
                     className="flex-1"
+                    disabled={isLoading}
                   />
-                  <Button onClick={handleSendMessage} size="icon">
+                  <Button onClick={handleSendMessage} size="icon" disabled={isLoading}>
                     <Send className="w-4 h-4" />
                   </Button>
                 </div>
