@@ -1,5 +1,11 @@
-import { Check, TrendingUp, Target, MessageSquare, Timer, Layers } from "lucide-react";
+import { Check, TrendingUp, Target, MessageSquare, Timer, Layers, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import agenteVendas from "@/assets/agente_vendas.png";
 
 const SalesAssistant = () => {
@@ -7,29 +13,29 @@ const SalesAssistant = () => {
     {
       icon: "1️⃣",
       title: "Conte seu cenário",
-      description: "Segmento, ICP, ticket, ciclo, canais, time e onde o funil trava hoje.",
+      description: "Segmento, ICP, ticket, ciclo, canal, trava atual.",
     },
     {
       icon: "2️⃣",
       title: "Receba o plano",
-      description: "Diagnóstico + hipóteses claras + próximas ações priorizadas.",
+      description: "Diagnóstico + prioridades.",
     },
     {
       icon: "3️⃣",
       title: "Execute com scripts",
-      description: "Cadências, emails, roteiros SPIN, negociação e follow-ups prontos.",
+      description: "Cadência, SPIN, objeções, follow-ups.",
     },
   ];
 
   const premiumDelivers = [
-    "Diagnóstico comercial completo (ICP, funil, cadência, taxa de conversão)",
-    "Playbook por etapa do funil (prospecção → discovery → proposta → fechamento)",
-    "Roteiro SPIN Selling com perguntas adaptadas ao seu produto/serviço",
-    "Cadência outbound/inbound pronta (email, LinkedIn, WhatsApp, call)",
-    "Templates de cold email, mensagem LinkedIn e follow-up persuasivo",
-    "Kit de objeções (preço, timing, concorrente, decisor, prioridade)",
-    "Sugestão de CRM ideal + setup de pipeline e atividades",
-    "Plano 7/14/30 dias para destravar resultados",
+    "Diagnóstico comercial completo",
+    "Playbook por etapa do funil",
+    "Roteiro SPIN Selling adaptado",
+    "Cadências outbound/inbound prontas",
+    "Templates (email, LinkedIn, WhatsApp, call)",
+    "Kit de objeções",
+    "Sugestão/setup de CRM",
+    "Plano 7/14/30 dias",
   ];
 
   const benefits = [
@@ -61,11 +67,11 @@ const SalesAssistant = () => {
   ];
 
   const perfectFor = [
-    "Vendedores que querem aumentar taxa de conversão",
+    "Vendedores que querem aumentar conversão",
     "Times que precisam organizar CRM e pipeline",
-    "Quem faz outbound e não está conseguindo resposta",
-    "Gestores que querem playbook e rotina comercial",
-    "Startups e PMEs com ciclo longo ou previsibilidade baixa",
+    "Quem faz outbound sem resposta",
+    "Gestores que querem playbook comercial",
+    "Startups/PMEs com ciclo longo",
   ];
 
   const learnMore = [
@@ -104,15 +110,15 @@ const SalesAssistant = () => {
                 </h1>
 
                 <p className="text-xl text-muted-foreground mb-8">
-                  Seu parceiro de IA para prospecção, CRM, SPIN Selling, negociação e fechamento — com métodos claros e
+                  Seu parceiro de IA para prospecção, CRM, SPIN Selling, objeções e fechamento — com plano claro e
                   scripts prontos.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button size="lg" className="text-lg">
-                    Comece minha análise agora (grátis)
+                    Começar minha análise agora (grátis)
                   </Button>
-                  <Button size="lg" variant="outline" className="text-lg">
+                  <Button size="lg" variant="ghost" className="text-lg">
                     Ver planos Premium
                   </Button>
                 </div>
@@ -133,8 +139,7 @@ const SalesAssistant = () => {
 
             {/* Como funciona */}
             <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-2">Como funciona</h2>
-              <p className="text-muted-foreground mb-6">Simples, rápido e feito para a sua realidade.</p>
+              <h2 className="text-3xl font-bold mb-6">Como funciona</h2>
 
               <div className="grid md:grid-cols-3 gap-6">
                 {steps.map((s, i) => (
@@ -195,33 +200,33 @@ const SalesAssistant = () => {
 
             {/* Aprenda mais (opcional) */}
             <div className="mb-16">
-              <h2 className="text-2xl font-bold mb-2">Aprenda mais (opcional)</h2>
-              <p className="text-muted-foreground mb-6">Conteúdo prático para você evoluir com segurança.</p>
+              <h2 className="text-2xl font-bold mb-6">Aprenda mais (opcional)</h2>
 
-              <div className="grid gap-3">
+              <Accordion type="single" collapsible className="w-full space-y-3">
                 {learnMore.map((l, i) => (
-                  <details key={i} className="group rounded-lg bg-card border border-border p-4">
-                    <summary className="cursor-pointer list-none flex items-center justify-between">
-                      <span className="font-medium">{l.title}</span>
-                      <span className="text-muted-foreground group-open:rotate-180 transition-transform">▾</span>
-                    </summary>
-                    <div className="mt-3 text-muted-foreground">{l.desc}</div>
-                  </details>
+                  <AccordionItem key={i} value={`item-${i}`} className="border border-border rounded-lg px-4 bg-card">
+                    <AccordionTrigger className="hover:no-underline">
+                      <span className="font-medium text-left">{l.title}</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      {l.desc}
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
+              </Accordion>
             </div>
 
             {/* Segurança e limites */}
             <div className="mb-16 p-8 rounded-2xl bg-card border border-border">
-              <h2 className="text-2xl font-bold mb-3 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-primary" />
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-primary" />
                 Segurança e limites
               </h2>
               <ul className="text-muted-foreground space-y-2 list-disc pl-5">
-                <li>Orientação educativa baseada em boas práticas de vendas.</li>
-                <li>Não garante resultados numéricos; depende da execução.</li>
-                <li>Não incentiva spam, compra de listas ilícitas ou práticas antiéticas.</li>
-                <li>Para casos específicos de compliance/contratos, consulte especialistas.</li>
+                <li>Orientação educativa baseada em boas práticas</li>
+                <li>Não garante resultados numéricos</li>
+                <li>Não incentiva spam/compra de listas/práticas antiéticas</li>
+                <li>Para compliance jurídico/contratos, consultar especialista</li>
               </ul>
             </div>
 
