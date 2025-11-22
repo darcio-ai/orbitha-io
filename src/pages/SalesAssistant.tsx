@@ -13,7 +13,7 @@ const SalesAssistant = () => {
     {
       icon: "1️⃣",
       title: "Conte seu cenário",
-      description: "Segmento, ICP, ticket, ciclo, canal, trava atual.",
+      description: "Segmento, ICP (perfil de cliente ideal), ticket, ciclo, canal e trava atual.",
     },
     {
       icon: "2️⃣",
@@ -64,6 +64,11 @@ const SalesAssistant = () => {
       title: "Objeções dominadas",
       description: "Respostas prontas pra avançar sem desgaste.",
     },
+    {
+      icon: "📊",
+      title: "Previsibilidade comercial",
+      description: "Pipeline mais claro e metas mais realistas.",
+    },
   ];
 
   const perfectFor = [
@@ -104,28 +109,30 @@ const SalesAssistant = () => {
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center mb-14">
-              <div>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                  Assistente de <span className="text-primary">Vendas</span>
-                </h1>
+              <div className="px-4 md:px-6 lg:px-8">
+                <div className="max-w-xl">
+                  <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                    Assistente de <span className="text-primary">Vendas</span>
+                  </h1>
 
-                <p className="text-xl text-muted-foreground mb-8">
-                  Seu parceiro de IA para prospecção, CRM, SPIN Selling, objeções e fechamento — com plano claro e
-                  scripts prontos.
-                </p>
+                  <p className="text-xl text-muted-foreground mb-8">
+                    Seu parceiro de IA para prospecção, CRM, SPIN Selling, objeções e fechamento — com plano claro e
+                    scripts prontos.
+                  </p>
 
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button size="lg" className="text-lg">
-                    Começar minha análise agora (grátis)
-                  </Button>
-                  <Button size="lg" variant="ghost" className="text-lg">
-                    Ver planos Premium
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+                    <Button size="lg" className="text-lg">
+                      Começar minha análise agora (grátis)
+                    </Button>
+                    <Button size="lg" variant="ghost" className="text-lg">
+                      Ver planos Premium
+                    </Button>
+                  </div>
+
+                  <p className="text-sm text-muted-foreground mt-4">
+                    Sem promessa milagrosa. Plano claro + scripts prontos + execução consistente = evolução.
+                  </p>
                 </div>
-
-                <p className="text-sm text-muted-foreground mt-4">
-                  Sem promessa milagrosa. Plano claro + execução consistente = evolução.
-                </p>
               </div>
 
               <div className="relative">
@@ -143,10 +150,10 @@ const SalesAssistant = () => {
 
               <div className="grid md:grid-cols-3 gap-6">
                 {steps.map((s, i) => (
-                  <div key={i} className="p-6 rounded-xl bg-card border border-border">
+                  <div key={i} className="p-6 rounded-xl bg-card border border-border flex flex-col">
                     <div className="text-3xl mb-3">{s.icon}</div>
                     <h3 className="text-lg font-semibold mb-2">{s.title}</h3>
-                    <p className="text-muted-foreground">{s.description}</p>
+                    <p className="text-muted-foreground flex-grow">{s.description}</p>
                   </div>
                 ))}
               </div>
