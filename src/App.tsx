@@ -21,6 +21,7 @@ import FitnessAssistant from "./pages/FitnessAssistant";
 import SalesAssistant from "./pages/SalesAssistant";
 import MarketingAssistant from "./pages/MarketingAssistant";
 import SupportAssistant from "./pages/SupportAssistant";
+import DemoAssistant from "./pages/DemoAssistant";
 import Login from "./pages/Login";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import Pricing from "./pages/Pricing";
@@ -77,6 +78,7 @@ function AppRoutes() {
       <Route path="/assistentes/sales-assistant" element={<><Header /><SalesAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/marketing-assistant" element={<><Header /><MarketingAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/support-assistant" element={<><Header /><SupportAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/demo/:assistantId" element={<DemoAssistant />} />
       <Route path="/blog" element={<><Header /><Blog /><Footer /><WhatsAppFloat /></>} />
       <Route path="/contato" element={<><Header /><Contato /><Footer /><WhatsAppFloat /></>} />
       <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
