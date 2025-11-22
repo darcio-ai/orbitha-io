@@ -4,6 +4,8 @@ import agenteBusiness from "@/assets/agente_business.png";
 import agenteFitness from "@/assets/agente_fitness.png";
 import agenteVendas from "@/assets/agente_vendas.png";
 import agenteViagens from "@/assets/agente_viagens.png";
+import agenteMarketing from "@/assets/agente_marketing.png";
+import agenteSuporte from "@/assets/agente_suporte.png";
 
 const Produtos = () => {
   const produtos = [
@@ -24,6 +26,18 @@ const Produtos = () => {
       image: agenteVendas,
       description: "Venda mais, venda melhor: domine metodologias, CRMs, KPIs e estratégias que transformam vendedores comuns em top performers.",
       link: "/assistentes/sales-assistant",
+    },
+    {
+      title: "Marketing Assistant",
+      image: agenteMarketing,
+      description: "Transforme sua marca com estratégias de marketing digital, conteúdo e campanhas que geram resultados reais.",
+      link: "/assistentes/marketing-assistant",
+    },
+    {
+      title: "Support Assistant",
+      image: agenteSuporte,
+      description: "Atendimento excepcional: processos, métricas e automação para encantar clientes e otimizar seu suporte.",
+      link: "/assistentes/support-assistant",
     },
     {
       title: "Travel Assistant",
