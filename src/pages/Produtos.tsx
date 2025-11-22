@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import agenteFitness from "@/assets/agente_fitness.png";
-import agenteVendas from "@/assets/agente_business.png";
+import agenteVendas from "@/assets/agente_vendas.png";
 import agenteViagens from "@/assets/agente_viagens.png";
 
 const Produtos = () => {
