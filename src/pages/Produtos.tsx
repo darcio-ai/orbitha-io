@@ -30,7 +30,7 @@ const Produtos = () => {
     {
       title: "Marketing Assistant",
       image: agenteMarketing,
-      description: "Marketing Assistant é seu estrategista de marketing 24/7 para crescer com clareza e consistência.",
+      description: "Seu estrategista de marketing 24/7 para MEI/PJ: entende seu negócio, organiza ICP e funil, e entrega uma rotina simples com calendário de conteúdo, anúncios e copies sob medida para atrair e converter mais clientes.",
       link: "/assistentes/marketing-assistant",
     },
     {
