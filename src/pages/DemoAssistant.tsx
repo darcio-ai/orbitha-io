@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Send, ArrowLeft } from "lucide-react";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   text: string;
@@ -156,7 +158,23 @@ const DemoAssistant = () => {
                         msg.sender === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border"
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap ReactMarkdown">{msg.text}</p>
+                      {msg.sender === "assistant" ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          className="text-sm leading-relaxed whitespace-pre-wrap"
+                          components={{
+                            p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-5 space-y-1">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1">{children}</ol>,
+                            li: ({ children }) => <li>{children}</li>,
+                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                          }}
+                        >
+                          {msg.text}
+                        </ReactMarkdown>
+                      ) : (
+                        <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                      )}
                     </div>
                   </div>
                 ))}
