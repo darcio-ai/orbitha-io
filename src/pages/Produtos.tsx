@@ -8,7 +8,6 @@ import agenteVendas from "@/assets/agente_vendas.png";
 import agenteViagens from "@/assets/agente_viagens.png";
 import agenteMarketing from "@/assets/agente_marketing.png";
 import agenteSuporte from "@/assets/agente_suporte.png";
-import agenteSuporte from "@/assets/agente_suporte.png";
 
 const Produtos = () => {
   const navigate = useNavigate();
