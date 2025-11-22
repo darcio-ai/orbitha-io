@@ -6,15 +6,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import agenteMarketing from "@/assets/agente_marketing.png";
+import assistente-marketing from "@/assets/assistente-marketing.png";
 import { useNavigate } from "react-router-dom";
 
 const MarketingAssistant = () => {
   const navigate = useNavigate();
 
   const scrollToPremium = () => {
-    const premiumSection = document.getElementById('premium-section');
-    premiumSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const premiumSection = document.getElementById("premium-section");
+    premiumSection?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const steps = [
@@ -38,6 +38,34 @@ const MarketingAssistant = () => {
     },
   ];
 
+  const pillars = [
+    {
+      icon: "🎁",
+      title: "Oferta (25%)",
+      description: "Clareza do que vende, prova, valor percebido e CTA.",
+    },
+    {
+      icon: "🎯",
+      title: "ICP & Posicionamento (20%)",
+      description: "Público ideal real, dores e promessa plausível.",
+    },
+    {
+      icon: "📣",
+      title: "Canais (20%)",
+      description: "Onde publicar/anunciar com consistência e aderência ao ICP.",
+    },
+    {
+      icon: "🧲",
+      title: "Funil simples (20%)",
+      description: "Topo → Meio → Fundo com mensagem certa por etapa.",
+    },
+    {
+      icon: "📈",
+      title: "Métricas & Rotina (15%)",
+      description: "Leads, conversão, CAC, ticket, LTV e cadência.",
+    },
+  ];
+
   const premiumDelivers = [
     "Diagnóstico completo de marketing (oferta, ICP, canais, funil, métricas)",
     "Plano prático 7/14/30/90 dias com metas realistas",
@@ -47,6 +75,7 @@ const MarketingAssistant = () => {
     "Estrutura de landing pages que convertem (headline → prova → oferta → CTA)",
     "Sequências de e-mail/WhatsApp para nutrição e venda",
     "Testes A/B e hipóteses de crescimento fáceis de medir",
+    "Ajuste contínuo baseado nos seus resultados + memória conversacional",
   ];
 
   const benefits = [
@@ -191,8 +220,42 @@ const MarketingAssistant = () => {
               </div>
             </div>
 
+            {/* SMART Marketing Score */}
+            <div className="mb-16">
+              <h2 className="text-3xl font-bold mb-2">
+                Seu Score de Marketing (0–100)
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Diagnóstico automático baseado em 5 pilares essenciais do marketing que geram demanda de verdade.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {pillars.map((p, i) => (
+                  <div
+                    key={i}
+                    className="flex gap-4 p-4 rounded-lg bg-card border border-border"
+                  >
+                    <div className="text-2xl">{p.icon}</div>
+                    <div>
+                      <h3 className="font-semibold">{p.title}</h3>
+                      <p className="text-muted-foreground">{p.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 p-4 rounded-lg bg-card border border-border">
+                <p className="text-sm text-muted-foreground">
+                  Resultado: diagnóstico + score + prioridades claras para você saber exatamente o que ajustar primeiro.
+                </p>
+              </div>
+            </div>
+
             {/* O que você recebe no Premium */}
-            <Card id="premium-section" className="mb-16 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background scroll-mt-20">
+            <Card
+              id="premium-section"
+              className="mb-16 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background scroll-mt-20"
+            >
               <CardHeader>
                 <CardTitle className="text-3xl font-bold flex items-center gap-2">
                   <Megaphone className="w-7 h-7 text-primary" />
