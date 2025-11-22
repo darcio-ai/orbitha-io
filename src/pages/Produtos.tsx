@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
+import agenteBusiness from "@/assets/agente_business.png";
 import agenteFitness from "@/assets/agente_fitness.png";
 import agenteVendas from "@/assets/agente_vendas.png";
 import agenteViagens from "@/assets/agente_viagens.png";
@@ -11,6 +12,12 @@ const Produtos = () => {
       image: agenteFinanceiro,
       description: "Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.",
       link: "/assistentes/financial-assistant",
+    },
+    {
+      title: "Business Assistant",
+      image: agenteBusiness,
+      description: "Eleve sua gestão empresarial: dashboards inteligentes, KPIs estratégicos e pipelines otimizados para decisões mais assertivas.",
+      link: "/assistentes/business-assistant",
     },
     {
       title: "Sales Assistant",
