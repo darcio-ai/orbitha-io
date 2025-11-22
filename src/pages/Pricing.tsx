@@ -133,7 +133,7 @@ const Pricing = () => {
             Destrave seus assistentes da Orbitha
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Você já testou a demo. Agora tenha acesso completo com 7 dias de garantia.
+            A demo foi só o começo. Agora destrave o acesso completo.
           </p>
           {focusPlan && (
             <p className="text-lg text-primary mt-4 font-semibold">
