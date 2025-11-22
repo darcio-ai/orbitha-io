@@ -116,16 +116,15 @@ const SalesAssistant = () => {
                   </h1>
 
                   <p className="text-xl text-muted-foreground mb-8">
-                    Seu parceiro de IA para prospecção, CRM, SPIN Selling, objeções e fechamento — com plano claro e
-                    scripts prontos.
+                    IA para prospecção, SPIN Selling, CRM e objeções — com plano claro e scripts prontos.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                     <Button size="lg" className="text-lg">
                       Começar minha análise agora (grátis)
                     </Button>
-                    <Button size="lg" variant="ghost" className="text-lg">
-                      Ver planos Premium
+                    <Button size="lg" variant="ghost" className="text-lg sm:text-lg text-sm">
+                      Ver Premium
                     </Button>
                   </div>
 
@@ -225,16 +224,28 @@ const SalesAssistant = () => {
 
             {/* Segurança e limites */}
             <div className="mb-16 p-8 rounded-2xl bg-card border border-border">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <Shield className="w-5 h-5 text-primary" />
                 Segurança e limites
               </h2>
-              <ul className="text-muted-foreground space-y-2 list-disc pl-5">
-                <li>Orientação educativa baseada em boas práticas</li>
-                <li>Não garante resultados numéricos</li>
-                <li>Não incentiva spam/compra de listas/práticas antiéticas</li>
-                <li>Para compliance jurídico/contratos, consultar especialista</li>
-              </ul>
+              <div className="grid gap-3">
+                <div className="flex gap-4 p-4 rounded-lg bg-background border border-border">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <p className="text-muted-foreground">Orientação educativa baseada em boas práticas</p>
+                </div>
+                <div className="flex gap-4 p-4 rounded-lg bg-background border border-border">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <p className="text-muted-foreground">Não garante resultados numéricos</p>
+                </div>
+                <div className="flex gap-4 p-4 rounded-lg bg-background border border-border">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <p className="text-muted-foreground">Não incentiva spam/compra de listas/práticas antiéticas</p>
+                </div>
+                <div className="flex gap-4 p-4 rounded-lg bg-background border border-border">
+                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <p className="text-muted-foreground">Para compliance jurídico/contratos, consultar especialista</p>
+                </div>
+              </div>
             </div>
 
             {/* CTA final */}
