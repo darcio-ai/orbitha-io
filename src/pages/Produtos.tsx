@@ -30,7 +30,7 @@ const Produtos = () => {
     {
       title: "Marketing Assistant",
       image: agenteMarketing,
-      description: "Transforme sua marca com estratégias de marketing digital, conteúdo e campanhas que geram resultados reais.",
+      description: "Marketing Assistant é seu estrategista de marketing 24/7 para crescer com clareza e consistência.",
       link: "/assistentes/marketing-assistant",
     },
     {
