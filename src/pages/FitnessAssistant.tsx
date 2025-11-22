@@ -1,220 +1,281 @@
-import { Check } from "lucide-react";
+import { Check, ShieldAlert, Dumbbell, Apple, HeartPulse, Sparkles, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import agenteFitness from "@/assets/agente_fitness.png";
+import { useNavigate } from "react-router-dom";
 
 const FitnessAssistant = () => {
-  const benefits = [
+  const navigate = useNavigate();
+
+  // ✅ Ajuste a rota abaixo para a rota real do chat/onboarding do seu assistente no seu app
+  const START_ASSISTANT_ROUTE = "/assistentes/fitness-assistant/start";
+
+  const howItWorks = [
     {
-      icon: "🎯",
-      title: "Resultados em 8-12 semanas",
-      description: "Com consistência, mudanças visíveis acontecem"
+      icon: <Sparkles className="w-6 h-6 text-primary" />,
+      title: "1) Conte sua situação",
+      desc: "Objetivo, nível, rotina, equipamentos e possíveis limitações.",
     },
     {
-      icon: "💪",
-      title: "Treinos de 30-60 minutos",
-      description: "Eficientes, não precisa viver na academia"
+      icon: <Dumbbell className="w-6 h-6 text-primary" />,
+      title: "2) Receba seu plano",
+      desc: "Treino semanal personalizado com progressão inteligente.",
     },
     {
-      icon: "🍽️",
-      title: "Nutrição sem radicalismo",
-      description: "Equilibrada, sustentável, prazerosa"
+      icon: <Apple className="w-6 h-6 text-primary" />,
+      title: "3) Ajuste e evolua",
+      desc: "Nutrição educativa, hábitos e revisões ao longo das semanas.",
     },
-    {
-      icon: "📱",
-      title: "Apps integrados",
-      description: "Acompanhe progresso, conte calorias, monitore treinos"
-    },
-    {
-      icon: "🧘",
-      title: "Saúde mental incluída",
-      description: "Exercício é sobre sentir-se bem, não punição"
-    }
   ];
 
-  const features = [
-    "Avaliação Inicial Completa - Nível de condicionamento, objetivos (emagrecimento, hipertrofia, performance), restrições físicas",
-    "Plano de Treino Personalizado - Divisão de treino (ABC, ABCD, Full Body), exercícios específicos, séries, repetições, descanso",
-    "Orientações Nutricionais - Macros (proteínas, carbos, gorduras), timing de refeições, suplementação (se necessário)",
-    "Progressão Inteligente - Como evoluir semana a semana sem estagnar ou se lesionar",
-    "Recuperação e Descanso - Importância do sono, alongamentos, foam roller, dias off",
-    "Motivação e Consistência - Estratégias para manter disciplina nos dias difíceis",
-    "Top Apps Recomendados - MyFitnessPal, Strava, Nike Training Club, Apple Fitness+ (conforme seu objetivo)",
-    "Treinos por Modalidade - Musculação, HIIT, Funcional, Calistenia, Yoga, Corrida, Natação"
-  ];
-
-  const trends = [
-    "Tecnologia vestível (smartwatches, monitores de frequência)",
-    "Apps mobile e treinos online",
-    "Personal training virtual",
-    "Programas para idosos (longevidade ativa)",
-    "HIIT (treinos curtos e intensos)",
-    "Calistenia (treino com peso corporal)",
-    "Treino funcional (movimentos do dia a dia)",
-    "Exercícios ao ar livre (conexão com natureza)",
-    "Integração saúde mental + física",
-    "Treinamento baseado em dados (biohacking)"
-  ];
-
-  const goals = [
-    "Emagrecimento (queima de gordura sustentável)",
-    "Hipertrofia (ganho de massa muscular)",
-    "Performance (correr mais rápido, levantar mais peso)",
-    "Saúde geral (prevenir doenças, longevidade)",
-    "Estética (corpo definido, proporções)",
-    "Qualidade de vida (mais energia, melhor sono)"
+  const premiumDelivers = [
+    "Treino personalizado por objetivo e nível (academia, casa ou peso corporal)",
+    "Progressão inteligente para evoluir sem estagnar",
+    "Nutrição educativa básica (TMB/TDEE, macros e déficit/superávit sustentável)",
+    "Recuperação e hábitos (sono, passos, mobilidade, dias de descanso)",
+    "Memória conversacional: não repete perguntas e adapta ao seu contexto",
   ];
 
   const perfectFor = [
-    "Iniciantes que não sabem por onde começar",
-    "Intermediários que estagnou nos resultados",
-    "Avançados que querem otimizar performance",
-    "Pessoas com restrições (lesões, idade, tempo)",
-    "Quem treina sozinho e precisa de direção"
+    "Iniciantes que querem um caminho claro para começar",
+    "Quem já treina, mas estagnou e precisa de direção",
+    "Pessoas com pouco tempo e rotina corrida",
+    "Quem treina em casa ou sem personal",
+    "Quem quer melhorar saúde, estética ou performance com consistência",
+  ];
+
+  const benefits = [
+    {
+      icon: "🎯",
+      title: "Plano possível de seguir",
+      description: "Nada de radicalismo: metas realistas para sua rotina.",
+    },
+    {
+      icon: "💪",
+      title: "Treinos eficientes",
+      description: "Sessões objetivas com foco no que dá resultado.",
+    },
+    {
+      icon: "🍽️",
+      title: "Nutrição educativa",
+      description: "Entenda calorias, macros e estratégias simples.",
+    },
+    {
+      icon: "🧠",
+      title: "Evolução com segurança",
+      description: "Ajustes conforme seu nível e limitações.",
+    },
   ];
 
   return (
     <div className="min-h-screen pt-20 pb-16">
-      {/* Hero Section */}
+      {/* HERO */}
       <section className="py-16 px-4">
         <div className="container mx-auto">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+            <div className="grid md:grid-cols-2 gap-12 items-center mb-14">
               <div>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                <h1 className="text-4xl md:text-6xl font-bold mb-4">
                   Fitness <span className="text-primary">Assistant</span>
                 </h1>
-                <p className="text-xl text-muted-foreground mb-8">
-                  Alcance seus objetivos fitness com um guia completo que domina treinos, nutrição, recuperação e as últimas tendências.
+                <p className="text-xl text-muted-foreground mb-6">
+                  Seu coach de IA para treinos personalizados, nutrição educativa e hábitos saudáveis — do jeito que
+                  cabe na sua vida.
                 </p>
-                <Button size="lg" className="text-lg">
-                  Seu corpo merece a melhor versão de você. Vamos começar hoje?
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button size="lg" className="text-lg" onClick={() => navigate(START_ASSISTANT_ROUTE)}>
+                    Começar minha análise agora (grátis)
+                  </Button>
+                  <Button variant="ghost" size="lg" className="text-lg" onClick={() => navigate("/pricing")}>
+                    Ver planos Premium
+                  </Button>
+                </div>
+
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Sem promessa milagrosa. Um plano claro + consistência = evolução.
+                </p>
               </div>
+
               <div className="relative">
-                <img
-                  src={agenteFitness}
-                  alt="Fitness Assistant"
-                  className="w-full h-auto object-contain rounded-2xl"
-                />
+                <img src={agenteFitness} alt="Fitness Assistant" className="w-full h-auto object-contain rounded-2xl" />
               </div>
             </div>
 
-            {/* Introduction */}
-            <div className="prose prose-lg max-w-none mb-16">
-              <p className="text-lg text-muted-foreground">
-                Transformar o corpo não é sobre força de vontade. É sobre ter o plano certo, no momento certo, com as informações certas. O <strong>Agente Fitness 2025</strong> é seu aliado nessa jornada, baseado nas top 10 tendências do mercado fitness brasileiro.
-              </p>
+            {/* COMO FUNCIONA */}
+            <div className="mb-14">
+              <h2 className="text-3xl font-bold mb-2">Como funciona</h2>
+              <p className="text-muted-foreground mb-8">Simples, rápido e feito para sua realidade.</p>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {howItWorks.map((step, i) => (
+                  <Card key={i} className="border-2">
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <div className="bg-primary/10 p-2 rounded-lg">{step.icon}</div>
+                        <CardTitle className="text-lg">{step.title}</CardTitle>
+                      </div>
+                      <CardDescription className="text-base mt-2">{step.desc}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
             </div>
 
-            {/* Why Different */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-6">Por que este agente é indispensável?</h2>
-              <p className="text-lg text-muted-foreground">
-                Ele não te dá uma ficha genérica de treino. Ele entende VOCÊ: seu nível atual, seus objetivos, seu tempo disponível, suas limitações e até suas preferências. Treina em casa? Academia? Ao ar livre? Ele adapta tudo.
-              </p>
-            </div>
+            {/* O QUE O PREMIUM ENTREGA */}
+            <Card className="mb-14 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Activity className="w-6 h-6 text-primary" />O que você recebe no Premium
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Conteúdo prático e educativo, com ajustes contínuos.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {premiumDelivers.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex gap-3 items-start p-3 rounded-lg bg-background/60 border border-border"
+                  >
+                    <Check className="w-5 h-5 text-primary mt-0.5" />
+                    <p className="text-muted-foreground">{item}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-            {/* Features */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8">O que você ganha:</h2>
-              <div className="grid gap-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex gap-4 p-4 rounded-lg bg-card border border-border">
-                    <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-                    <p className="text-muted-foreground">{feature}</p>
+            {/* BENEFÍCIOS */}
+            <div className="mb-14">
+              <h2 className="text-3xl font-bold mb-8 text-center">Benefícios</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {benefits.map((b, i) => (
+                  <div
+                    key={i}
+                    className="p-6 rounded-xl bg-card border border-border hover:shadow-lg transition-shadow"
+                  >
+                    <div className="text-4xl mb-3">{b.icon}</div>
+                    <h3 className="text-lg font-bold mb-1">{b.title}</h3>
+                    <p className="text-muted-foreground text-sm">{b.description}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Trends */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-6">Tendências 2025 que ele domina:</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                {trends.map((trend, index) => (
-                  <div key={index} className="flex gap-3 items-center p-4 rounded-lg bg-card border border-border">
-                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                    <p className="text-muted-foreground">{trend}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Goals */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-6">Objetivos que ele te ajuda a alcançar:</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                {goals.map((goal, index) => (
-                  <div key={index} className="flex gap-3 items-center p-4 rounded-lg bg-card border border-border">
-                    <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
-                    <p className="text-muted-foreground">{goal}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Perfect For */}
-            <div className="mb-16">
+            {/* PERFEITO PARA */}
+            <div className="mb-14">
               <h2 className="text-3xl font-bold mb-6">Perfeito para:</h2>
-              <div className="grid gap-4">
-                {perfectFor.map((item, index) => (
-                  <div key={index} className="flex gap-4 p-4 rounded-lg bg-card border border-border">
-                    <Check className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+              <div className="grid md:grid-cols-2 gap-4">
+                {perfectFor.map((item, idx) => (
+                  <div key={idx} className="flex gap-3 p-4 rounded-lg bg-card border border-border">
+                    <Check className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
                     <p className="text-muted-foreground">{item}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="mb-16 p-8 rounded-2xl bg-card border border-border">
-              <h2 className="text-3xl font-bold mb-4">Dados que importam:</h2>
-              <p className="text-lg text-muted-foreground">
-                70% das pessoas buscam transformação física, 60% querem melhorar saúde, 50% focam em estética. O agente equilibra os três aspectos para resultados reais e duradouros.
-              </p>
-            </div>
+            {/* COMPLIANCE CURTO */}
+            <Card className="mb-14 border-2 border-blue-500/30 bg-blue-500/5">
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <ShieldAlert className="w-5 h-5 text-primary" />
+                  Segurança e limites
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-muted-foreground">
+                <p>
+                  Este assistente oferece orientação <strong>educativa</strong> sobre treino, nutrição básica e hábitos.
+                </p>
+                <ul className="list-disc pl-5 space-y-1 text-sm">
+                  <li>Não substitui médico, nutricionista, personal trainer ou fisioterapeuta.</li>
+                  <li>Não prescreve dietas clínicas/restritivas nem trata doenças.</li>
+                  <li>
+                    Em caso de dor forte, condição clínica, gravidez ou lesão grave, procure um profissional antes de
+                    iniciar ou alterar treinos.
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
 
-            {/* Differential */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-4">O diferencial:</h2>
-              <p className="text-lg text-muted-foreground">
-                Ele não é apenas sobre "levanta peso e coma frango". É sobre entender seu corpo, respeitar seus limites, progredir de forma inteligente e criar hábitos que duram para sempre. Não é dieta, é estilo de vida.
+            {/* CTA FINAL */}
+            <div className="text-center p-10 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">Comece hoje com um plano feito para você</h2>
+              <p className="text-lg text-muted-foreground mb-6">
+                Diagnóstico rápido + treino personalizado + hábitos que sustentam resultados.
               </p>
-            </div>
-
-            {/* Knowledge */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-4">Conhecimento atualizado:</h2>
-              <p className="text-lg text-muted-foreground">
-                Apps mais eficazes, dúvidas comuns respondidas, mitos desmascarados, ciência aplicada. Tudo baseado em pesquisa do mercado fitness brasileiro de 2025.
-              </p>
-            </div>
-
-            {/* Benefits Grid */}
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-8 text-center">Benefícios</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {benefits.map((benefit, index) => (
-                  <div key={index} className="p-6 rounded-xl bg-card border border-border hover:shadow-lg transition-shadow">
-                    <div className="text-4xl mb-4">{benefit.icon}</div>
-                    <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
-                    <p className="text-muted-foreground">{benefit.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* CTA */}
-            <div className="text-center p-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Seu corpo merece a melhor versão de você
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8">
-                Vamos começar hoje?
-              </p>
-              <Button size="lg" className="text-lg">
-                Começar agora
+              <Button size="lg" className="text-lg" onClick={() => navigate(START_ASSISTANT_ROUTE)}>
+                Começar agora (grátis)
               </Button>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Conteúdo educativo • Ajustável à sua rotina • Sem promessas irreais
+              </p>
+            </div>
+
+            {/* APRENDA MAIS (OPCIONAL) */}
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold mb-1">📚 Aprenda mais (opcional)</h3>
+              <p className="text-muted-foreground mb-6">
+                Conteúdo educativo para você entender melhor e evoluir com mais segurança.
+              </p>
+
+              <Accordion type="single" collapsible className="w-full space-y-3">
+                <AccordionItem value="tendencias" className="border rounded-lg px-2 bg-card">
+                  <AccordionTrigger className="text-left font-semibold">
+                    Tendências modernas que o assistente considera
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">
+                    Treinos curtos e eficientes (HIIT), musculação bem estruturada, calistenia/peso corporal, funcional,
+                    longevidade ativa, integração com saúde mental e uso inteligente de dados (quando você compartilha).
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="modalidades" className="border rounded-lg px-2 bg-card">
+                  <AccordionTrigger className="text-left font-semibold">Treinos por modalidade</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">
+                    O assistente pode montar rotinas específicas para musculação, funcional, corrida/ciclismo,
+                    yoga/mobilidade, natação e treinos híbridos — adaptando ao seu nível.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="nutricao" className="border rounded-lg px-2 bg-card">
+                  <AccordionTrigger className="text-left font-semibold">
+                    Nutrição educativa (sem radicalismo)
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground space-y-2">
+                    <p>
+                      Você recebe orientações simples sobre calorias, macros e estratégia alimentar para seu objetivo.
+                      Nada de dietas extremas.
+                    </p>
+                    <p className="text-sm italic">Conteúdo educativo. Para casos clínicos, procure nutricionista.</p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="apps" className="border rounded-lg px-2 bg-card">
+                  <AccordionTrigger className="text-left font-semibold">Apps e wearables (opcional)</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">
+                    Se você já usa apps ou relógios inteligentes, pode compartilhar seus dados para personalização
+                    melhor. Exemplos comuns: apps de calorias, corrida/ciclismo, treinos em casa e smartwatches. O
+                    assistente adapta ao que você tiver.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="mitos" className="border rounded-lg px-2 bg-card">
+                  <AccordionTrigger className="text-left font-semibold">Dúvidas comuns e mitos</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">
+                    O assistente esclarece execução correta, progressão de carga, frequência ideal, descanso, e
+                    desmistifica “atalhos” que não se sustentam.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="disclaimer" className="border rounded-lg px-2 bg-card">
+                  <AccordionTrigger className="text-left font-semibold">Aviso importante</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-sm">
+                    Tudo aqui é educativo. Resultados dependem de consistência, sono, alimentação, histórico de treino e
+                    saúde individual. Em situações médicas específicas, consulte profissionais.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         </div>
