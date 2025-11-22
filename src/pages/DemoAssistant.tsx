@@ -156,7 +156,7 @@ const DemoAssistant = () => {
                         msg.sender === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border"
                       }`}
                     >
-                      <p className="text-sm ReactMarkdown whitespace-pre-wrap">{msg.text}</p>
+                      <p className="text-sm whitespace-pre-wrap ReactMarkdown">{msg.text}</p>
                     </div>
                   </div>
                 ))}
