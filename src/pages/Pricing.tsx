@@ -84,7 +84,7 @@ const Pricing = () => {
   const plans = [
     {
       name: "Growth Pack",
-      price: "R$ 29,90",
+      price: "R$ 00,00",
       period: "/mês",
       subtitle: "Pra vender mais e atender melhor",
       description: "Ideal para vendas, marketing e suporte",
@@ -104,7 +104,7 @@ const Pricing = () => {
     },
     {
       name: "Orbitha Suite",
-      price: "R$ 97",
+      price: "R$ 00,00",
       period: "/mês",
       subtitle: "Negócio + vida pessoal",
       description: "Todos os 7 assistentes + recursos premium",
