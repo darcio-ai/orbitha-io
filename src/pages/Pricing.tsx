@@ -34,16 +34,37 @@ const Pricing = () => {
 
   // Removed MercadoPago initialization
 
-  const handleStripeCheckout = async (planType: string) => {
+  const handleStripeCheckout = async (planType: 'growth' | 'suite') => {
     if (!user) {
       toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
       navigate("/login");
       return;
     }
-    // Extract numeric value from string "R$ 00,00" (simplified for demo)
-    // In real app, store price in number in the plan object
-    const value = plan.priceValue;
-    setSelectedPlanForAsaas({ name: plan.name, value, planType: plan.planType });
+    
+    setLoadingStripe(true);
+    try {
+      const { url } = await createStripeCheckout(planType);
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      toast({
+        title: "Erro no pagamento",
+        description: error.message || "Ocorreu um erro ao processar o pagamento.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingStripe(false);
+    }
+  };
+
+  const handleAsaasClick = (plan: typeof plans[0]) => {
+    if (!user) {
+      toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
+      navigate("/login");
+      return;
+    }
+    setSelectedPlanForAsaas({ name: plan.name, value: plan.priceValue, planType: plan.planType });
     setAsaasOpen(true);
   };
 
@@ -67,7 +88,7 @@ const Pricing = () => {
       buttonText: "Assinar Growth Pack",
       buttonVariant: "default" as const,
       popular: focusPlan === 'growth',
-      planType: 'growth'
+      planType: 'growth' as const
     },
     {
       name: "Orbitha Suite",
@@ -88,7 +109,7 @@ const Pricing = () => {
       buttonText: "Assinar Orbitha Suite",
       buttonVariant: "default" as const,
       popular: focusPlan === 'suite',
-      planType: 'suite'
+      planType: 'suite' as const
     }
   ];
 
