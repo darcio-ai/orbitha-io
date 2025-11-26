@@ -125,24 +125,24 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-background pt-24">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8 md:py-16">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 text-foreground">
             Destrave seus assistentes da Orbitha
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
             A demo foi só o começo. Agora destrave o acesso completo.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <Card
               key={plan.name}
               className={`relative flex flex-col ${plan.popular
-                  ? "border-primary shadow-lg scale-105"
+                  ? "border-primary shadow-lg md:scale-105"
                   : "border-border"
                 }`}
             >
@@ -152,28 +152,28 @@ const Pricing = () => {
                 </Badge>
               )}
 
-              <CardHeader className="text-center pb-8 pt-8">
-                <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
-                <p className="text-sm font-medium text-primary mb-2">{plan.subtitle}</p>
-                <CardDescription className="text-base">{plan.description}</CardDescription>
+              <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-8">
+                <CardTitle className="text-xl md:text-2xl mb-2">{plan.name}</CardTitle>
+                <p className="text-xs md:text-sm font-medium text-primary mb-2">{plan.subtitle}</p>
+                <CardDescription className="text-sm md:text-base">{plan.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-foreground">{plan.price}</span>
-                  <span className="text-muted-foreground">{plan.period}</span>
+                  <span className="text-3xl md:text-4xl font-bold text-foreground">{plan.price}</span>
+                  <span className="text-sm md:text-base text-muted-foreground">{plan.period}</span>
                 </div>
               </CardHeader>
 
-              <CardContent className="flex-grow">
+              <CardContent className="flex-grow px-4 md:px-6">
                 <ul className="space-y-3">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                      <span className="text-foreground">{feature}</span>
+                      <span className="text-sm md:text-base text-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </CardContent>
 
-              <CardFooter className="flex-col gap-3">
+              <CardFooter className="flex-col gap-3 px-4 md:px-6">
                 <Button
                   className="w-full"
                   variant={plan.buttonVariant}

@@ -64,35 +64,35 @@ const Home = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 px-4">
+      <section className="relative min-h-screen flex items-center justify-center pt-24 pb-12 md:pb-16 px-4">
         <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: Text Content */}
-            <div className="space-y-8 animate-fade-in">
+            <div className="space-y-6 md:space-y-8 animate-fade-in text-center lg:text-left">
               <Badge 
                 variant="secondary" 
-                className="backdrop-blur-xl bg-card/10 border border-border/20 text-primary px-4 py-2"
+                className="backdrop-blur-xl bg-card/10 border border-border/20 text-primary px-3 md:px-4 py-2 mx-auto lg:mx-0 w-fit"
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 Inteligência Artificial para Empresas
               </Badge>
               
-              <h1 className="text-5xl md:text-7xl font-space font-bold leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-space font-bold leading-tight">
                 <span className="block text-foreground">Explorando o</span>
                 <span className="block bg-gradient-primary bg-clip-text text-transparent">
                   Futuro da IA
                 </span>
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
+              <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-relaxed">
                 Ajudamos pequenas e médias empresas a integrarem inteligência artificial 
                 em seus processos, com foco em performance, simplicidade e resultado.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                 <Button 
                   size="lg" 
-                  className="h-14 px-8 text-base font-semibold rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:scale-105"
+                  className="w-full sm:w-auto h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:scale-105"
                   asChild
                 >
                   <a
@@ -100,7 +100,7 @@ const Home = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <MessageSquare className="mr-2 h-5 w-5" />
+                    <MessageSquare className="mr-2 h-4 md:h-5 w-4 md:w-5" />
                     Começar Agora
                   </a>
                 </Button>
@@ -108,19 +108,19 @@ const Home = () => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="h-14 px-8 text-base font-semibold rounded-full backdrop-blur-xl bg-transparent border-border/60 hover:bg-card/20 hover:shadow-glow transition-all duration-300"
+                  className="w-full sm:w-auto h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold rounded-full backdrop-blur-xl bg-transparent border-border/60 hover:bg-card/20 hover:shadow-glow transition-all duration-300"
                   asChild
                 >
                   <a href="#recursos">
                     Saiba Mais
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-4 md:h-5 w-4 md:w-5" />
                   </a>
                 </Button>
               </div>
             </div>
 
             {/* Right: Astronaut + HUD Cards */}
-            <div className="relative h-[600px] lg:h-[700px]">
+            <div className="relative h-[400px] md:h-[500px] lg:h-[700px] mt-8 lg:mt-0">
               <img 
                 src={astronautHero} 
                 alt="Astronauta Futurista" 
@@ -128,9 +128,9 @@ const Home = () => {
               />
 
               {/* HUD Card 1: Data Growth Chart */}
-              <div className="absolute top-12 left-0 w-64 p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <div className="absolute top-4 md:top-12 left-0 w-48 md:w-64 p-3 md:p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <p className="text-xs text-muted-foreground mb-2">Crescimento de Dados (TB)</p>
-                <div className="h-24 flex items-end gap-1">
+                <div className="h-16 md:h-24 flex items-end gap-1">
                   {[40, 55, 45, 70, 60, 85, 95].map((height, i) => (
                     <div 
                       key={i} 
@@ -142,8 +142,8 @@ const Home = () => {
               </div>
 
               {/* HUD Card 2: Neural Processing Circle */}
-              <div className="absolute bottom-32 left-8 w-40 h-40 p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in flex flex-col items-center justify-center" style={{ animationDelay: '0.4s' }}>
-                <div className="relative w-24 h-24">
+              <div className="absolute bottom-24 md:bottom-32 left-2 md:left-8 w-32 h-32 md:w-40 md:h-40 p-3 md:p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in flex flex-col items-center justify-center" style={{ animationDelay: '0.4s' }}>
+                <div className="relative w-20 h-20 md:w-24 md:h-24">
                   <svg className="w-full h-full -rotate-90">
                     <circle
                       cx="48"
@@ -173,14 +173,14 @@ const Home = () => {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">94%</span>
+                    <span className="text-xl md:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">94%</span>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground text-center mt-2">Processamento Neural</p>
               </div>
 
               {/* HUD Card 3: Model Efficiency Bars */}
-              <div className="absolute bottom-12 right-0 w-64 p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              <div className="absolute bottom-4 md:bottom-12 right-0 w-48 md:w-64 p-3 md:p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in" style={{ animationDelay: '0.6s' }}>
                 <p className="text-xs text-muted-foreground mb-3">Eficiência do Modelo (%)</p>
                 <div className="space-y-2">
                   {[
@@ -207,13 +207,13 @@ const Home = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mt-12 md:mt-24 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center backdrop-blur-xl bg-card/5 p-6 rounded-2xl border border-border/10 hover:shadow-glow transition-all">
-                <div className="text-4xl md:text-5xl font-bold font-space bg-gradient-primary bg-clip-text text-transparent mb-2">
+              <div key={index} className="text-center backdrop-blur-xl bg-card/5 p-4 md:p-6 rounded-2xl border border-border/10 hover:shadow-glow transition-all">
+                <div className="text-3xl md:text-4xl lg:text-5xl font-bold font-space bg-gradient-primary bg-clip-text text-transparent mb-2">
                   {stat.number}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs md:text-sm text-muted-foreground">
                   {stat.label}
                 </div>
               </div>
@@ -223,31 +223,31 @@ const Home = () => {
       </section>
 
       {/* Solutions Section */}
-      <section id="recursos" className="relative py-24 px-4">
+      <section id="recursos" className="relative py-12 md:py-24 px-4">
         <div className="container mx-auto relative z-10">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl md:text-5xl font-space font-bold">
+          <div className="text-center mb-8 md:mb-16 space-y-3 md:space-y-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold">
               Nossas <span className="bg-gradient-primary bg-clip-text text-transparent">Soluções</span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
               Automatize processos, melhore o atendimento e aumente a produtividade 
               da sua empresa com nossas soluções de IA.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {solutions.map((solution, index) => (
               <Card 
                 key={index} 
                 className="backdrop-blur-xl bg-card/10 border border-border/20 hover:shadow-cyber-glow transition-all duration-300 group hover:scale-105"
               >
-                <CardContent className="p-6 text-center space-y-4">
-                  <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-glow">
+                <CardContent className="p-4 md:p-6 text-center space-y-3 md:space-y-4">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-glow">
                     <div className="text-primary-foreground">
                       {solution.icon}
                     </div>
                   </div>
-                  <h3 className="text-xl font-space font-semibold">{solution.title}</h3>
+                  <h3 className="text-lg md:text-xl font-space font-semibold">{solution.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{solution.description}</p>
                 </CardContent>
               </Card>
@@ -257,19 +257,19 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-24 px-4">
+      <section className="relative py-12 md:py-24 px-4">
         <div className="container mx-auto relative z-10">
-          <div className="max-w-4xl mx-auto text-center backdrop-blur-xl bg-gradient-cyber p-12 rounded-3xl border border-border/20 shadow-cyber-glow">
-            <h2 className="text-4xl md:text-5xl font-space font-bold mb-6">
+          <div className="max-w-4xl mx-auto text-center backdrop-blur-xl bg-gradient-cyber p-6 md:p-12 rounded-3xl border border-border/20 shadow-cyber-glow">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-space font-bold mb-4 md:mb-6">
               Vamos conversar?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-muted-foreground mb-6 md:mb-8 max-w-3xl mx-auto">
               Me conta: o que tá tirando o seu sono ou te dando dor de cabeça aí no dia a dia? 
               Vamos descobrir juntos como a automação pode te ajudar a resolver isso. 💡
             </p>
             <Button 
               size="lg" 
-              className="h-14 px-8 text-base font-semibold rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:scale-105"
+              className="w-full md:w-auto h-12 md:h-14 px-6 md:px-8 text-sm md:text-base font-semibold rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300 hover:scale-105"
               asChild
             >
               <a
@@ -277,7 +277,7 @@ const Home = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MessageSquare className="mr-2 h-5 w-5" />
+                <MessageSquare className="mr-2 h-4 md:h-5 w-4 md:w-5" />
                 Conversar com a Dora
               </a>
             </Button>
