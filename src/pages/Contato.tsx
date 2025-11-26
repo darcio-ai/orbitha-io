@@ -66,9 +66,9 @@ const Contato = () => {
     {
       icon: <Mail className="h-6 w-6" />,
       title: "Email",
-      description: "darciog@orbitha.io",
+      description: "darcio@orbitha.io",
       action: "Enviar email",
-      link: "mailto:darciog@orbitha.io"
+      link: "mailto:darcio@orbitha.io"
     },
     {
       icon: <Clock className="h-6 w-6" />,

@@ -23,16 +23,6 @@ const Footer = () => {
               Ajudamos pequenas e médias empresas a integrarem inteligência artificial em seus 
               atendimentos e processos, com foco em performance, simplicidade e resultado.
             </p>
-            <div className="flex space-x-4 justify-center md:justify-start">
-              <a
-                href="https://wa.me/5513991497873"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                WhatsApp
-              </a>
-            </div>
           </div>
 
           {/* Links Rápidos */}
@@ -66,15 +56,12 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <h3 className="text-base font-semibold mb-4">Contato</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>darciog@orbitha.io</li>
               <li>
                 <a
-                  href="https://wa.me/5513991497873"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="mailto:darcio@orbitha.io"
                   className="hover:text-primary transition-colors"
                 >
-                  WhatsApp
+                  darcio@orbitha.io
                 </a>
               </li>
             </ul>

@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
 import { supabase } from "@/integrations/supabase/client";
+import { Check } from "lucide-react";
 
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import agenteBusiness from "@/assets/agente_business.png";
@@ -150,85 +152,6 @@ const Produtos = () => {
             })}
           </div>
 
-          {/* Divider suave */}
-          <div className="max-w-6xl mx-auto mt-8 md:mt-12 mb-4 md:mb-6 h-px bg-white/10" />
-
-          {/* Pacotes / Combos */}
-          <section className="max-w-6xl mx-auto mt-4 md:mt-6 px-2">
-            <div className="text-center mb-6 md:mb-8">
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">Quer destravar tudo de uma vez?</h2>
-              <p className="text-xs md:text-sm lg:text-base text-muted-foreground mt-2">
-                Escolha um pacote e tenha acesso completo com 7 dias de garantia.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {/* Growth Pack */}
-              <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-primary/40 via-white/10 to-transparent">
-                <div className="rounded-2xl bg-background/80 p-4 md:p-6 h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary">
-                      Ideal para negócios
-                    </span>
-                  </div>
-
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 md:p-4 mb-3 md:mb-4">
-                    <p className="text-xs md:text-sm text-muted-foreground">Vendas • Marketing • Suporte</p>
-                  </div>
-
-                  <h3 className="text-lg md:text-xl font-semibold mb-1">Growth Pack</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
-                    O combo ideal pra quem quer vender mais e atender melhor.
-                  </p>
-
-                  <ul className="text-xs md:text-sm space-y-2 mb-4 md:mb-6">
-                    <li>• Sales Assistant completo</li>
-                    <li>• Marketing Assistant completo</li>
-                    <li>• Support Assistant completo</li>
-                  </ul>
-
-                  <div className="mt-auto">
-                    <Button size="lg" onClick={() => navigate("/planos?focus=growth")} className="w-full">
-                      Assinar Growth Pack
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Orbitha Suite */}
-              <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/30 via-primary/10 to-transparent">
-                <div className="rounded-2xl bg-background/80 p-4 md:p-6 h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs px-3 py-1 rounded-full bg-white/10">Recomendado</span>
-                  </div>
-
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 md:p-4 mb-3 md:mb-4">
-                    <p className="text-xs md:text-sm text-muted-foreground">Todos os 7 assistentes</p>
-                  </div>
-
-                  <h3 className="text-lg md:text-xl font-semibold mb-1">Orbitha Suite</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground mb-2">
-                    Produtividade + Growth. Tudo que a Orbitha oferece.
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-3 md:mb-4">
-                    Melhor custo-benefício para quem quer usar mais de 3 assistentes.
-                  </p>
-
-                  <ul className="text-xs md:text-sm space-y-2 mb-4 md:mb-6">
-                    <li>• 7 assistentes completos</li>
-                    <li>• Recursos premium</li>
-                    <li>• Suporte prioritário</li>
-                  </ul>
-
-                  <div className="mt-auto">
-                    <Button size="lg" onClick={() => navigate("/planos?focus=suite")} className="w-full">
-                      Assinar Orbitha Suite
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
       </section>
     </div>

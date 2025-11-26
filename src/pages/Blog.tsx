@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ const Blog = () => {
     {
       id: 1,
       title: "Como a IA está revolucionando o atendimento ao cliente",
+      slug: "ia-revolucionando-atendimento-cliente",
       excerpt: "Descubra como empresas estão usando inteligência artificial para transformar a experiência do cliente e aumentar a satisfação.",
       category: "IA & Atendimento",
       readTime: "5 min",
@@ -28,6 +30,7 @@ const Blog = () => {
     {
       id: 2,
       title: "WhatsApp Business API: Guia completo para automação",
+      slug: "whatsapp-business-api-guia-automacao",
       excerpt: "Tudo que você precisa saber para implementar automação no WhatsApp e melhorar o relacionamento com seus clientes.",
       category: "WhatsApp",
       readTime: "8 min",
@@ -37,6 +40,7 @@ const Blog = () => {
     {
       id: 3,
       title: "5 processos que toda PME deveria automatizar",
+      slug: "processos-pme-automatizar",
       excerpt: "Identifique os principais gargalos operacionais e como a automação pode liberar tempo para focar no que realmente importa.",
       category: "Automação",
       readTime: "6 min",
@@ -49,6 +53,7 @@ const Blog = () => {
     {
       id: 4,
       title: "Zapier vs n8n: Qual ferramenta escolher para sua empresa?",
+      slug: "zapier-vs-n8n-ferramenta-escolher",
       excerpt: "Comparativo completo entre as principais plataformas de automação no mercado.",
       category: "Ferramentas",
       readTime: "7 min",
@@ -58,6 +63,7 @@ const Blog = () => {
     {
       id: 5,
       title: "ROI da automação: Como calcular o retorno do investimento",
+      slug: "roi-automacao-calcular-retorno",
       excerpt: "Métricas essenciais para medir o sucesso das suas iniciativas de automação.",
       category: "Produtividade",
       readTime: "4 min",
@@ -67,6 +73,7 @@ const Blog = () => {
     {
       id: 6,
       title: "Chatbots inteligentes: Além das respostas automáticas",
+      slug: "chatbots-inteligentes-respostas-automaticas",
       excerpt: "Como criar assistentes virtuais que realmente agregam valor ao seu negócio.",
       category: "IA & Chatbots",
       readTime: "6 min",
@@ -111,18 +118,20 @@ const Blog = () => {
             {/* Featured Post */}
             {featuredPosts[0] && (
               <Card className="mb-12 overflow-hidden bg-card border-border shadow-card">
-                <div className="relative">
-                  <img 
-                    src={featuredPosts[0].image} 
-                    alt={featuredPosts[0].title}
-                    className="w-full h-64 md:h-80 object-cover"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <Badge variant="secondary">
-                      Destaque
-                    </Badge>
+                <Link to={`/blog/${featuredPosts[0].slug}`}>
+                  <div className="relative">
+                    <img 
+                      src={featuredPosts[0].image} 
+                      alt={featuredPosts[0].title}
+                      className="w-full h-64 md:h-80 object-cover"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <Badge variant="secondary">
+                        Destaque
+                      </Badge>
+                    </div>
                   </div>
-                </div>
+                </Link>
                 <CardHeader className="p-8">
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center space-x-1">
@@ -135,15 +144,19 @@ const Blog = () => {
                     </div>
                     <Badge variant="outline">{featuredPosts[0].category}</Badge>
                   </div>
-                  <CardTitle className="text-2xl md:text-3xl mb-4">
-                    {featuredPosts[0].title}
-                  </CardTitle>
+                  <Link to={`/blog/${featuredPosts[0].slug}`}>
+                    <CardTitle className="text-2xl md:text-3xl mb-4 hover:text-primary transition-colors">
+                      {featuredPosts[0].title}
+                    </CardTitle>
+                  </Link>
                   <p className="text-lg text-muted-foreground mb-6">
                     {featuredPosts[0].excerpt}
                   </p>
-                  <Button variant="outline">
-                    Ler artigo completo
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button variant="outline" asChild>
+                    <Link to={`/blog/${featuredPosts[0].slug}`}>
+                      Ler artigo completo
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                 </CardHeader>
               </Card>
@@ -154,38 +167,40 @@ const Blog = () => {
               <h2 className="text-2xl font-bold mb-8">Artigos Recentes</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {featuredPosts.slice(1).concat(recentPosts.slice(0, 1)).map((post) => (
-                  <Card key={post.id} className="bg-card border-border hover:shadow-glow transition-all duration-300 group cursor-pointer">
-                    {post.image && (
-                      <div className="relative overflow-hidden">
-                        <img 
-                          src={post.image} 
-                          alt={post.title}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <CardHeader className="p-6">
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{post.date}</span>
+                  <Link key={post.id} to={`/blog/${post.slug}`}>
+                    <Card className="bg-card border-border hover:shadow-glow transition-all duration-300 group cursor-pointer h-full">
+                      {post.image && (
+                        <div className="relative overflow-hidden">
+                          <img 
+                            src={post.image} 
+                            alt={post.title}
+                            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
                         </div>
-                        <div className="flex items-center space-x-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{post.readTime}</span>
+                      )}
+                      <CardHeader className="p-6">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>{post.date}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{post.readTime}</span>
+                          </div>
                         </div>
-                      </div>
-                      <Badge variant="outline" className="w-fit mb-3">
-                        {post.category}
-                      </Badge>
-                      <CardTitle className="text-xl mb-3 group-hover:text-primary transition-colors">
-                        {post.title}
-                      </CardTitle>
-                      <p className="text-muted-foreground text-sm">
-                        {post.excerpt}
-                      </p>
-                    </CardHeader>
-                  </Card>
+                        <Badge variant="outline" className="w-fit mb-3">
+                          {post.category}
+                        </Badge>
+                        <CardTitle className="text-xl mb-3 group-hover:text-primary transition-colors">
+                          {post.title}
+                        </CardTitle>
+                        <p className="text-muted-foreground text-sm">
+                          {post.excerpt}
+                        </p>
+                      </CardHeader>
+                    </Card>
+                  </Link>
                 ))}
               </div>
 
@@ -194,34 +209,36 @@ const Blog = () => {
                 <h3 className="text-xl font-semibold mb-6">Mais Artigos</h3>
                 <div className="space-y-6">
                   {recentPosts.slice(1).map((post) => (
-                    <Card key={post.id} className="bg-card border-border hover:shadow-glow transition-all duration-300 group cursor-pointer">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="h-4 w-4" />
-                                <span>{post.date}</span>
+                    <Link key={post.id} to={`/blog/${post.slug}`}>
+                      <Card className="bg-card border-border hover:shadow-glow transition-all duration-300 group cursor-pointer">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
+                                <div className="flex items-center space-x-1">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>{post.date}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <Clock className="h-4 w-4" />
+                                  <span>{post.readTime}</span>
+                                </div>
                               </div>
-                              <div className="flex items-center space-x-1">
-                                <Clock className="h-4 w-4" />
-                                <span>{post.readTime}</span>
-                              </div>
+                              <Badge variant="outline" className="mb-3">
+                                {post.category}
+                              </Badge>
+                              <h4 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                                {post.title}
+                              </h4>
+                              <p className="text-muted-foreground text-sm">
+                                {post.excerpt}
+                              </p>
                             </div>
-                            <Badge variant="outline" className="mb-3">
-                              {post.category}
-                            </Badge>
-                            <h4 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
-                              {post.title}
-                            </h4>
-                            <p className="text-muted-foreground text-sm">
-                              {post.excerpt}
-                            </p>
+                            <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors ml-4 mt-2" />
                           </div>
-                          <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors ml-4 mt-2" />
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   ))}
                 </div>
               </div>
