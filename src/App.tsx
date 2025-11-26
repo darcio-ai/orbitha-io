@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import WhatsAppFloat from "./components/WhatsAppFloat";
+
 import Home from "./pages/Home";
 import QuemSou from "./pages/QuemSou";
 import Mentoria from "./pages/Mentoria";
@@ -66,24 +66,24 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public routes with Header/Footer */}
-      <Route path="/" element={<><Header /><Home /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/quem-sou" element={<><Header /><QuemSou /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/mentoria" element={<><Header /><Mentoria /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/solucoes" element={<><Header /><Solucoes /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes" element={<><Header /><Produtos /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/financial-assistant" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistente-financeiro" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/business-assistant" element={<><Header /><BusinessAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/travel-assistant" element={<><Header /><TravelAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/fitness-assistant" element={<><Header /><FitnessAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/sales-assistant" element={<><Header /><SalesAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/marketing-assistant" element={<><Header /><MarketingAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/support-assistant" element={<><Header /><SupportAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/" element={<><Header /><Home /><Footer /></>} />
+      <Route path="/quem-sou" element={<><Header /><QuemSou /><Footer /></>} />
+      <Route path="/mentoria" element={<><Header /><Mentoria /><Footer /></>} />
+      <Route path="/solucoes" element={<><Header /><Solucoes /><Footer /></>} />
+      <Route path="/assistentes" element={<><Header /><Produtos /><Footer /></>} />
+      <Route path="/assistentes/financial-assistant" element={<><Header /><FinancialAssistant /><Footer /></>} />
+      <Route path="/assistente-financeiro" element={<><Header /><FinancialAssistant /><Footer /></>} />
+      <Route path="/assistentes/business-assistant" element={<><Header /><BusinessAssistant /><Footer /></>} />
+      <Route path="/assistentes/travel-assistant" element={<><Header /><TravelAssistant /><Footer /></>} />
+      <Route path="/assistentes/fitness-assistant" element={<><Header /><FitnessAssistant /><Footer /></>} />
+      <Route path="/assistentes/sales-assistant" element={<><Header /><SalesAssistant /><Footer /></>} />
+      <Route path="/assistentes/marketing-assistant" element={<><Header /><MarketingAssistant /><Footer /></>} />
+      <Route path="/assistentes/support-assistant" element={<><Header /><SupportAssistant /><Footer /></>} />
       <Route path="/demo/:assistantId" element={<DemoAssistant />} />
-      <Route path="/blog" element={<><Header /><Blog /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/contato" element={<><Header /><Contato /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/planos" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/blog" element={<><Header /><Blog /><Footer /></>} />
+      <Route path="/contato" element={<><Header /><Contato /><Footer /></>} />
+      <Route path="/pricing" element={<><Header /><Pricing /><Footer /></>} />
+      <Route path="/planos" element={<><Header /><Pricing /><Footer /></>} />
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
