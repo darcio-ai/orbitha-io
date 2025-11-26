@@ -73,21 +73,21 @@ const Produtos = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-20 pb-16">
+    <div className="min-h-screen pt-20 pb-12 md:pb-16">
       {/* Hero Section */}
-      <section className="py-16 px-4">
+      <section className="py-8 md:py-16 px-4">
         <div className="container mx-auto">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <div className="max-w-4xl mx-auto text-center mb-8 md:mb-16">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6">
               Nossos <span className="text-primary">Assistentes</span>
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base md:text-xl text-muted-foreground">
               Assistentes de IA especializados para transformar seu negócio
             </p>
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-6xl mx-auto">
             {produtos.map((produto, index) => {
               const assistantConfig = produto.demoId ? ASSISTANT_DEMOS[produto.demoId] : null;
               const planFocus = assistantConfig?.planFocus || "suite";
@@ -95,7 +95,7 @@ const Produtos = () => {
               return (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl min-h-[340px] bg-white/5 flex items-center justify-center"
+                  className="group relative overflow-hidden rounded-2xl min-h-[280px] md:min-h-[340px] bg-white/5 flex items-center justify-center"
                 >
                   <Link to={produto.link} className="block">
                     <img
@@ -105,13 +105,13 @@ const Produtos = () => {
                     />
                   </Link>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end pb-8 px-6">
-                    <div className="text-center mb-4">
-                      <h3 className="text-2xl font-bold mb-2">{produto.title}</h3>
-                      <p className="text-muted-foreground text-sm">{produto.description}</p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end pb-6 md:pb-8 px-4 md:px-6">
+                    <div className="text-center mb-3 md:mb-4">
+                      <h3 className="text-xl md:text-2xl font-bold mb-2">{produto.title}</h3>
+                      <p className="text-muted-foreground text-xs md:text-sm">{produto.description}</p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
+                    <div className="flex flex-col w-full gap-2 max-w-md">
                       {produto.demoId && (
                         <Button
                           size="lg"
@@ -119,7 +119,7 @@ const Produtos = () => {
                             e.preventDefault();
                             navigate(`/demo/${produto.demoId}`);
                           }}
-                          className="flex-1"
+                          className="w-full"
                         >
                           Testar demo rápida
                         </Button>
@@ -132,7 +132,7 @@ const Produtos = () => {
                           e.preventDefault();
                           navigate(`/planos?focus=${planFocus}`);
                         }}
-                        className="flex-1"
+                        className="w-full"
                       >
                         Ver planos
                       </Button>
@@ -144,37 +144,37 @@ const Produtos = () => {
           </div>
 
           {/* Divider suave */}
-          <div className="max-w-6xl mx-auto mt-12 mb-6 h-px bg-white/10" />
+          <div className="max-w-6xl mx-auto mt-8 md:mt-12 mb-4 md:mb-6 h-px bg-white/10" />
 
           {/* Pacotes / Combos */}
-          <section className="max-w-6xl mx-auto mt-6 px-2">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold">Quer destravar tudo de uma vez?</h2>
-              <p className="text-sm md:text-base text-muted-foreground mt-2">
+          <section className="max-w-6xl mx-auto mt-4 md:mt-6 px-2">
+            <div className="text-center mb-6 md:mb-8">
+              <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">Quer destravar tudo de uma vez?</h2>
+              <p className="text-xs md:text-sm lg:text-base text-muted-foreground mt-2">
                 Escolha um pacote e tenha acesso completo com 7 dias de garantia.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Growth Pack */}
               <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-primary/40 via-white/10 to-transparent">
-                <div className="rounded-2xl bg-background/80 p-6 h-full flex flex-col">
+                <div className="rounded-2xl bg-background/80 p-4 md:p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary">
                       Ideal para negócios
                     </span>
                   </div>
 
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-4">
-                    <p className="text-sm text-muted-foreground">Vendas • Marketing • Suporte</p>
+                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 md:p-4 mb-3 md:mb-4">
+                    <p className="text-xs md:text-sm text-muted-foreground">Vendas • Marketing • Suporte</p>
                   </div>
 
-                  <h3 className="text-xl font-semibold mb-1">Growth Pack</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <h3 className="text-lg md:text-xl font-semibold mb-1">Growth Pack</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
                     O combo ideal pra quem quer vender mais e atender melhor.
                   </p>
 
-                  <ul className="text-sm space-y-2 mb-6">
+                  <ul className="text-xs md:text-sm space-y-2 mb-4 md:mb-6">
                     <li>• Sales Assistant completo</li>
                     <li>• Marketing Assistant completo</li>
                     <li>• Support Assistant completo</li>
@@ -190,24 +190,24 @@ const Produtos = () => {
 
               {/* Orbitha Suite */}
               <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/30 via-primary/10 to-transparent">
-                <div className="rounded-2xl bg-background/80 p-6 h-full flex flex-col">
+                <div className="rounded-2xl bg-background/80 p-4 md:p-6 h-full flex flex-col">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs px-3 py-1 rounded-full bg-white/10">Recomendado</span>
                   </div>
 
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-4">
-                    <p className="text-sm text-muted-foreground">Todos os 7 assistentes</p>
+                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 md:p-4 mb-3 md:mb-4">
+                    <p className="text-xs md:text-sm text-muted-foreground">Todos os 7 assistentes</p>
                   </div>
 
-                  <h3 className="text-xl font-semibold mb-1">Orbitha Suite</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
+                  <h3 className="text-lg md:text-xl font-semibold mb-1">Orbitha Suite</h3>
+                  <p className="text-xs md:text-sm text-muted-foreground mb-2">
                     Produtividade + Growth. Tudo que a Orbitha oferece.
                   </p>
-                  <p className="text-xs text-muted-foreground mb-4">
+                  <p className="text-xs text-muted-foreground mb-3 md:mb-4">
                     Melhor custo-benefício para quem quer usar mais de 3 assistentes.
                   </p>
 
-                  <ul className="text-sm space-y-2 mb-6">
+                  <ul className="text-xs md:text-sm space-y-2 mb-4 md:mb-6">
                     <li>• 7 assistentes completos</li>
                     <li>• Recursos premium</li>
                     <li>• Suporte prioritário</li>

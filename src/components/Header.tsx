@@ -24,6 +24,60 @@ const Header = () => {
   return (
     <header className="fixed top-6 left-0 right-0 z-50 px-4">
       <div className="max-w-6xl mx-auto">
+        {/* Mobile Navigation */}
+        <div className="md:hidden">
+          <div className="flex items-center justify-between h-14 px-4 rounded-full backdrop-blur-xl bg-card/10 border border-border/20">
+            <Link to="/" className="flex items-center space-x-2">
+              <img 
+                src={orbithaLogo} 
+                alt="Orbitha Logo" 
+                className="h-7 w-auto"
+              />
+              <span className="text-base font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
+                Orbitha
+              </span>
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="rounded-full h-9 w-9" asChild>
+                <Link to="/login">
+                  <User className="h-4 w-4 text-primary" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full h-9 w-9"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="mt-2 p-3 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20">
+              <div className="space-y-1">
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                      isActive(item.href) 
+                        ? "text-primary bg-primary/10" 
+                        : "text-muted-foreground hover:bg-card/20"
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Desktop Navigation - Glass Capsule */}
         <nav className="hidden md:flex items-center justify-between h-16 px-6 rounded-full backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow">
           {/* Logo */}
@@ -39,12 +93,12 @@ const Header = () => {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6 lg:gap-8">
             {navigation.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className={`text-sm font-medium transition-all hover:text-primary relative group ${
+                className={`text-sm font-medium transition-all hover:text-primary relative group whitespace-nowrap ${
                   isActive(item.href) ? "text-primary" : "text-muted-foreground"
                 }`}
               >
@@ -66,60 +120,6 @@ const Header = () => {
             </Link>
           </Button>
         </nav>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <div className="flex items-center justify-between h-14 px-4 rounded-full backdrop-blur-xl bg-card/10 border border-border/20">
-            <Link to="/" className="flex items-center space-x-2">
-              <img 
-                src={orbithaLogo} 
-                alt="Orbitha Logo" 
-                className="h-7 w-auto"
-              />
-              <span className="text-lg font-space font-bold bg-gradient-primary bg-clip-text text-transparent">
-                Orbitha
-              </span>
-            </Link>
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="rounded-full" asChild>
-                <Link to="/login">
-                  <User className="h-5 w-5 text-primary" />
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="mt-2 p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20">
-              <div className="space-y-2">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={`block px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                      isActive(item.href) 
-                        ? "text-primary bg-primary/10" 
-                        : "text-muted-foreground hover:bg-card/20"
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </header>
   );
