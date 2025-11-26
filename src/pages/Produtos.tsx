@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
+import { Check } from "lucide-react";
 
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import agenteBusiness from "@/assets/agente_business.png";
@@ -155,71 +157,120 @@ const Produtos = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto">
               {/* Growth Pack */}
-              <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-primary/40 via-white/10 to-transparent">
-                <div className="rounded-2xl bg-background/80 p-4 md:p-6 h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary">
-                      Ideal para negócios
-                    </span>
+              <Card className="relative flex flex-col border-border">
+                <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-8">
+                  <CardTitle className="text-xl md:text-2xl mb-2">Growth Pack</CardTitle>
+                  <p className="text-xs md:text-sm font-medium text-primary mb-2">Pra vender mais e atender melhor</p>
+                  <CardDescription className="text-sm md:text-base">Ideal para vendas, marketing e suporte</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-3xl md:text-4xl font-bold text-foreground">R$ 97,00</span>
+                    <span className="text-sm md:text-base text-muted-foreground">/mês</span>
                   </div>
+                </CardHeader>
 
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 md:p-4 mb-3 md:mb-4">
-                    <p className="text-xs md:text-sm text-muted-foreground">Vendas • Marketing • Suporte</p>
-                  </div>
-
-                  <h3 className="text-lg md:text-xl font-semibold mb-1">Growth Pack</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground mb-3 md:mb-4">
-                    O combo ideal pra quem quer vender mais e atender melhor.
-                  </p>
-
-                  <ul className="text-xs md:text-sm space-y-2 mb-4 md:mb-6">
-                    <li>• Sales Assistant completo</li>
-                    <li>• Marketing Assistant completo</li>
-                    <li>• Support Assistant completo</li>
+                <CardContent className="flex-grow px-4 md:px-6">
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Sales Assistant completo</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Marketing Assistant completo</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Support Assistant completo</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Conversas ilimitadas</span>
+                    </li>
                   </ul>
+                </CardContent>
 
-                  <div className="mt-auto">
-                    <Button size="lg" onClick={() => navigate("/planos?focus=growth")} className="w-full">
-                      Assinar Growth Pack
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                <CardFooter className="flex-col gap-3 px-4 md:px-6">
+                  <Button
+                    className="w-full"
+                    variant="default"
+                    size="lg"
+                    onClick={() => navigate("/planos?focus=growth")}
+                  >
+                    Pagar com Cartão
+                  </Button>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="lg"
+                    onClick={() => navigate("/planos?focus=growth")}
+                  >
+                    Pagar com Pix
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-3 text-center">
+                    ✅ 7 dias de garantia incondicional<br />
+                    ✅ Cancele quando quiser
+                  </p>
+                </CardFooter>
+              </Card>
 
               {/* Orbitha Suite */}
-              <div className="relative rounded-2xl p-[1px] bg-gradient-to-br from-white/30 via-primary/10 to-transparent">
-                <div className="rounded-2xl bg-background/80 p-4 md:p-6 h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs px-3 py-1 rounded-full bg-white/10">Recomendado</span>
+              <Card className="relative flex flex-col border-border">
+                <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-8">
+                  <CardTitle className="text-xl md:text-2xl mb-2">Orbitha Suite</CardTitle>
+                  <p className="text-xs md:text-sm font-medium text-primary mb-2">Negócio + vida pessoal</p>
+                  <CardDescription className="text-sm md:text-base">Todos os 7 assistentes + recursos premium</CardDescription>
+                  <div className="mt-4">
+                    <span className="text-3xl md:text-4xl font-bold text-foreground">R$ 147,00</span>
+                    <span className="text-sm md:text-base text-muted-foreground">/mês</span>
                   </div>
+                </CardHeader>
 
-                  <div className="rounded-xl bg-white/5 border border-white/10 p-3 md:p-4 mb-3 md:mb-4">
-                    <p className="text-xs md:text-sm text-muted-foreground">Todos os 7 assistentes</p>
-                  </div>
-
-                  <h3 className="text-lg md:text-xl font-semibold mb-1">Orbitha Suite</h3>
-                  <p className="text-xs md:text-sm text-muted-foreground mb-2">
-                    Produtividade + Growth. Tudo que a Orbitha oferece.
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-3 md:mb-4">
-                    Melhor custo-benefício para quem quer usar mais de 3 assistentes.
-                  </p>
-
-                  <ul className="text-xs md:text-sm space-y-2 mb-4 md:mb-6">
-                    <li>• 7 assistentes completos</li>
-                    <li>• Recursos premium</li>
-                    <li>• Suporte prioritário</li>
+                <CardContent className="flex-grow px-4 md:px-6">
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Todos os assistentes (7)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Financial, Business, Fitness, Travel</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Sales, Marketing, Support</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm md:text-base text-foreground">Suporte prioritário</span>
+                    </li>
                   </ul>
+                </CardContent>
 
-                  <div className="mt-auto">
-                    <Button size="lg" onClick={() => navigate("/planos?focus=suite")} className="w-full">
-                      Assinar Orbitha Suite
-                    </Button>
-                  </div>
-                </div>
-              </div>
+                <CardFooter className="flex-col gap-3 px-4 md:px-6">
+                  <Button
+                    className="w-full"
+                    variant="default"
+                    size="lg"
+                    onClick={() => navigate("/planos?focus=suite")}
+                  >
+                    Pagar com Cartão
+                  </Button>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    size="lg"
+                    onClick={() => navigate("/planos?focus=suite")}
+                  >
+                    Pagar com Pix
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-3 text-center">
+                    ✅ 7 dias de garantia incondicional<br />
+                    ✅ Cancele quando quiser
+                  </p>
+                </CardFooter>
+              </Card>
             </div>
           </section>
         </div>
