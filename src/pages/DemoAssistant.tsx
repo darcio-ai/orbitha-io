@@ -7,6 +7,7 @@ import { Send, ArrowLeft } from "lucide-react";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   text: string;
@@ -33,21 +34,32 @@ const DemoAssistant = () => {
   useEffect(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), [messages, isLoading]);
 
   useEffect(() => {
-    if (!assistant) {
-      navigate("/assistentes");
-      return;
-    }
+    const checkAuthAndInit = async () => {
+      // Verificar autenticação primeiro
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname)}`);
+        return;
+      }
 
-    // Mensagem inicial do assistente
-    setMessages([{ text: assistant.openingMessage, sender: "assistant" }]);
+      if (!assistant) {
+        navigate("/assistentes");
+        return;
+      }
 
-    // Carregar contagem do localStorage
-    const storageKey = `demoCount_${assistantId}`;
-    const stored = localStorage.getItem(storageKey);
-    const count = stored ? parseInt(stored, 10) : 0;
+      // Mensagem inicial do assistente
+      setMessages([{ text: assistant.openingMessage, sender: "assistant" }]);
 
-    setMessageCount(count);
-    if (count >= effectiveLimit) setIsLimitReached(true);
+      // Carregar contagem do localStorage
+      const storageKey = `demoCount_${assistantId}`;
+      const stored = localStorage.getItem(storageKey);
+      const count = stored ? parseInt(stored, 10) : 0;
+
+      setMessageCount(count);
+      if (count >= effectiveLimit) setIsLimitReached(true);
+    };
+
+    checkAuthAndInit();
   }, [assistant, assistantId, navigate]);
 
   async function callDemoLLM(userText: string, history: Message[]) {
