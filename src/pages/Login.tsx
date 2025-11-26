@@ -97,12 +97,51 @@ const Login = () => {
         throw new Error("Por favor, insira um email ou WhatsApp válido.");
       }
 
+      // 1. Tentar Login
       const { data, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Se o erro for de credenciais inválidas, pode ser que o usuário não exista
+        // Vamos tentar criar a conta (SignUp)
+        if (error.message.includes("Invalid login credentials")) {
+          // Tentar criar conta
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: loginEmail,
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}${redirectTo}`,
+            }
+          });
+
+          if (signUpError) {
+            // Se der erro no cadastro também, aí sim lançamos o erro original ou do cadastro
+            throw signUpError;
+          }
+
+          if (signUpData.session) {
+            // Cadastro e login automáticos (se não exigir confirmação de email)
+            toast({
+              title: "Conta criada com sucesso!",
+              description: "Redirecionando...",
+            });
+            navigate(redirectTo, { replace: true });
+            return;
+          } else if (signUpData.user) {
+            // Cadastro feito, mas requer confirmação de email
+            toast({
+              title: "Conta criada!",
+              description: "Verifique seu email para confirmar o cadastro antes de entrar.",
+            });
+            return;
+          }
+        }
+
+        // Se não for erro de credenciais ou se o signup não foi tentado/falhou de outra forma
+        throw error;
+      }
 
       if (data.session) {
         // Store remember me preference and credentials
@@ -125,7 +164,7 @@ const Login = () => {
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erro ao fazer login",
+        title: "Erro ao fazer login/cadastro",
         description: error.message || "Verifique suas credenciais e tente novamente.",
       });
     } finally {
