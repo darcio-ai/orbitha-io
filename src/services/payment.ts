@@ -4,11 +4,23 @@ export const createStripeCheckout = async (priceId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("User not authenticated");
 
+    console.log('Calling Stripe checkout with:', { priceId, userId: user.id });
+
     const { data, error } = await supabase.functions.invoke('create-checkout-stripe', {
         body: { priceId, userId: user.id },
     });
 
-    if (error) throw error;
+    if (error) {
+        console.error('Stripe checkout error:', error);
+        throw error;
+    }
+    
+    console.log('Stripe checkout response:', data);
+    
+    if (!data || !data.url) {
+        throw new Error('Invalid response from Stripe checkout');
+    }
+    
     return data;
 };
 

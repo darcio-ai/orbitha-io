@@ -25,15 +25,24 @@ const DashboardLayout = () => {
         return;
       }
 
-      // Get user role
-      const { data: roleData } = await supabase
+      // Get user role(s)
+      const { data: rolesData } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", session.user.id)
-        .single();
+        .eq("user_id", session.user.id);
 
-      if (roleData) {
-        setUserRole(roleData.role);
+      if (rolesData && rolesData.length > 0) {
+        // If user has multiple roles, prioritize admin
+        const roles = rolesData.map(r => r.role);
+        if (roles.includes('admin')) {
+          setUserRole('admin');
+        } else {
+          setUserRole(roles[0]);
+        }
+      } else {
+        // Default to 'user' if no role found (new users)
+        setUserRole('user');
+        console.log('No role found, defaulting to user');
       }
       
       setLoading(false);
