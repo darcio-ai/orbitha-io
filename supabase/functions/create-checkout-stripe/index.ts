@@ -39,6 +39,28 @@ serve(async (req) => {
 
     console.log(`Creating checkout session for user: ${userId} (${email})`);
 
+    // Check if customer already exists in Stripe
+    let customerId: string;
+    const existingCustomers = await stripe.customers.list({
+      email: email,
+      limit: 1,
+    });
+
+    if (existingCustomers.data.length > 0) {
+      customerId = existingCustomers.data[0].id;
+      console.log(`Using existing customer: ${customerId}`);
+    } else {
+      // Create new customer
+      const customer = await stripe.customers.create({
+        email: email,
+        metadata: {
+          user_id: userId,
+        },
+      });
+      customerId = customer.id;
+      console.log(`Created new customer: ${customerId}`);
+    }
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -50,7 +72,7 @@ serve(async (req) => {
       mode: "subscription",
       success_url: `${req.headers.get("origin")}/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/`,
-      customer_email: email,
+      customer: customerId,
       metadata: {
         user_id: userId,
       },
