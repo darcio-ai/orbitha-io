@@ -69,7 +69,7 @@ const Pricing = () => {
       name: "Growth Pack",
       price: "R$ 97,00",
       priceValue: 97.00,
-      stripePriceId: "price_growth_pack_id", // Replace with real ID
+      stripePriceId: "price_1SXZ8cJVqrOuT3N7Frp0xJbv",
       period: "/mês",
       subtitle: "Pra vender mais e atender melhor",
       description: "Ideal para vendas, marketing e suporte",
@@ -90,7 +90,7 @@ const Pricing = () => {
       name: "Orbitha Suite",
       price: "R$ 147,00",
       priceValue: 147.00,
-      stripePriceId: "price_orbitha_suite_id", // Replace with real ID
+      stripePriceId: "price_1SXZ9FJVqrOuT3N73PzMG5ca",
       period: "/mês",
       subtitle: "Negócio + vida pessoal",
       description: "Todos os 7 assistentes + recursos premium",
