@@ -11,9 +11,10 @@ interface AsaasCheckoutDialogProps {
     onOpenChange: (open: boolean) => void;
     value: number;
     planName: string;
+    planType: string;
 }
 
-export function AsaasCheckoutDialog({ open, onOpenChange, value, planName }: AsaasCheckoutDialogProps) {
+export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planType }: AsaasCheckoutDialogProps) {
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [billingInfo, setBillingInfo] = useState({ name: "", email: "", cpfCnpj: "" });
@@ -26,7 +27,7 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName }: Asa
 
         setLoading(true);
         try {
-            const { paymentUrl } = await createAsaasCheckout(value, billingInfo);
+            const { paymentUrl } = await createAsaasCheckout(planType as 'growth' | 'suite', billingInfo);
             if (paymentUrl) {
                 window.open(paymentUrl, "_blank");
                 onOpenChange(false);

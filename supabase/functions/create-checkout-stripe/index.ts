@@ -4,7 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -13,12 +14,6 @@ serve(async (req) => {
   }
 
   try {
-    const { priceId, userId } = await req.json();
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2023-10-16",
-    });
-
-    // Get user email from Supabase Auth context
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
@@ -29,20 +24,33 @@ serve(async (req) => {
       }
     );
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const {
+      data: { user },
+    } = await supabaseClient.auth.getUser();
 
     if (!user) {
-        throw new Error("User not found");
+      throw new Error("User not authenticated");
     }
 
-    const email = user.email;
+    const { planType } = await req.json();
 
-    console.log(`Creating checkout session for user: ${userId} (${email})`);
+    if (!planType || (planType !== 'growth' && planType !== 'suite')) {
+      throw new Error("Invalid plan type");
+    }
+
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2023-10-16",
+    });
+
+    // Map planType to Stripe Price IDs
+    const priceId = planType === 'growth'
+      ? "price_1SXZ8cJVqrOuT3N7Frp0xJbv"
+      : "price_1SXZ9FJVqrOuT3N73PzMG5ca";
 
     // Check if customer already exists in Stripe
     let customerId: string;
     const existingCustomers = await stripe.customers.list({
-      email: email,
+      email: user.email,
       limit: 1,
     });
 
@@ -52,9 +60,9 @@ serve(async (req) => {
     } else {
       // Create new customer
       const customer = await stripe.customers.create({
-        email: email,
+        email: user.email,
         metadata: {
-          user_id: userId,
+          user_id: user.id,
         },
       });
       customerId = customer.id;
@@ -74,7 +82,8 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin") || req.headers.get("referer")?.split('?')[0] || 'https://orbitha.io'}/pricing`,
       customer: customerId,
       metadata: {
-        user_id: userId,
+        user_id: user.id,
+        plan_type: planType,
       },
     });
 
@@ -83,7 +92,6 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    console.error("Error creating stripe checkout:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

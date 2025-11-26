@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,8 +17,10 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  
-  const from = (location.state as any)?.from || "/dashboard";
+  const [searchParams] = useSearchParams();
+
+  // Prioritize redirectTo from URL, then location state, then default to /dashboard
+  const redirectTo = searchParams.get('redirectTo') || (location.state as any)?.from || "/dashboard";
 
   const isEmail = (value: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -34,7 +36,7 @@ const Login = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate(from, { replace: true });
+        navigate(redirectTo, { replace: true });
       }
     };
     checkUser();
@@ -48,7 +50,27 @@ const Login = () => {
       if (savedPassword) setPassword(savedPassword);
       setRememberMe(true);
     }
-  }, [navigate, from]);
+  }, [navigate, redirectTo]);
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}${redirectTo}`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao entrar com Google",
+        description: error.message,
+      });
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,7 +120,7 @@ const Login = () => {
           title: "Login realizado com sucesso!",
           description: "Redirecionando...",
         });
-        navigate(from, { replace: true });
+        navigate(redirectTo, { replace: true });
       }
     } catch (error: any) {
       toast({
@@ -118,14 +140,14 @@ const Login = () => {
       <header className="bg-background border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <img 
-              src="/favicon.png" 
-              alt="Orbitha Logo" 
+            <img
+              src="/favicon.png"
+              alt="Orbitha Logo"
               className="h-8 w-8"
             />
             <span className="text-xl font-bold text-foreground">Orbitha</span>
           </Link>
-          
+
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Home
@@ -139,83 +161,115 @@ const Login = () => {
           </nav>
         </div>
       </header>
-      
+
       {/* Conteúdo da página de login */}
       <div className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Entre na sua conta</CardTitle>
-          <CardDescription className="text-center">
-            Acesse seu Score Patrimonial
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="emailOrWhatsApp">Email ou WhatsApp</Label>
-              <Input
-                id="emailOrWhatsApp"
-                type="text"
-                placeholder="seu@email.com ou +55 (11) 99999-9999"
-                value={emailOrWhatsApp}
-                onChange={(e) => setEmailOrWhatsApp(e.target.value)}
-                required
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Entre na sua conta</CardTitle>
+            <CardDescription className="text-center">
+              Acesse seu Score Patrimonial e Assistentes
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGoogleLogin}
                 disabled={loading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="rememberMe"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                disabled={loading}
-              />
-              <Label
-                htmlFor="rememberMe"
-                className="text-sm font-normal cursor-pointer"
               >
-                Lembrar de mim
-              </Label>
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
+                {loading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                "Entrar"
-              )}
-            </Button>
-            <div className="flex items-center justify-between text-sm">
-              <Link
-                to="/recuperar-senha"
-                className="text-primary hover:underline"
-              >
-                Esqueceu a senha?
-              </Link>
-              <Link
-                to="/cadastro-gratuito"
-                className="text-primary hover:underline"
-              >
-                Não tem conta? Cadastre-se
-              </Link>
+                ) : (
+                  <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                    <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                  </svg>
+                )}
+                Entrar com Google
+              </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Ou continue com
+                  </span>
+                </div>
+              </div>
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="emailOrWhatsApp">Email ou WhatsApp</Label>
+                  <Input
+                    id="emailOrWhatsApp"
+                    type="text"
+                    placeholder="seu@email.com ou +55 (11) 99999-9999"
+                    value={emailOrWhatsApp}
+                    onChange={(e) => setEmailOrWhatsApp(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Senha</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    disabled={loading}
+                  />
+                  <Label
+                    htmlFor="rememberMe"
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    Lembrar de mim
+                  </Label>
+                </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Entrando...
+                    </>
+                  ) : (
+                    "Entrar com Email"
+                  )}
+                </Button>
+                <div className="flex items-center justify-between text-sm">
+                  <Link
+                    to="/recuperar-senha"
+                    className="text-primary hover:underline"
+                  >
+                    Esqueceu a senha?
+                  </Link>
+                  <Link
+                    to="/cadastro-gratuito"
+                    className="text-primary hover:underline"
+                  >
+                    Não tem conta? Cadastre-se
+                  </Link>
+                </div>
+              </form>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+            <p className="px-8 text-center text-sm text-muted-foreground mt-4">
+              Ao continuar, você concorda com os termos de uso da Orbitha.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

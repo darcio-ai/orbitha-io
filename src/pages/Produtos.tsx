@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
+import { supabase } from "@/integrations/supabase/client";
 
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import agenteBusiness from "@/assets/agente_business.png";
@@ -115,9 +116,15 @@ const Produtos = () => {
                       {produto.demoId && (
                         <Button
                           size="lg"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
-                            navigate(`/demo/${produto.demoId}`);
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (!session) {
+                              const demoUrl = `/demo/${produto.demoId}`;
+                              navigate(`/login?redirectTo=${encodeURIComponent(demoUrl)}`);
+                            } else {
+                              navigate(`/demo/${produto.demoId}`);
+                            }
                           }}
                           className="w-full"
                         >

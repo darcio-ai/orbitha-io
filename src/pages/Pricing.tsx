@@ -18,7 +18,7 @@ const Pricing = () => {
 
   // Asaas Dialog State
   const [asaasOpen, setAsaasOpen] = useState(false);
-  const [selectedPlanForAsaas, setSelectedPlanForAsaas] = useState<{ name: string, value: number } | null>(null);
+  const [selectedPlanForAsaas, setSelectedPlanForAsaas] = useState<{ name: string, value: number, planType: string } | null>(null);
 
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
@@ -34,38 +34,7 @@ const Pricing = () => {
 
   // Removed MercadoPago initialization
 
-  const handleStripeCheckout = async (priceId: string) => {
-    if (!user) {
-      toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
-      navigate("/login");
-      return;
-    }
-    setLoadingStripe(true);
-    try {
-      console.log('Starting Stripe checkout for price:', priceId);
-      const { url } = await createStripeCheckout(priceId);
-      console.log('Redirecting to Stripe checkout:', url);
-      
-      if (url) {
-        // Use a short delay to ensure state is updated before redirect
-        setTimeout(() => {
-          window.location.href = url;
-        }, 100);
-      } else {
-        throw new Error('URL de checkout não retornada');
-      }
-    } catch (error: any) {
-      console.error('Stripe checkout failed:', error);
-      toast({ 
-        title: "Erro no checkout", 
-        description: error.message || "Erro ao processar pagamento. Tente novamente.", 
-        variant: "destructive" 
-      });
-      setLoadingStripe(false);
-    }
-  };
-
-  const handleAsaasClick = (plan: any) => {
+  const handleStripeCheckout = async (planType: string) => {
     if (!user) {
       toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
       navigate("/login");
@@ -74,7 +43,7 @@ const Pricing = () => {
     // Extract numeric value from string "R$ 00,00" (simplified for demo)
     // In real app, store price in number in the plan object
     const value = plan.priceValue;
-    setSelectedPlanForAsaas({ name: plan.name, value });
+    setSelectedPlanForAsaas({ name: plan.name, value, planType: plan.planType });
     setAsaasOpen(true);
   };
 
@@ -142,8 +111,8 @@ const Pricing = () => {
             <Card
               key={plan.name}
               className={`relative flex flex-col ${plan.popular
-                  ? "border-primary shadow-lg md:scale-105"
-                  : "border-border"
+                ? "border-primary shadow-lg md:scale-105"
+                : "border-border"
                 }`}
             >
               {plan.popular && (
@@ -178,7 +147,7 @@ const Pricing = () => {
                   className="w-full"
                   variant={plan.buttonVariant}
                   size="lg"
-                  onClick={() => handleStripeCheckout(plan.stripePriceId)}
+                  onClick={() => handleStripeCheckout(plan.planType)}
                   disabled={loadingStripe}
                 >
                   {loadingStripe ? "Processando..." : "Pagar com Cartão"}
@@ -211,6 +180,7 @@ const Pricing = () => {
           onOpenChange={setAsaasOpen}
           value={selectedPlanForAsaas.value}
           planName={selectedPlanForAsaas.name}
+          planType={selectedPlanForAsaas.planType}
         />
       )}
     </div>
