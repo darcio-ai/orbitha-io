@@ -66,7 +66,7 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <h3 className="text-base font-semibold mb-4">Contato</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>darciog@orbitha.io</li>
+              <li>darcio@orbitha.io</li>
               <li>
                 <a
                   href="https://wa.me/5513991497873"
