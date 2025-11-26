@@ -1,4 +1,3 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import OpenAI from "https://esm.sh/openai@4.0.0";
 
 const corsHeaders = {
