@@ -124,7 +124,7 @@ const SignupFree = () => {
         const { data: agents, error: agentError } = await supabase
           .from("agents")
           .select("id")
-          .eq("name", "Financial Assistant Premium")
+          .eq("name", "Financial Assistant")
           .eq("status", "active")
           .single();
 
@@ -134,7 +134,7 @@ const SignupFree = () => {
         }
 
         if (!agents) {
-          throw new Error("Agente Financial Assistant Premium não encontrado. Por favor, contate o suporte.");
+          throw new Error("Agente Financial Assistant não encontrado. Por favor, contate o suporte.");
         }
 
         const { error: agentAccessError } = await supabase
@@ -150,7 +150,7 @@ const SignupFree = () => {
         }
 
         toast({
-          title: "Bem-vindo ao Financial Assistant Premium!",
+          title: "Bem-vindo ao Financial Assistant!",
           description: "Sua conta gratuita foi criada com sucesso.",
         });
 
