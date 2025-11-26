@@ -181,7 +181,7 @@ const Pricing = () => {
                   onClick={() => handleStripeCheckout(plan.stripePriceId)}
                   disabled={loadingStripe}
                 >
-                  {loadingStripe ? "Processando..." : "Pagar com Cartão (Stripe)"}
+                  {loadingStripe ? "Processando..." : "Pagar com Cartão"}
                 </Button>
                 <Button
                   className="w-full"
@@ -189,7 +189,7 @@ const Pricing = () => {
                   size="lg"
                   onClick={() => handleAsaasClick(plan)}
                 >
-                  Pagar com Pix/Boleto (Asaas)
+                  Pagar com Pix
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   ✅ 7 dias de garantia incondicional<br />
