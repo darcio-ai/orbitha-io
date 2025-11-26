@@ -1,14 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ASSISTANT_DEMOS } from "@/config/assistantDemos";
-
-import agenteFinanceiro from "@/assets/agente_financeiro.png";
-import agenteBusiness from "@/assets/agente_business.png";
-import agenteFitness from "@/assets/agente_fitness.png";
-import agenteVendas from "@/assets/agente_vendas.png";
-import agenteViagens from "@/assets/agente_viagens.png";
-import agenteMarketing from "@/assets/agente_marketing.png";
-import agenteSuporte from "@/assets/agente_suporte.png";
+import { Check } from "lucide-react";
 
 const Produtos = () => {
   const navigate = useNavigate();
@@ -16,58 +9,86 @@ const Produtos = () => {
   const produtos = [
     {
       title: "Financial Assistant",
-      image: agenteFinanceiro,
-      description:
-        "Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.",
-      link: "/assistentes/financial-assistant",
+      subtitle: "Organize e prospere",
+      description: "Transforme sua relação com o dinheiro",
+      features: [
+        "Planejamento financeiro personalizado",
+        "Estratégias de investimento inteligente",
+        "Controle de gastos e economia",
+        "Metas financeiras claras e atingíveis"
+      ],
       demoId: "financeiro",
     },
     {
       title: "Business Assistant",
-      image: agenteBusiness,
-      description:
-        "IA para MEI e pequenos negócios: PF x PJ, fluxo de caixa, precificação, margem e checklists de obrigações — com plano de ação claro.",
-      link: "/assistentes/business-assistant",
+      subtitle: "IA para MEI e pequenos negócios",
+      description: "Gestão completa para empreendedores",
+      features: [
+        "Análise PF x PJ personalizada",
+        "Fluxo de caixa e precificação",
+        "Checklists de obrigações fiscais",
+        "Plano de ação claro e executável"
+      ],
       demoId: "business",
     },
     {
       title: "Sales Assistant",
-      image: agenteVendas,
-      description:
-        "Venda mais, venda melhor: domine metodologias, CRMs, KPIs e estratégias que transformam vendedores comuns em top performers.",
-      link: "/assistentes/sales-assistant",
+      subtitle: "Venda mais, venda melhor",
+      description: "Transforme-se em um top performer",
+      features: [
+        "Metodologias de vendas avançadas",
+        "Domínio de CRMs e ferramentas",
+        "KPIs e métricas de performance",
+        "Estratégias de fechamento"
+      ],
       demoId: "vendas",
     },
     {
       title: "Marketing Assistant",
-      image: agenteMarketing,
-      description:
-        "Seu estrategista de marketing 24/7 para MEI/PJ: entende seu negócio, organiza ICP e funil, e entrega uma rotina simples com calendário de conteúdo, anúncios e copies sob medida para atrair e converter mais clientes.",
-      link: "/assistentes/marketing-assistant",
+      subtitle: "Seu estrategista 24/7",
+      description: "Marketing sob medida para MEI/PJ",
+      features: [
+        "Definição de ICP e funil de vendas",
+        "Calendário de conteúdo personalizado",
+        "Copies e anúncios otimizados",
+        "Estratégias para atrair e converter"
+      ],
       demoId: "marketing",
     },
     {
       title: "Support Assistant",
-      image: agenteSuporte,
-      description:
-        "Atendimento excepcional: processos, métricas e automação para encantar clientes e otimizar seu suporte.",
-      link: "/assistentes/support-assistant",
+      subtitle: "Atendimento excepcional",
+      description: "Encante e fidelize seus clientes",
+      features: [
+        "Processos de atendimento otimizados",
+        "Métricas e KPIs de suporte",
+        "Automação inteligente",
+        "Scripts e respostas prontas"
+      ],
       demoId: "suporte",
     },
     {
       title: "Travel Assistant",
-      image: agenteViagens,
-      description:
-        "Planeje viagens incríveis com um especialista que conhece destinos, roteiros, dicas e transforma sonhos em itinerários reais.",
-      link: "/assistentes/travel-assistant",
+      subtitle: "Viagens incríveis, planejadas",
+      description: "Seu especialista em destinos",
+      features: [
+        "Roteiros personalizados",
+        "Dicas exclusivas de destinos",
+        "Planejamento completo de viagens",
+        "Orçamento e economia em viagens"
+      ],
       demoId: "viagens",
     },
     {
       title: "Fitness Assistant",
-      image: agenteFitness,
-      description:
-        "Alcance seus objetivos fitness com um guia completo que domina treinos, nutrição, recuperação e as últimas tendências.",
-      link: "/assistentes/fitness-assistant",
+      subtitle: "Alcance seus objetivos",
+      description: "Guia completo de treino e nutrição",
+      features: [
+        "Treinos personalizados",
+        "Planos nutricionais sob medida",
+        "Recuperação e descanso otimizados",
+        "Tendências e técnicas avançadas"
+      ],
       demoId: "fitness",
     },
   ];
@@ -87,7 +108,7 @@ const Produtos = () => {
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-6xl mx-auto">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto px-4">
             {produtos.map((produto, index) => {
               const assistantConfig = produto.demoId ? ASSISTANT_DEMOS[produto.demoId] : null;
               const planFocus = assistantConfig?.planFocus || "suite";
@@ -95,48 +116,49 @@ const Produtos = () => {
               return (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl min-h-[280px] md:min-h-[340px] bg-white/5 flex items-center justify-center"
+                  className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5 md:p-6 flex flex-col justify-between h-full"
                 >
-                  <Link to={produto.link} className="block">
-                    <img
-                      src={produto.image}
-                      alt={produto.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </Link>
+                  {/* Header */}
+                  <div>
+                    <h3 className="text-xl md:text-2xl font-semibold text-slate-50 text-center">
+                      {produto.title}
+                    </h3>
+                    <p className="text-xs md:text-sm font-semibold text-cyan-400 text-center mt-1">
+                      {produto.subtitle}
+                    </p>
+                    <p className="text-xs md:text-sm text-slate-300 text-center mt-1">
+                      {produto.description}
+                    </p>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end pb-6 md:pb-8 px-4 md:px-6">
-                    <div className="text-center mb-3 md:mb-4">
-                      <h3 className="text-xl md:text-2xl font-bold mb-2">{produto.title}</h3>
-                      <p className="text-muted-foreground text-xs md:text-sm">{produto.description}</p>
-                    </div>
+                    {/* Features List */}
+                    <ul className="mt-4 space-y-2 text-sm text-slate-100">
+                      {produto.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <Check className="h-5 w-5 text-cyan-400 shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                    <div className="flex flex-col w-full gap-2 max-w-md">
-                      {produto.demoId && (
-                        <Button
-                          size="lg"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigate(`/demo/${produto.demoId}`);
-                          }}
-                          className="w-full"
-                        >
-                          Testar demo rápida
-                        </Button>
-                      )}
-
+                  {/* Buttons */}
+                  <div className="flex flex-col gap-3 mt-5">
+                    {produto.demoId && (
                       <Button
-                        size="lg"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          navigate(`/planos?focus=${planFocus}`);
-                        }}
-                        className="w-full"
+                        onClick={() => navigate(`/demo/${produto.demoId}`)}
+                        className="w-full rounded-full bg-cyan-400 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition"
                       >
-                        Ver planos
+                        Testar demo rápida
                       </Button>
-                    </div>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate(`/planos?focus=${planFocus}`)}
+                      className="w-full rounded-full border border-slate-600 bg-transparent py-2 text-sm font-semibold text-slate-50 hover:bg-slate-800 transition"
+                    >
+                      Ver planos
+                    </Button>
                   </div>
                 </div>
               );
