@@ -49,7 +49,7 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName }: Asa
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Pagamento via Pix/Boleto (Asaas)</DialogTitle>
+                    <DialogTitle>Pagamento via Pix</DialogTitle>
                     <DialogDescription>
                         Para o plano: <strong>{planName}</strong> (R$ {value.toFixed(2)})
                     </DialogDescription>
