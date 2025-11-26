@@ -70,8 +70,8 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/`,
+      success_url: `${req.headers.get("origin") || req.headers.get("referer")?.split('?')[0] || 'https://orbitha.io'}/?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin") || req.headers.get("referer")?.split('?')[0] || 'https://orbitha.io'}/pricing`,
       customer: customerId,
       metadata: {
         user_id: userId,
