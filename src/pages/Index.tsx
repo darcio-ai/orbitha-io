@@ -16,8 +16,7 @@ const Index = () => {
   const handleStripe = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with your actual Stripe Price ID
-      const { url } = await createStripeCheckout("price_1Qk...");
+      const { url } = await createStripeCheckout("growth");
       if (url) {
         window.location.href = url;
       } else {
@@ -42,7 +41,7 @@ const Index = () => {
 
     setLoading(true);
     try {
-      const { paymentUrl } = await createAsaasCheckout(100, billingInfo); // Value hardcoded for demo
+      const { paymentUrl } = await createAsaasCheckout("growth", billingInfo);
       if (paymentUrl) {
         window.open(paymentUrl, "_blank");
         setAsaasOpen(false);
