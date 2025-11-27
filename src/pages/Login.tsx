@@ -35,10 +35,19 @@ const Login = () => {
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await syncUserProfile(session.user);
-        navigate(redirectTo, { replace: true });
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          await syncUserProfile(session.user);
+          navigate(redirectTo, { replace: true });
+        }
+      } catch (error: any) {
+        console.error("Error syncing profile on session check:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao sincronizar perfil",
+          description: error.message || "Tente fazer login novamente.",
+        });
       }
     };
     checkUser();
