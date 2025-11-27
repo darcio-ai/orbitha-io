@@ -146,11 +146,21 @@ const Login = () => {
         }
 
         await syncUserProfile(data.session.user);
+        
+        // Check user plan and redirect accordingly
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('plan')
+          .eq('id', data.session.user.id)
+          .single();
+        
+        const finalRedirect = profile?.plan === 'free' ? '/dashboard/agents' : redirectTo;
+        
         toast({
           title: "Login realizado com sucesso!",
           description: "Redirecionando...",
         });
-        navigate(redirectTo, { replace: true });
+        navigate(finalRedirect, { replace: true });
       }
     } catch (error: any) {
       toast({
