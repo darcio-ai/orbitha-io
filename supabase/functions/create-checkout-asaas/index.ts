@@ -35,9 +35,10 @@ serve(async (req) => {
 
         console.log("User authenticated:", user.id);
 
-        const { planType, billingInfo } = await req.json();
+        const { planType, billingInfo, billingType = "BOLETO" } = await req.json();
         console.log("Plan type:", planType);
         console.log("Billing info:", billingInfo);
+        console.log("Billing type:", billingType);
 
         if (!planType || (planType !== 'growth' && planType !== 'suite')) {
             throw new Error("Invalid plan type");
@@ -122,16 +123,12 @@ serve(async (req) => {
             },
             body: JSON.stringify({
                 customer: customerId,
-                billingType: "PIX", // Defaulting to PIX as requested, could be dynamic
+                billingType: billingType, // BOLETO or PIX
                 value: value,
                 dueDate: new Date().toISOString().split('T')[0], // Due today
                 description: description,
-                externalReference: user.id, // Storing user_id in externalReference for easy retrieval
+                externalReference: user.id,
                 postalService: false,
-                // Asaas doesn't have a direct 'metadata' field in the same way as Stripe for the payment object in all versions,
-                // but we can use description or externalReference. 
-                // We will rely on externalReference for user_id and infer plan from value/description in webhook.
-                // Alternatively, we can use the 'description' to store a JSON string if needed, but simple description is better for user.
             }),
         });
 
