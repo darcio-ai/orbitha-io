@@ -51,7 +51,7 @@ const Login = () => {
           console.log('🎯 Login (checkUser) - Is Admin:', isAdmin);
           console.log('📍 Login (checkUser) - redirectTo:', redirectTo);
           
-          const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+          const defaultPath = isAdmin ? '/dashboard/panel' : '/dashboard/agents-for-user';
           const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
           
           console.log('➡️ Login (checkUser) - Redirecionando para:', finalPath);
@@ -174,7 +174,7 @@ const Login = () => {
       console.log('🎯 Login (handleLogin) - Is Admin:', isAdmin);
       console.log('📍 Login (handleLogin) - redirectTo:', redirectTo);
       
-      const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+      const defaultPath = isAdmin ? '/dashboard/panel' : '/dashboard/agents-for-user';
       const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
       
       console.log('➡️ Login (handleLogin) - Redirecionando para:', finalPath);
