@@ -135,6 +135,8 @@ export type Database = {
         Row: {
           age: number | null
           asaas_customer_id: string | null
+          billing_name: string | null
+          cpf_cnpj: string | null
           created_at: string
           email: string
           financial_goal: string | null
@@ -154,6 +156,8 @@ export type Database = {
         Insert: {
           age?: number | null
           asaas_customer_id?: string | null
+          billing_name?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           email: string
           financial_goal?: string | null
@@ -173,6 +177,8 @@ export type Database = {
         Update: {
           age?: number | null
           asaas_customer_id?: string | null
+          billing_name?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           email?: string
           financial_goal?: string | null
