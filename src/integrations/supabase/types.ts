@@ -143,6 +143,11 @@ export type Database = {
           monthly_income: number | null
           phone: string
           plan: string | null
+          stripe_customer_id: string | null
+          subscription_end_date: string | null
+          subscription_id: string | null
+          subscription_plan: string | null
+          subscription_status: string | null
           whatsapp: string
         }
         Insert: {
@@ -156,6 +161,11 @@ export type Database = {
           monthly_income?: number | null
           phone: string
           plan?: string | null
+          stripe_customer_id?: string | null
+          subscription_end_date?: string | null
+          subscription_id?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           whatsapp?: string
         }
         Update: {
@@ -169,6 +179,11 @@ export type Database = {
           monthly_income?: number | null
           phone?: string
           plan?: string | null
+          stripe_customer_id?: string | null
+          subscription_end_date?: string | null
+          subscription_id?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           whatsapp?: string
         }
         Relationships: []

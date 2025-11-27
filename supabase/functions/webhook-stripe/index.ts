@@ -8,12 +8,24 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
 
 const endpointSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
 
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+    // Handle CORS preflight requests
+    if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders });
+    }
+
     const signature = req.headers.get("stripe-signature");
 
     if (!signature || !endpointSecret) {
+        console.error("Missing signature or webhook secret");
         return new Response("Missing signature or secret", {
             status: 400,
+            headers: corsHeaders,
         });
     }
 
@@ -22,16 +34,16 @@ serve(async (req) => {
 
         let event;
         try {
-            // Fixed: Using constructEventAsync for Deno environment
             event = await stripe.webhooks.constructEventAsync(
                 body,
                 signature,
                 endpointSecret,
             );
         } catch (err: any) {
-            console.error(`Webhook signature verification failed.`, err.message);
+            console.error(`Webhook signature verification failed:`, err.message);
             return new Response(`Webhook Error: ${err.message}`, {
                 status: 400,
+                headers: corsHeaders,
             });
         }
 
@@ -51,25 +63,90 @@ serve(async (req) => {
             const subscriptionId = session.subscription;
 
             if (userId) {
-                console.log(`Updating subscription for user ${userId}`);
+                console.log(`Updating subscription for user ${userId} - Plan: ${planType}`);
 
                 const { error } = await supabase
                     .from("profiles")
                     .update({
                         stripe_customer_id: customerId,
                         subscription_status: "active",
-                        plan_type: planType,
-                        billing_provider: "stripe",
-                        billing_provider_subscription_id: subscriptionId,
-                        plan_id: planType,
+                        subscription_plan: planType,
+                        subscription_id: subscriptionId,
                     })
-                    .eq("user_id", userId);
+                    .eq("id", userId);
 
                 if (error) {
                     console.error("Error updating profile:", error);
+                } else {
+                    console.log(`Successfully updated profile for user ${userId}`);
                 }
             } else {
                 console.warn("No user_id found in session metadata");
+            }
+        }
+
+        if (event.type === "customer.subscription.updated") {
+            const subscription = event.data.object as any;
+            
+            console.log(`Subscription updated: ${subscription.id} - Status: ${subscription.status}`);
+
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("subscription_id", subscription.id)
+                .single();
+
+            if (profile) {
+                const updateData: any = {
+                    subscription_status: subscription.status,
+                };
+
+                if (subscription.current_period_end) {
+                    updateData.subscription_end_date = new Date(subscription.current_period_end * 1000).toISOString();
+                }
+
+                const { error } = await supabase
+                    .from("profiles")
+                    .update(updateData)
+                    .eq("id", profile.id);
+
+                if (error) {
+                    console.error("Error updating subscription status:", error);
+                } else {
+                    console.log(`Successfully updated subscription status for user ${profile.id}`);
+                }
+            } else {
+                console.warn(`No profile found with subscription_id: ${subscription.id}`);
+            }
+        }
+
+        if (event.type === "customer.subscription.deleted") {
+            const subscription = event.data.object as any;
+            
+            console.log(`Subscription deleted: ${subscription.id}`);
+
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("subscription_id", subscription.id)
+                .single();
+
+            if (profile) {
+                const { error } = await supabase
+                    .from("profiles")
+                    .update({
+                        subscription_status: "canceled",
+                        subscription_end_date: new Date().toISOString(),
+                    })
+                    .eq("id", profile.id);
+
+                if (error) {
+                    console.error("Error updating canceled subscription:", error);
+                } else {
+                    console.log(`Successfully marked subscription as canceled for user ${profile.id}`);
+                }
+            } else {
+                console.warn(`No profile found with subscription_id: ${subscription.id}`);
             }
         }
 
@@ -79,6 +156,7 @@ serve(async (req) => {
             }),
             {
                 headers: {
+                    ...corsHeaders,
                     "Content-Type": "application/json",
                 },
                 status: 200,
@@ -92,6 +170,7 @@ serve(async (req) => {
             }),
             {
                 headers: {
+                    ...corsHeaders,
                     "Content-Type": "application/json",
                 },
                 status: 400,
