@@ -37,7 +37,7 @@ const Pricing = () => {
   const handleStripeCheckout = async (planType: 'growth' | 'suite') => {
     if (!user) {
       toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
-      navigate("/login");
+      navigate(`/login?redirectTo=${encodeURIComponent('/pricing' + (focusPlan ? `?focus=${focusPlan}` : ''))}`);
       return;
     }
     
@@ -61,7 +61,7 @@ const Pricing = () => {
   const handleAsaasClick = (plan: typeof plans[0]) => {
     if (!user) {
       toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
-      navigate("/login");
+      navigate(`/login?redirectTo=${encodeURIComponent('/pricing' + (focusPlan ? `?focus=${focusPlan}` : ''))}`);
       return;
     }
     setSelectedPlanForAsaas({ name: plan.name, value: plan.priceValue, planType: plan.planType });
