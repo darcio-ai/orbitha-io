@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { syncUserProfile } from "@/services/profile";
 
 const Login = () => {
   const [emailOrWhatsApp, setEmailOrWhatsApp] = useState("");
@@ -36,6 +37,7 @@ const Login = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
+        await syncUserProfile(session.user);
         navigate(redirectTo, { replace: true });
       }
     };
@@ -115,28 +117,7 @@ const Login = () => {
               emailRedirectTo: `${window.location.origin}${redirectTo}`,
             }
           });
-
-          if (signUpError) {
-            // Se der erro no cadastro também, aí sim lançamos o erro original ou do cadastro
-            throw signUpError;
-          }
-
-          if (signUpData.session) {
-            // Cadastro e login automáticos (se não exigir confirmação de email)
-            toast({
-              title: "Conta criada com sucesso!",
-              description: "Redirecionando...",
-            });
-            navigate(redirectTo, { replace: true });
-            return;
-          } else if (signUpData.user) {
-            // Cadastro feito, mas requer confirmação de email
-            toast({
-              title: "Conta criada!",
-              description: "Verifique seu email para confirmar o cadastro antes de entrar.",
-            });
-            return;
-          }
+          return;
         }
 
         // Se não for erro de credenciais ou se o signup não foi tentado/falhou de outra forma
@@ -155,6 +136,7 @@ const Login = () => {
           localStorage.removeItem('savedPassword');
         }
 
+        await syncUserProfile(data.session.user);
         toast({
           title: "Login realizado com sucesso!",
           description: "Redirecionando...",
