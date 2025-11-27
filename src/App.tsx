@@ -46,9 +46,11 @@ function AppRoutes() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Persist last visited route
+  // Persist last visited route (but not pricing page to avoid interference)
   useEffect(() => {
-    localStorage.setItem("last-path", location.pathname);
+    if (location.pathname !== '/pricing' && location.pathname !== '/login') {
+      localStorage.setItem("last-path", location.pathname);
+    }
   }, [location.pathname]);
 
   // Restore dashboard route if an unexpected redirect sends user to "/"
@@ -59,16 +61,7 @@ function AppRoutes() {
       const isOnRoot = location.pathname === "/";
       const shouldRestoreDashboard = saved?.startsWith("/dashboard");
       
-      console.log('🔄 App.tsx restore check:', {
-        isOnRoot,
-        saved,
-        shouldRestoreDashboard,
-        hasSession: !!session,
-        currentPath: location.pathname
-      });
-      
       if (isOnRoot && shouldRestoreDashboard && session) {
-        console.log('➡️ App.tsx - Restoring to:', saved);
         navigate(saved, { replace: true });
       }
     };
