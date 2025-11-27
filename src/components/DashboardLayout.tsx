@@ -54,9 +54,9 @@ const DashboardLayout = () => {
       setUserRole(determinedRole);
       
       // Redirect users to their agents page if they land on /dashboard
-      if (determinedRole === 'user' && location.pathname === '/dashboard') {
-        console.log('➡️ DashboardLayout - Redirecionando user de /dashboard para /dashboard/agents-for-user');
-        navigate('/dashboard/agents-for-user', { replace: true });
+      if (determinedRole === 'user' && location.pathname.startsWith('/dashboard')) {
+        console.log('➡️ DashboardLayout - User não autorizado, redirecionando para /assistentes');
+        navigate('/assistentes', { replace: true });
       }
       
       setLoading(false);
