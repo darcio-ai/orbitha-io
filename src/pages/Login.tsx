@@ -47,14 +47,9 @@ const Login = () => {
             .eq("user_id", session.user.id);
 
           const isAdmin = rolesData?.some(r => r.role === 'admin');
-          console.log('🔍 Login (checkUser) - Roles:', rolesData);
-          console.log('🎯 Login (checkUser) - Is Admin:', isAdmin);
-          console.log('📍 Login (checkUser) - redirectTo:', redirectTo);
-          
           const defaultPath = isAdmin ? '/dashboard/panel' : '/assistentes';
           const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
           
-          console.log('➡️ Login (checkUser) - Redirecionando para:', finalPath);
           navigate(finalPath, { replace: true });
         }
       } catch (error: any) {
@@ -169,15 +164,9 @@ const Login = () => {
         .select("role")
         .eq("user_id", data.user.id);
 
-      console.log('🔍 Login (handleLogin) - Roles:', rolesData);
       const isAdmin = rolesData?.some(r => r.role === 'admin');
-      console.log('🎯 Login (handleLogin) - Is Admin:', isAdmin);
-      console.log('📍 Login (handleLogin) - redirectTo:', redirectTo);
-      
       const defaultPath = isAdmin ? '/dashboard/panel' : '/assistentes';
       const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
-      
-      console.log('➡️ Login (handleLogin) - Redirecionando para:', finalPath);
       
       toast({
         title: "Login realizado com sucesso!",

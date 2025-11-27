@@ -148,7 +148,7 @@ const Produtos = () => {
                         variant="outline"
                         onClick={(e) => {
                           e.preventDefault();
-                          navigate(`/planos?focus=${planFocus}`);
+                          navigate(`/pricing?focus=${planFocus}`);
                         }}
                         className="w-full"
                       >

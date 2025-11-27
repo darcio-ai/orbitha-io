@@ -36,7 +36,6 @@ const DashboardLayout = () => {
       if (rolesData && rolesData.length > 0) {
         // If user has multiple roles, prioritize admin
         const roles = rolesData.map(r => r.role);
-        console.log('🔍 DashboardLayout - Roles encontrados:', roles);
         if (roles.includes('admin')) {
           determinedRole = 'admin';
         } else {
@@ -45,19 +44,9 @@ const DashboardLayout = () => {
       } else {
         // Default to 'user' if no role found (new users)
         determinedRole = 'user';
-        console.log('⚠️ DashboardLayout - No role found, defaulting to user');
       }
-      
-      console.log('🎯 DashboardLayout - Role determinado:', determinedRole);
-      console.log('📍 DashboardLayout - Current pathname:', location.pathname);
       
       setUserRole(determinedRole);
-      
-      // Redirect users to their agents page if they land on /dashboard
-      if (determinedRole === 'user' && location.pathname.startsWith('/dashboard')) {
-        console.log('➡️ DashboardLayout - User não autorizado, redirecionando para /assistentes');
-        navigate('/assistentes', { replace: true });
-      }
       
       setLoading(false);
     };

@@ -6,7 +6,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAndRedirect = async () => {
+    const checkAdminAccess = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
@@ -21,16 +21,13 @@ const Dashboard = () => {
 
       const isAdmin = rolesData?.some(r => r.role === 'admin');
       
-      console.log('🔍 Dashboard.tsx - Is Admin:', isAdmin);
-      
       // Users without admin role should not access this page
       if (!isAdmin) {
-        console.log('➡️ Dashboard.tsx - User não é admin, redirecionando para /dashboard/agents-for-user');
-        navigate("/dashboard/agents-for-user", { replace: true });
+        navigate("/assistentes", { replace: true });
       }
     };
 
-    checkAndRedirect();
+    checkAdminAccess();
   }, [navigate]);
 
   return (
