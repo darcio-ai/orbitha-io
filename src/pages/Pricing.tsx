@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { createStripeCheckout } from "@/services/payment";
 import { AsaasCheckoutDialog } from "@/components/AsaasCheckoutDialog";
+import { useUserSubscription } from "@/hooks/useUserSubscription";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Pricing = () => {
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
   const [loadingStripe, setLoadingStripe] = useState(false);
+  const { subscription, isActive, planType, isLoading: subscriptionLoading } = useUserSubscription();
 
   // Asaas Dialog State
   const [asaasOpen, setAsaasOpen] = useState(false);
@@ -128,22 +130,30 @@ const Pricing = () => {
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`relative flex flex-col ${plan.popular
-                ? "border-primary shadow-lg md:scale-105"
-                : "border-border"
-                }`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
-                  RECOMENDADO
-                </Badge>
-              )}
+          {plans.map((plan) => {
+            const isCurrentPlan = isActive && planType === plan.planType;
+            
+            return (
+              <Card
+                key={plan.name}
+                className={`relative flex flex-col ${plan.popular
+                  ? "border-primary shadow-lg md:scale-105"
+                  : "border-border"
+                  }`}
+              >
+                {plan.popular && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                    RECOMENDADO
+                  </Badge>
+                )}
+                {isCurrentPlan && (
+                  <Badge className="absolute -top-3 right-4 bg-green-600 text-white">
+                    SEU PLANO
+                  </Badge>
+                )}
 
-              <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-8">
-                <CardTitle className="text-xl md:text-2xl mb-2">{plan.name}</CardTitle>
+                <CardHeader className="text-center pb-6 md:pb-8 pt-6 md:pt-8">
+                  <CardTitle className="text-xl md:text-2xl mb-2">{plan.name}</CardTitle>
                 <p className="text-xs md:text-sm font-medium text-primary mb-2">{plan.subtitle}</p>
                 <CardDescription className="text-sm md:text-base">{plan.description}</CardDescription>
                 <div className="mt-4">
@@ -169,17 +179,18 @@ const Pricing = () => {
                   variant={plan.buttonVariant}
                   size="lg"
                   onClick={() => handleStripeCheckout(plan.planType)}
-                  disabled={loadingStripe}
+                  disabled={loadingStripe || isCurrentPlan}
                 >
-                  {loadingStripe ? "Processando..." : "Pagar com Cartão"}
+                  {isCurrentPlan ? "Plano Atual" : loadingStripe ? "Processando..." : "Pagar com Cartão"}
                 </Button>
                 <Button
                   className="w-full"
                   variant="outline"
                   size="lg"
                   onClick={() => handleAsaasClick(plan)}
+                  disabled={isCurrentPlan}
                 >
-                  Pagar com Pix
+                  {isCurrentPlan ? "Plano Atual" : "Pagar com Pix"}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   ✅ 7 dias de garantia incondicional<br />
@@ -187,7 +198,8 @@ const Pricing = () => {
                 </p>
               </CardFooter>
             </Card>
-          ))}
+            );
+          })}
         </div>
 
         {/* FAQ Section */}
