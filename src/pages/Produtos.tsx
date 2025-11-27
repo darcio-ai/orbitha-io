@@ -98,15 +98,24 @@ const Produtos = () => {
               return (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl min-h-[280px] md:min-h-[340px] bg-white/5 flex items-center justify-center"
+                  className="group relative overflow-hidden rounded-2xl min-h-[280px] md:min-h-[340px] bg-white/5 flex items-center justify-center cursor-pointer"
+                  onClick={async () => {
+                    if (produto.demoId) {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session) {
+                        const demoUrl = `/demo/${produto.demoId}`;
+                        navigate(`/login?redirectTo=${encodeURIComponent(demoUrl)}`);
+                      } else {
+                        navigate(`/demo/${produto.demoId}`);
+                      }
+                    }
+                  }}
                 >
-                  <Link to={produto.link} className="block">
-                    <img
-                      src={produto.image}
-                      alt={produto.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </Link>
+                  <img
+                    src={produto.image}
+                    alt={produto.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end pb-6 md:pb-8 px-4 md:px-6">
                     <div className="text-center mb-3 md:mb-4">
