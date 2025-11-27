@@ -102,16 +102,10 @@ const Produtos = () => {
                   onClick={async () => {
                     if (produto.demoId) {
                       const { data: { session } } = await supabase.auth.getSession();
-                      console.log('=== CLICK NO CARD ===');
-                      console.log('Session:', session);
-                      console.log('User:', session?.user?.email);
-                      
                       if (!session) {
-                        console.log('SEM SESSÃO - Redirecionando para login');
                         const demoUrl = `/demo/${produto.demoId}`;
                         navigate(`/login?redirectTo=${encodeURIComponent(demoUrl)}`);
                       } else {
-                        console.log('COM SESSÃO - Indo direto para demo');
                         navigate(`/demo/${produto.demoId}`);
                       }
                     }
