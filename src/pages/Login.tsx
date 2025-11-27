@@ -47,9 +47,15 @@ const Login = () => {
             .eq("user_id", session.user.id);
 
           const isAdmin = rolesData?.some(r => r.role === 'admin');
-          const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+          console.log('🔍 Login (checkUser) - Roles:', rolesData);
+          console.log('🎯 Login (checkUser) - Is Admin:', isAdmin);
+          console.log('📍 Login (checkUser) - redirectTo:', redirectTo);
           
-          navigate(redirectTo !== '/dashboard' ? redirectTo : defaultPath, { replace: true });
+          const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+          const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
+          
+          console.log('➡️ Login (checkUser) - Redirecionando para:', finalPath);
+          navigate(finalPath, { replace: true });
         }
       } catch (error: any) {
         console.error("Error syncing profile on session check:", error);
@@ -157,20 +163,27 @@ const Login = () => {
 
         await syncUserProfile(data.session.user);
 
-        // Get user role to redirect to appropriate page
-        const { data: rolesData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.user.id);
+      // Get user role to redirect to appropriate page
+      const { data: rolesData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id);
 
-        const isAdmin = rolesData?.some(r => r.role === 'admin');
-        const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
-        
-        toast({
-          title: "Login realizado com sucesso!",
-          description: "Redirecionando...",
-        });
-        navigate(redirectTo !== '/dashboard' ? redirectTo : defaultPath, { replace: true });
+      console.log('🔍 Login (handleLogin) - Roles:', rolesData);
+      const isAdmin = rolesData?.some(r => r.role === 'admin');
+      console.log('🎯 Login (handleLogin) - Is Admin:', isAdmin);
+      console.log('📍 Login (handleLogin) - redirectTo:', redirectTo);
+      
+      const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+      const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
+      
+      console.log('➡️ Login (handleLogin) - Redirecionando para:', finalPath);
+      
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Redirecionando...",
+      });
+      navigate(finalPath, { replace: true });
       }
     } catch (error: any) {
       toast({
