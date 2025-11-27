@@ -118,7 +118,7 @@ const DashboardLayout = () => {
     {
       name: "Painel",
       icon: LayoutDashboard,
-      path: "/dashboard",
+      path: "/dashboard/panel",
       adminOnly: true,
     },
     {

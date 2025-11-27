@@ -36,6 +36,7 @@ import DashboardLayout from "./components/DashboardLayout";
 import ChatAgent from "./pages/ChatAgent";
 import NotFound from "./pages/NotFound";
 import AdminSetup from "./pages/AdminSetup";
+import DashboardRedirect from "./pages/DashboardRedirect";
 import ScrollToTop from "./components/ScrollToTop";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -95,7 +96,8 @@ function AppRoutes() {
       
       {/* Dashboard routes with sidebar */}
       <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<Dashboard />} />
+        <Route index element={<DashboardRedirect />} />
+        <Route path="panel" element={<Dashboard />} />
         <Route path="users" element={<DashboardUsers />} />
         <Route path="users/:userId/agents" element={<ManageUserAgents />} />
         <Route path="agents" element={<DashboardAgents />} />
