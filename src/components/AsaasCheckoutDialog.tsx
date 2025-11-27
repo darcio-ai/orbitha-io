@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { createAsaasCheckout } from "@/services/payment";
+import { supabase } from "@/integrations/supabase/client";
+import { formatCpfCnpj, validateCpfCnpj } from "@/lib/utils";
 
 interface AsaasCheckoutDialogProps {
     open: boolean;
@@ -20,10 +22,43 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planT
     const [loading, setLoading] = useState(false);
     const [billingInfo, setBillingInfo] = useState({ name: "", email: "", cpfCnpj: "" });
     const [billingType, setBillingType] = useState("BOLETO");
+    const [cpfCnpjError, setCpfCnpjError] = useState(false);
+
+    // Pré-preencher dados quando o dialog abrir
+    useEffect(() => {
+        if (open) {
+            const fetchUserData = async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                const { data: profile } = await supabase
+                    .from("profiles")
+                    .select("billing_name, cpf_cnpj, email")
+                    .eq("id", user.id)
+                    .single();
+
+                if (profile) {
+                    setBillingInfo({
+                        name: profile.billing_name || "",
+                        email: profile.email || "",
+                        cpfCnpj: profile.cpf_cnpj || "",
+                    });
+                }
+            };
+
+            fetchUserData();
+        }
+    }, [open]);
 
     const handleAsaas = async () => {
         if (!billingInfo.name || !billingInfo.email || !billingInfo.cpfCnpj) {
             toast({ title: "Campos obrigatórios", description: "Preencha todos os campos.", variant: "destructive" });
+            return;
+        }
+
+        if (!validateCpfCnpj(billingInfo.cpfCnpj)) {
+            setCpfCnpjError(true);
+            toast({ title: "CPF/CNPJ inválido", description: "Verifique o documento digitado.", variant: "destructive" });
             return;
         }
 
@@ -94,10 +129,19 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planT
                         <Label htmlFor="cpf">CPF/CNPJ</Label>
                         <Input
                             id="cpf"
-                            placeholder="000.000.000-00"
+                            placeholder="000.000.000-00 ou 00.000.000/0000-00"
                             value={billingInfo.cpfCnpj}
-                            onChange={e => setBillingInfo({ ...billingInfo, cpfCnpj: e.target.value })}
+                            onChange={e => {
+                                const formatted = formatCpfCnpj(e.target.value);
+                                setBillingInfo({ ...billingInfo, cpfCnpj: formatted });
+                                setCpfCnpjError(false);
+                            }}
+                            className={cpfCnpjError ? "border-destructive" : ""}
+                            maxLength={18}
                         />
+                        {cpfCnpjError && (
+                            <p className="text-sm text-destructive">CPF/CNPJ inválido</p>
+                        )}
                     </div>
                 </div>
                 <DialogFooter>

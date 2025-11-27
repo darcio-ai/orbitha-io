@@ -30,6 +30,7 @@ import SignupFree from "./pages/SignupFree";
 import Dashboard from "./pages/Dashboard";
 import DashboardUsers from "./pages/DashboardUsers";
 import DashboardAgents from "./pages/DashboardAgents";
+import Profile from "./pages/Profile";
 import DashboardAgentsForUser from "./pages/DashboardAgentsForUser";
 import ManageUserAgents from "./pages/ManageUserAgents";
 import DashboardLayout from "./components/DashboardLayout";
@@ -106,6 +107,7 @@ function AppRoutes() {
         <Route path="users/:userId/agents" element={<ManageUserAgents />} />
         <Route path="agents" element={<DashboardAgents />} />
         <Route path="agents-for-user" element={<DashboardAgentsForUser />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
       
       {/* Chat route */}

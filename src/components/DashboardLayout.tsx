@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const DashboardLayout = () => {
@@ -128,6 +128,12 @@ const DashboardLayout = () => {
       path: "/dashboard/agents-for-user",
       adminOnly: false,
       userOnly: true,
+    },
+    {
+      name: "Perfil",
+      icon: User,
+      path: "/dashboard/profile",
+      adminOnly: false,
     },
   ];
 
