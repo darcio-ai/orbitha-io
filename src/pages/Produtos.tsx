@@ -98,18 +98,7 @@ const Produtos = () => {
               return (
                 <div
                   key={index}
-                  className="group relative overflow-hidden rounded-2xl min-h-[280px] md:min-h-[340px] bg-white/5 flex items-center justify-center cursor-pointer"
-                  onClick={async () => {
-                    if (produto.demoId) {
-                      const { data: { session } } = await supabase.auth.getSession();
-                      if (!session) {
-                        const demoUrl = `/demo/${produto.demoId}`;
-                        navigate(`/login?redirectTo=${encodeURIComponent(demoUrl)}`);
-                      } else {
-                        navigate(`/demo/${produto.demoId}`);
-                      }
-                    }
-                  }}
+                  className="group relative overflow-hidden rounded-2xl min-h-[280px] md:min-h-[340px] bg-white/5 flex items-center justify-center"
                 >
                   <img
                     src={produto.image}
