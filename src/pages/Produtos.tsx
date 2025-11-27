@@ -129,6 +129,7 @@ const Produtos = () => {
                           size="lg"
                           onClick={async (e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             const { data: { session } } = await supabase.auth.getSession();
                             if (!session) {
                               const demoUrl = `/demo/${produto.demoId}`;
@@ -148,6 +149,7 @@ const Produtos = () => {
                         variant="outline"
                         onClick={(e) => {
                           e.preventDefault();
+                          e.stopPropagation();
                           navigate(`/pricing?focus=${planFocus}`);
                         }}
                         className="w-full"
