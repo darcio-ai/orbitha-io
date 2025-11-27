@@ -223,7 +223,7 @@ const DemoAssistant = () => {
                       dias de garantia total.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Button size="lg" onClick={() => navigate(`/planos?focus=${assistant.planFocus}`)}>
+                      <Button size="lg" onClick={() => navigate(`/pricing?focus=${assistant.planFocus}`)}>
                         Assinar agora
                       </Button>
                       <Button size="lg" variant="outline" onClick={() => navigate("/assistentes")}>

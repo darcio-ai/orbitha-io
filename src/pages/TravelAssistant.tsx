@@ -2,9 +2,11 @@ import { Check, MapPin, Calendar, Sparkles, AlertCircle, BookOpen } from "lucide
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useNavigate } from "react-router-dom";
 import agenteViagens from "@/assets/agente_viagens.png";
 
 const TravelAssistant = () => {
+  const navigate = useNavigate();
   const howItWorks = [
     {
       icon: MapPin,
@@ -100,7 +102,7 @@ const TravelAssistant = () => {
                   <Button size="lg" className="text-lg" onClick={() => window.location.href = '/chat/travel-assistant'}>
                     Montar meu roteiro agora (grátis)
                   </Button>
-                  <Button size="lg" variant="ghost" className="text-lg" onClick={() => window.location.href = '/pricing'}>
+                  <Button size="lg" variant="ghost" className="text-lg" onClick={() => navigate('/pricing')}>
                     Ver planos Premium
                   </Button>
                 </div>
