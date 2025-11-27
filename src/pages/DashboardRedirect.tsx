@@ -27,8 +27,8 @@ const DashboardRedirect = () => {
           // Admin vai para o painel principal
           navigate("/dashboard/panel", { replace: true });
         } else {
-          // User vai para seus agentes
-          navigate("/dashboard/agents-for-user", { replace: true });
+          // User vai para página pública de assistentes
+          navigate("/assistentes", { replace: true });
         }
       } catch (error) {
         console.error("Error checking role:", error);
