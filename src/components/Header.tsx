@@ -1,12 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import orbithaLogo from "@/assets/orbitha-logo-new.png";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logout realizado",
+      description: "Você saiu da sua conta com sucesso.",
+    });
+    navigate("/");
+  };
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -39,11 +65,23 @@ const Header = () => {
             </Link>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="rounded-full h-9 w-9" asChild>
-                <Link to="/login">
-                  <User className="h-4 w-4 text-primary" />
-                </Link>
-              </Button>
+              {isLoggedIn ? (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full h-9 w-9" 
+                  onClick={handleLogout}
+                  title="Sair"
+                >
+                  <LogOut className="h-4 w-4 text-primary" />
+                </Button>
+              ) : (
+                <Button variant="ghost" size="icon" className="rounded-full h-9 w-9" asChild>
+                  <Link to="/login">
+                    <User className="h-4 w-4 text-primary" />
+                  </Link>
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -108,17 +146,29 @@ const Header = () => {
             ))}
           </div>
 
-          {/* Profile Icon */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="rounded-full w-10 h-10 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all"
-            asChild
-          >
-            <Link to="/login">
-              <User className="h-5 w-5 text-primary" />
-            </Link>
-          </Button>
+          {/* Profile Icon / Logout */}
+          {isLoggedIn ? (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full w-10 h-10 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all"
+              onClick={handleLogout}
+              title="Sair"
+            >
+              <LogOut className="h-5 w-5 text-primary" />
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full w-10 h-10 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all"
+              asChild
+            >
+              <Link to="/login">
+                <User className="h-5 w-5 text-primary" />
+              </Link>
+            </Button>
+          )}
         </nav>
       </div>
     </header>
