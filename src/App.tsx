@@ -46,26 +46,27 @@ function AppRoutes() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Persist last visited route (but not pricing page to avoid interference)
+  // Simplified: only persist and restore dashboard routes
   useEffect(() => {
-    if (location.pathname !== '/pricing' && location.pathname !== '/login') {
-      localStorage.setItem("last-path", location.pathname);
+    if (location.pathname.startsWith('/dashboard')) {
+      localStorage.setItem("last-dashboard-path", location.pathname);
     }
   }, [location.pathname]);
 
-  // Restore dashboard route if an unexpected redirect sends user to "/"
+  // Restore only if user lands on root and had a dashboard session
   useEffect(() => {
-    const tryRestore = async () => {
-      const saved = localStorage.getItem("last-path");
-      const { data: { session } } = await supabase.auth.getSession();
-      const isOnRoot = location.pathname === "/";
-      const shouldRestoreDashboard = saved?.startsWith("/dashboard");
+    const restoreDashboard = async () => {
+      if (location.pathname !== "/") return;
       
-      if (isOnRoot && shouldRestoreDashboard && session) {
+      const saved = localStorage.getItem("last-dashboard-path");
+      if (!saved) return;
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && saved.startsWith("/dashboard")) {
         navigate(saved, { replace: true });
       }
     };
-    tryRestore();
+    restoreDashboard();
   }, [location.pathname, navigate]);
 
   return (
