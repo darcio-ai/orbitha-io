@@ -58,7 +58,17 @@ function AppRoutes() {
       const { data: { session } } = await supabase.auth.getSession();
       const isOnRoot = location.pathname === "/";
       const shouldRestoreDashboard = saved?.startsWith("/dashboard");
+      
+      console.log('🔄 App.tsx restore check:', {
+        isOnRoot,
+        saved,
+        shouldRestoreDashboard,
+        hasSession: !!session,
+        currentPath: location.pathname
+      });
+      
       if (isOnRoot && shouldRestoreDashboard && session) {
+        console.log('➡️ App.tsx - Restoring to:', saved);
         navigate(saved, { replace: true });
       }
     };

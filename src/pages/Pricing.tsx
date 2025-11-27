@@ -23,14 +23,18 @@ const Pricing = () => {
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
   useEffect(() => {
+    console.log('🎯 Pricing - Mounted, searchParams:', Object.fromEntries(searchParams));
+    console.log('🎯 Pricing - Current location:', window.location.href);
+    
     document.title = "Planos | Financial Assistant Premium";
     // ... (meta tags logic kept same)
 
     // Verificar se usuário está logado
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🎯 Pricing - Session check:', session ? 'Logged in' : 'Not logged in');
       setUser(session?.user ?? null);
     });
-  }, []);
+  }, [searchParams]);
 
   // Removed MercadoPago initialization
 
