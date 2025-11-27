@@ -76,6 +76,25 @@ serve(async (req) => {
             customerId = newCustomer.id;
         }
 
+        // Save billing info to user profile
+        const supabaseAdmin = createClient(
+            Deno.env.get("SUPABASE_URL") ?? "",
+            Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+        );
+
+        const { error: profileError } = await supabaseAdmin
+            .from("profiles")
+            .update({
+                cpf_cnpj: billingInfo?.cpfCnpj,
+                billing_name: billingInfo?.name,
+                asaas_customer_id: customerId
+            })
+            .eq("id", user.id);
+
+        if (profileError) {
+            console.error("Error updating profile:", profileError);
+        }
+
         // 2. Create Payment
         const paymentResponse = await fetch(`${asaasApiUrl}/payments`, {
             method: "POST",
