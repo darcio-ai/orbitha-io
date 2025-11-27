@@ -134,6 +134,7 @@ export type Database = {
       profiles: {
         Row: {
           age: number | null
+          asaas_customer_id: string | null
           created_at: string
           email: string
           financial_goal: string | null
@@ -152,6 +153,7 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          asaas_customer_id?: string | null
           created_at?: string
           email: string
           financial_goal?: string | null
@@ -170,6 +172,7 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          asaas_customer_id?: string | null
           created_at?: string
           email?: string
           financial_goal?: string | null

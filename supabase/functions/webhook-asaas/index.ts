@@ -30,17 +30,21 @@ serve(async (req) => {
 
             if (userId) {
                 console.log(`Updating subscription for user ${userId}`);
-                await supabase
+                const { data, error } = await supabase
                     .from("profiles")
                     .update({
                         asaas_customer_id: customerId,
                         subscription_status: 'active',
-                        plan_type: planType,
-                        billing_provider: 'asaas',
-                        billing_provider_subscription_id: paymentId,
-                        plan_id: planType
+                        subscription_plan: planType,
+                        subscription_id: paymentId
                     })
-                    .eq("user_id", userId);
+                    .eq("id", userId);
+
+                if (error) {
+                    console.error("Error updating profile:", error);
+                } else {
+                    console.log("Profile updated successfully:", data);
+                }
             }
         }
 
