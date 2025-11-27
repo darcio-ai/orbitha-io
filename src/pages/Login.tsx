@@ -39,7 +39,16 @@ const Login = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           await syncUserProfile(session.user);
-          navigate(redirectTo, { replace: true });
+          
+          // Check user plan and redirect accordingly
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('plan')
+            .eq('id', session.user.id)
+            .single();
+          
+          const finalRedirect = profile?.plan === 'free' ? '/dashboard/agents' : redirectTo;
+          navigate(finalRedirect, { replace: true });
         }
       } catch (error: any) {
         console.error("Error syncing profile on session check:", error);
