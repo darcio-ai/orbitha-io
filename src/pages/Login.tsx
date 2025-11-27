@@ -147,11 +147,20 @@ const Login = () => {
 
         await syncUserProfile(data.session.user);
 
+        // Get user role to redirect to appropriate page
+        const { data: rolesData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id);
+
+        const isAdmin = rolesData?.some(r => r.role === 'admin');
+        const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+        
         toast({
           title: "Login realizado com sucesso!",
           description: "Redirecionando...",
         });
-        navigate(redirectTo, { replace: true });
+        navigate(redirectTo !== '/dashboard' ? redirectTo : defaultPath, { replace: true });
       }
     } catch (error: any) {
       toast({

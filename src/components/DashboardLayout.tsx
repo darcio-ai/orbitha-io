@@ -31,18 +31,27 @@ const DashboardLayout = () => {
         .select("role")
         .eq("user_id", session.user.id);
 
+      let determinedRole: string | null = null;
+      
       if (rolesData && rolesData.length > 0) {
         // If user has multiple roles, prioritize admin
         const roles = rolesData.map(r => r.role);
         if (roles.includes('admin')) {
-          setUserRole('admin');
+          determinedRole = 'admin';
         } else {
-          setUserRole(roles[0]);
+          determinedRole = roles[0];
         }
       } else {
         // Default to 'user' if no role found (new users)
-        setUserRole('user');
+        determinedRole = 'user';
         console.log('No role found, defaulting to user');
+      }
+      
+      setUserRole(determinedRole);
+      
+      // Redirect users to their agents page if they land on /dashboard
+      if (determinedRole === 'user' && location.pathname === '/dashboard') {
+        navigate('/dashboard/agents-for-user', { replace: true });
       }
       
       setLoading(false);
@@ -105,7 +114,7 @@ const DashboardLayout = () => {
       name: "Painel",
       icon: LayoutDashboard,
       path: "/dashboard",
-      adminOnly: false,
+      adminOnly: true,
     },
     {
       name: "Usuários",
