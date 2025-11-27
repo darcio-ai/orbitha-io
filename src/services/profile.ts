@@ -3,19 +3,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const syncUserProfile = async (user: User) => {
     const { id, email, user_metadata } = user;
-    const full_name = user_metadata?.full_name || user_metadata?.name || null;
-    const avatar_url = user_metadata?.avatar_url || null;
+    const firstname = user_metadata?.firstname || user_metadata?.first_name || '';
+    const lastname = user_metadata?.lastname || user_metadata?.last_name || '';
+    const phone = user_metadata?.phone || '';
+    const whatsapp = user_metadata?.whatsapp || '';
 
-    // Prepare the payload
-    // We include both id and user_id to ensure compatibility with different schema variations
+    // Prepare the payload using only columns that exist in profiles table
     const updates = {
         id,
-        user_id: id, // Ensure user_id is populated as it appears in the table
         email,
-        full_name,
-        avatar_url,
-        last_login_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        firstname,
+        lastname,
+        phone,
+        whatsapp,
     };
 
     console.log("Syncing profile for user:", id);
