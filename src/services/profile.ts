@@ -18,6 +18,9 @@ export const syncUserProfile = async (user: User) => {
         updated_at: new Date().toISOString(),
     };
 
+    console.log("Syncing profile for user:", id);
+    console.log("Payload:", updates);
+
     const { error } = await supabase
         .from("profiles")
         .upsert(updates, {
@@ -27,5 +30,18 @@ export const syncUserProfile = async (user: User) => {
     if (error) {
         console.error("Error syncing user profile:", error);
         throw error;
+    }
+
+    // Verify if it was saved
+    const { data: savedProfile, error: fetchError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+    if (fetchError) {
+        console.error("Error verifying saved profile:", fetchError);
+    } else {
+        console.log("Profile verified in DB:", savedProfile);
     }
 };
