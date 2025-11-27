@@ -39,7 +39,17 @@ const Login = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           await syncUserProfile(session.user);
-          navigate(redirectTo, { replace: true });
+          
+          // Get user role to redirect to appropriate page
+          const { data: rolesData } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id);
+
+          const isAdmin = rolesData?.some(r => r.role === 'admin');
+          const defaultPath = isAdmin ? '/dashboard' : '/dashboard/agents-for-user';
+          
+          navigate(redirectTo !== '/dashboard' ? redirectTo : defaultPath, { replace: true });
         }
       } catch (error: any) {
         console.error("Error syncing profile on session check:", error);
