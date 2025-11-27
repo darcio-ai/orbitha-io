@@ -48,7 +48,9 @@ const Login = () => {
 
           const isAdmin = rolesData?.some(r => r.role === 'admin');
           const defaultPath = isAdmin ? '/dashboard/panel' : '/assistentes';
-          const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
+          
+          // Se redirectTo não é /dashboard, usa redirectTo, senão usa defaultPath
+          const finalPath = (redirectTo && redirectTo !== '/dashboard') ? redirectTo : defaultPath;
           
           navigate(finalPath, { replace: true });
         }
@@ -166,7 +168,9 @@ const Login = () => {
 
       const isAdmin = rolesData?.some(r => r.role === 'admin');
       const defaultPath = isAdmin ? '/dashboard/panel' : '/assistentes';
-      const finalPath = redirectTo !== '/dashboard' ? redirectTo : defaultPath;
+      
+      // Se redirectTo não é /dashboard, usa redirectTo, senão usa defaultPath
+      const finalPath = (redirectTo && redirectTo !== '/dashboard') ? redirectTo : defaultPath;
       
       toast({
         title: "Login realizado com sucesso!",
