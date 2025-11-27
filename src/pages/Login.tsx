@@ -146,10 +146,6 @@ const Login = () => {
         }
 
         await syncUserProfile(data.session.user);
-        toast({
-          title: "Perfil sincronizado!",
-          description: "Seus dados foram atualizados.",
-        });
 
         toast({
           title: "Login realizado com sucesso!",
