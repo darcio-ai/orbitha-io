@@ -24,7 +24,7 @@ export const createStripeCheckout = async (planType: 'growth' | 'suite' | 'life_
     return data;
 };
 
-export const createAsaasCheckout = async (planType: 'growth' | 'suite' | 'life_balance', billingInfo: any, billingType: string = 'BOLETO') => {
+export const createAsaasCheckout = async (planType: 'growth' | 'suite' | 'life_balance', billingInfo: any, billingType: string = 'UNDEFINED') => {
     const { data, error } = await supabase.functions.invoke('create-checkout-asaas', {
         body: { planType, billingInfo, billingType },
     });
