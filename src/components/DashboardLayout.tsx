@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const DashboardLayout = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -15,6 +16,7 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -68,10 +70,8 @@ const DashboardLayout = () => {
       
       if (error) {
         console.error('Erro no logout:', error);
-        // Mesmo com erro, limpar o estado local
       }
       
-      // Clear saved login credentials
       localStorage.removeItem('rememberMe');
       localStorage.removeItem('savedEmail');
       localStorage.removeItem('savedPassword');
@@ -84,7 +84,6 @@ const DashboardLayout = () => {
       navigate("/login");
     } catch (error) {
       console.error('Erro inesperado no logout:', error);
-      // Forçar navegação para login mesmo com erro
       navigate("/login");
     }
   };
@@ -123,7 +122,7 @@ const DashboardLayout = () => {
       adminOnly: true,
     },
     {
-      name: "Agentes",
+      name: "Assistentes",
       icon: Bot,
       path: "/dashboard/agents-for-user",
       adminOnly: false,
@@ -143,6 +142,67 @@ const DashboardLayout = () => {
     return true;
   });
 
+  // Mobile Layout
+  if (isMobile) {
+    const mobileMenuItems = visibleMenuItems.filter(item => 
+      item.path === "/dashboard/agents-for-user" || item.path === "/dashboard/profile"
+    );
+
+    return (
+      <div className="flex flex-col min-h-screen bg-muted/10">
+        {/* Mobile Header */}
+        <header className="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
+              alt="Orbitha Logo" 
+              className="w-7 h-7 object-contain"
+            />
+            <span className="text-lg font-bold">Orbitha</span>
+          </Link>
+
+          {/* Mobile Navigation Tabs */}
+          <nav className="flex items-center gap-1">
+            {mobileMenuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            title="Sair"
+          >
+            <LogOut className="h-5 w-5" />
+          </Button>
+        </header>
+
+        {/* Mobile Content */}
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
+  // Desktop Layout
   return (
     <div className="flex min-h-screen bg-muted/10">
       {/* Sidebar */}
