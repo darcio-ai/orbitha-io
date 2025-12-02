@@ -166,42 +166,10 @@ Deno.serve(async (req) => {
         content: msg.message
       }));
 
-    // Check if this is the first message (welcome message)
-    const isFirstMessage = conversationHistory.length === 0;
-
-    // SECURITY: Inject user plan and name into system prompt (prevent user fraud)
-    // Show detailed plan info only on first message, simplified on subsequent messages
-    let planInfo = '';
-    if (isFirstMessage) {
-      // Detailed plan description for welcome message
-      if (userPlan === 'free') {
-        planInfo = `- Plano contratado: GRATUITO
-- Funcionalidades disponíveis no plano gratuito:
-  • Análise básica de Score Patrimonial
-  • 3 conversas por mês
-  • Recomendações gerais de investimentos`;
-      } else if (userPlan === 'premium') {
-        planInfo = `- Plano contratado: PREMIUM
-- Funcionalidades premium:
-  • Score detalhado com 5 pilares
-  • Conversas ilimitadas
-  • Produtos específicos por patrimônio
-  • Planos de ação personalizados
-  • Casos familiares básicos`;
-      } else {
-        planInfo = `- Plano contratado: ${userPlan.toUpperCase()}`;
-      }
-    } else {
-      // Simplified plan info for subsequent messages
-      planInfo = `- Plano: ${userPlan.toUpperCase()}`;
-    }
-
     const enhancedPrompt = `${agent.prompt || 'You are a helpful assistant.'}
 
 INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
-- Nome: ${userName}
-${planInfo}
-- IMPORTANTE: O usuário está no plano ${userPlan.toUpperCase()}. Ajuste suas respostas e funcionalidades de acordo com o plano dele. Não pergunte qual plano ele tem, você já sabe.`;
+- Nome: ${userName}`;
 
     // Prepare OpenAI request
     const messages = [
@@ -280,76 +248,7 @@ ${planInfo}
             }
           }
 
-          // Add plan information for free users
-          // isFirstMessage already defined above at line 171
-          
-          if (userPlan === 'free' && fullResponse) {
-            let freeUserInfo = '';
-            
-            // Show detailed plan info on first message
-            if (isFirstMessage) {
-              freeUserInfo = `
-
----
-
-**No plano Gratuito, você tem acesso a:**
-
-**Score Patrimonial Básico:** Apenas o número consolidado (por exemplo, "73/100 - Consolidado PF").
-
-**Máximo de 3 Perguntas por Sessão:** Você pode fazer até três perguntas por sessão.
-
-**Sem Detalhamento dos 5 Pilares:** Não há detalhamento dos pilares da metodologia Smart Finance Analysis.
-
-**Sem Listagem de Produtos Específicos:** Não são fornecidos produtos financeiros específicos.
-
-Para uma análise mais detalhada e acesso a funcionalidades adicionais, você pode considerar fazer um upgrade para os planos Premium ou Enterprise. Se tiver mais perguntas dentro do que o plano gratuito oferece, estou à disposição!
-
----`;
-            } else {
-              // Show upgrade cards on subsequent messages
-              freeUserInfo = `
-
----
-
-## 🚀 Quer Desbloquear Todo o Potencial?
-
-### 🚀 Plano Premium
-**R$ 29,90/mês**
-
-✅ Score detalhado com 5 pilares  
-✅ Conversas ilimitadas  
-✅ Produtos específicos por patrimônio  
-✅ Planos de ação personalizados  
-✅ Casos familiares básicos  
-
-[🎯 ASSINAR PREMIUM](https://pay.kiwify.com.br/seu-link-premium)
-
----
-
-### 💎 Plano Enterprise
-**R$ 97/mês**
-
-✅ Tudo do Premium +  
-✅ Relatórios de evolução patrimonial  
-✅ Simulações de aposentadoria avançadas  
-✅ Múltiplos cenários financeiros  
-✅ Suporte prioritário  
-
-[💼 ASSINAR ENTERPRISE](https://pay.kiwify.com.br/seu-link-enterprise)
-
----`;
-            }
-
-            // Stream the free user info
-            const infoLines = freeUserInfo.split('\n');
-            for (const line of infoLines) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: line + '\n' })}\n\n`));
-            }
-            
-            fullResponse += freeUserInfo;
-          }
-
-          // Save assistant response (with upgrade cards if applicable)
+          // Save assistant response
           if (fullResponse) {
             await supabase
               .from('agent_messages')
