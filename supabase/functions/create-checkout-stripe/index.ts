@@ -34,7 +34,7 @@ serve(async (req) => {
 
     const { planType } = await req.json();
 
-    if (!planType || (planType !== 'growth' && planType !== 'suite')) {
+    if (!planType || (planType !== 'growth' && planType !== 'suite' && planType !== 'life_balance')) {
       throw new Error("Invalid plan type");
     }
 
@@ -42,10 +42,12 @@ serve(async (req) => {
       apiVersion: "2023-10-16",
     });
 
-    // Map planType to Stripe Price IDs
-    const priceId = planType === 'growth'
-      ? "price_1SXZ8cJVqrOuT3N7Frp0xJbv"
-      : "price_1SXZ9FJVqrOuT3N73PzMG5ca";
+    // Map planType to Stripe Price IDs (Production)
+    const priceId = planType === 'life_balance'
+      ? "price_1SZjrAJVqrOuT3N7w5pXm4Cq"
+      : planType === 'growth'
+      ? "price_1SZjqSJVqrOuT3N7b16GWp6R"
+      : "price_1SZjpLJVqrOuT3N7lYARES4D"; // suite
 
     // Check if customer already exists in Stripe
     let customerId: string;
