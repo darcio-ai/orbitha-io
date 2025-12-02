@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import orbithaLogo from "@/assets/orbitha-logo-new.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,15 +67,27 @@ const Header = () => {
 
             <div className="flex items-center gap-2">
               {isLoggedIn ? (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-full h-9 w-9" 
-                  onClick={handleLogout}
-                  title="Sair"
-                >
-                  <LogOut className="h-4 w-4 text-primary" />
-                </Button>
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full h-9 w-9" 
+                    asChild
+                  >
+                    <Link to="/dashboard">
+                      <LayoutDashboard className="h-4 w-4 text-primary" />
+                    </Link>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full h-9 w-9" 
+                    onClick={handleLogout}
+                    title="Sair"
+                  >
+                    <LogOut className="h-4 w-4 text-primary" />
+                  </Button>
+                </>
               ) : (
                 <Button variant="ghost" size="icon" className="rounded-full h-9 w-9" asChild>
                   <Link to="/login">
@@ -149,15 +161,28 @@ const Header = () => {
 
           {/* Profile Icon / Logout */}
           {isLoggedIn ? (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="rounded-full w-10 h-10 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all"
-              onClick={handleLogout}
-              title="Sair"
-            >
-              <LogOut className="h-5 w-5 text-primary" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="rounded-full px-4 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all text-primary"
+                asChild
+              >
+                <Link to="/dashboard">
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Meus Assistentes
+                </Link>
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full w-10 h-10 backdrop-blur-xl bg-card/10 border border-border/20 hover:bg-card/20 hover:shadow-glow transition-all"
+                onClick={handleLogout}
+                title="Sair"
+              >
+                <LogOut className="h-5 w-5 text-primary" />
+              </Button>
+            </div>
           ) : (
             <Button 
               variant="ghost" 
