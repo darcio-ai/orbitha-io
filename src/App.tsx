@@ -48,28 +48,12 @@ function AppRoutes() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Simplified: only persist and restore dashboard routes
+  // Persist dashboard routes for navigation within dashboard
   useEffect(() => {
     if (location.pathname.startsWith('/dashboard')) {
       localStorage.setItem("last-dashboard-path", location.pathname);
     }
   }, [location.pathname]);
-
-  // Restore only if user lands on root and had a dashboard session
-  useEffect(() => {
-    const restoreDashboard = async () => {
-      if (location.pathname !== "/") return;
-      
-      const saved = localStorage.getItem("last-dashboard-path");
-      if (!saved) return;
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session && saved.startsWith("/dashboard")) {
-        navigate(saved, { replace: true });
-      }
-    };
-    restoreDashboard();
-  }, [location.pathname, navigate]);
 
   return (
     <Routes>
