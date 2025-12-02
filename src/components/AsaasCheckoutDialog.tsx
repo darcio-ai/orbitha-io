@@ -64,11 +64,9 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planT
 
         setLoading(true);
         try {
-            const { url } = await createAsaasCheckout(planType as 'growth' | 'suite', billingInfo, billingType);
+            const { url } = await createAsaasCheckout(planType as 'growth' | 'suite' | 'life_balance', billingInfo, billingType);
             if (url) {
-                window.open(url, "_blank");
-                onOpenChange(false);
-                toast({ title: "Sucesso", description: "Fatura gerada com sucesso! Verifique a nova aba." });
+                window.location.href = url;
             } else {
                 throw new Error("Failed to get payment URL");
             }

@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
-import { createAsaasCheckout } from "@/services/payment";
+import { AsaasCheckoutDialog } from "@/components/AsaasCheckoutDialog";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -15,7 +15,8 @@ const Pricing = () => {
   const [searchParams] = useSearchParams();
   const { subscription, isActive, planType, isLoading: subscriptionLoading } = useUserSubscription();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{ type: 'growth' | 'suite' | 'life_balance', name: string, value: number } | null>(null);
 
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
@@ -28,7 +29,7 @@ const Pricing = () => {
     });
   }, []);
 
-  const handleAsaasCheckout = async (planType: 'growth' | 'suite' | 'life_balance') => {
+  const handleAsaasCheckout = (planType: 'growth' | 'suite' | 'life_balance', planName: string, value: number) => {
     if (!user) {
       toast({ 
         title: "Login necessário", 
@@ -39,27 +40,15 @@ const Pricing = () => {
       return;
     }
     
-    setLoading(true);
-    try {
-      const { url } = await createAsaasCheckout(planType, {}, 'UNDEFINED');
-      if (url) {
-        window.location.href = url;
-      }
-    } catch (error) {
-      toast({
-        title: "Erro no pagamento",
-        description: error.message || "Ocorreu um erro ao processar o pagamento.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
+    setSelectedPlan({ type: planType, name: planName, value });
+    setDialogOpen(true);
   };
 
   const plans = [
     {
       name: "Life Balance Pack",
       price: "R$ 67,00",
+      value: 67.00,
       period: "/mês",
       subtitle: "Equilíbrio pessoal e bem-estar",
       description: "Fitness, Viagens e Finanças pessoais",
@@ -79,6 +68,7 @@ const Pricing = () => {
     {
       name: "Growth Pack",
       price: "R$ 97,00",
+      value: 97.00,
       period: "/mês",
       subtitle: "Pra vender mais e atender melhor",
       description: "Ideal para vendas, marketing e suporte",
@@ -98,6 +88,7 @@ const Pricing = () => {
     {
       name: "Orbitha Suite",
       price: "R$ 147,00",
+      value: 147.00,
       period: "/mês",
       subtitle: "Negócio + vida pessoal",
       description: "Todos os 7 assistentes + recursos premium",
@@ -179,10 +170,10 @@ const Pricing = () => {
                   className="w-full"
                   variant="default"
                   size="lg"
-                  onClick={() => handleAsaasCheckout(plan.planType)}
-                  disabled={loading || isCurrentPlan}
+                  onClick={() => handleAsaasCheckout(plan.planType, plan.name, plan.value)}
+                  disabled={isCurrentPlan}
                 >
-                  {isCurrentPlan ? "Plano Atual" : loading ? "Processando..." : "Pagar Agora"}
+                  {isCurrentPlan ? "Plano Atual" : "Pagar Agora"}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   ✅ 7 dias de garantia incondicional<br />
@@ -198,6 +189,17 @@ const Pricing = () => {
         {/* ... (FAQ kept same) ... */}
 
       </div>
+
+      {/* Asaas Checkout Dialog */}
+      {selectedPlan && (
+        <AsaasCheckoutDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          planType={selectedPlan.type}
+          planName={selectedPlan.name}
+          value={selectedPlan.value}
+        />
+      )}
     </div>
   );
 };
