@@ -152,6 +152,16 @@ const Produtos = () => {
             })}
           </div>
 
+          {/* Mobile Pricing Button */}
+          <div className="block md:hidden mt-12 text-center">
+            <Button
+              size="lg"
+              onClick={() => navigate('/pricing')}
+              className="w-full max-w-md mx-auto h-14 text-lg"
+            >
+              Ver Preços
+            </Button>
+          </div>
         </div>
       </section>
     </div>

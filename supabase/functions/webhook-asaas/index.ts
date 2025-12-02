@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
+// Agent URL mapping for each plan
+const PLAN_AGENT_MAPPING: Record<string, string[]> = {
+    life_balance: ['fitness', 'travel', 'financial'],
+    growth: ['sales', 'marketing', 'support'],
+    suite: ['fitness', 'travel', 'financial', 'sales', 'marketing', 'support', 'business']
+};
+
 serve(async (req) => {
     try {
         const body = await req.json();
@@ -22,15 +29,19 @@ serve(async (req) => {
 
             // Infer plan type from value or description
             let planType = 'unknown';
-            if (payment.value === 97.00 || payment.description?.includes('Growth')) {
+            if (payment.value === 67.00 || payment.description?.includes('Life Balance')) {
+                planType = 'life_balance';
+            } else if (payment.value === 97.00 || payment.description?.includes('Growth')) {
                 planType = 'growth';
             } else if (payment.value === 147.00 || payment.description?.includes('Suite')) {
                 planType = 'suite';
             }
 
-            if (userId) {
-                console.log(`Updating subscription for user ${userId}`);
-                const { data, error } = await supabase
+            if (userId && planType !== 'unknown') {
+                console.log(`Updating subscription for user ${userId} - Plan: ${planType}`);
+                
+                // Update profile
+                const { error: profileError } = await supabase
                     .from("profiles")
                     .update({
                         asaas_customer_id: customerId,
@@ -40,10 +51,50 @@ serve(async (req) => {
                     })
                     .eq("id", userId);
 
-                if (error) {
-                    console.error("Error updating profile:", error);
+                if (profileError) {
+                    console.error("Error updating profile:", profileError);
                 } else {
-                    console.log("Profile updated successfully:", data);
+                    console.log("Profile updated successfully");
+                }
+
+                // Get agents for this plan
+                const agentUrls = PLAN_AGENT_MAPPING[planType] || [];
+                console.log(`Plan ${planType} should unlock agents:`, agentUrls);
+
+                if (agentUrls.length > 0) {
+                    // Fetch agent IDs based on URLs
+                    const { data: agents, error: agentsError } = await supabase
+                        .from("agents")
+                        .select("id, url")
+                        .in("url", agentUrls)
+                        .eq("status", "active");
+
+                    if (agentsError) {
+                        console.error("Error fetching agents:", agentsError);
+                    } else if (agents && agents.length > 0) {
+                        console.log(`Found ${agents.length} agents to unlock:`, agents);
+
+                        // Insert agent access for each agent
+                        const agentAccess = agents.map(agent => ({
+                            user_id: userId,
+                            agent_id: agent.id
+                        }));
+
+                        const { error: accessError } = await supabase
+                            .from("agents_users")
+                            .upsert(agentAccess, { 
+                                onConflict: 'user_id,agent_id',
+                                ignoreDuplicates: true 
+                            });
+
+                        if (accessError) {
+                            console.error("Error granting agent access:", accessError);
+                        } else {
+                            console.log(`Successfully granted access to ${agents.length} agents for user ${userId}`);
+                        }
+                    } else {
+                        console.warn(`No active agents found for URLs:`, agentUrls);
+                    }
                 }
             }
         }

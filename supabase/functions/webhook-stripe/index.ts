@@ -13,6 +13,13 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Agent URL mapping for each plan
+const PLAN_AGENT_MAPPING: Record<string, string[]> = {
+    life_balance: ['fitness', 'travel', 'financial'],
+    growth: ['sales', 'marketing', 'support'],
+    suite: ['fitness', 'travel', 'financial', 'sales', 'marketing', 'support', 'business']
+};
+
 serve(async (req) => {
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
@@ -62,10 +69,11 @@ serve(async (req) => {
             const customerId = session.customer;
             const subscriptionId = session.subscription;
 
-            if (userId) {
+            if (userId && planType) {
                 console.log(`Updating subscription for user ${userId} - Plan: ${planType}`);
 
-                const { error } = await supabase
+                // Update profile
+                const { error: profileError } = await supabase
                     .from("profiles")
                     .update({
                         stripe_customer_id: customerId,
@@ -75,13 +83,53 @@ serve(async (req) => {
                     })
                     .eq("id", userId);
 
-                if (error) {
-                    console.error("Error updating profile:", error);
+                if (profileError) {
+                    console.error("Error updating profile:", profileError);
                 } else {
                     console.log(`Successfully updated profile for user ${userId}`);
                 }
+
+                // Get agents for this plan
+                const agentUrls = PLAN_AGENT_MAPPING[planType] || [];
+                console.log(`Plan ${planType} should unlock agents:`, agentUrls);
+
+                if (agentUrls.length > 0) {
+                    // Fetch agent IDs based on URLs
+                    const { data: agents, error: agentsError } = await supabase
+                        .from("agents")
+                        .select("id, url")
+                        .in("url", agentUrls)
+                        .eq("status", "active");
+
+                    if (agentsError) {
+                        console.error("Error fetching agents:", agentsError);
+                    } else if (agents && agents.length > 0) {
+                        console.log(`Found ${agents.length} agents to unlock:`, agents);
+
+                        // Insert agent access for each agent
+                        const agentAccess = agents.map(agent => ({
+                            user_id: userId,
+                            agent_id: agent.id
+                        }));
+
+                        const { error: accessError } = await supabase
+                            .from("agents_users")
+                            .upsert(agentAccess, { 
+                                onConflict: 'user_id,agent_id',
+                                ignoreDuplicates: true 
+                            });
+
+                        if (accessError) {
+                            console.error("Error granting agent access:", accessError);
+                        } else {
+                            console.log(`Successfully granted access to ${agents.length} agents for user ${userId}`);
+                        }
+                    } else {
+                        console.warn(`No active agents found for URLs:`, agentUrls);
+                    }
+                }
             } else {
-                console.warn("No user_id found in session metadata");
+                console.warn("No user_id or plan_type found in session metadata");
             }
         }
 
@@ -132,6 +180,17 @@ serve(async (req) => {
                 .single();
 
             if (profile) {
+                // Remove agent access
+                const { error: accessError } = await supabase
+                    .from("agents_users")
+                    .delete()
+                    .eq("user_id", profile.id);
+
+                if (accessError) {
+                    console.error("Error removing agent access:", accessError);
+                }
+
+                // Update profile
                 const { error } = await supabase
                     .from("profiles")
                     .update({

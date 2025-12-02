@@ -36,7 +36,7 @@ const Pricing = () => {
 
   // Removed MercadoPago initialization
 
-  const handleStripeCheckout = async (planType: 'growth' | 'suite') => {
+  const handleStripeCheckout = async (planType: 'growth' | 'suite' | 'life_balance') => {
     if (!user) {
       toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
       navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname + window.location.search)}`);
@@ -71,6 +71,27 @@ const Pricing = () => {
   };
 
   const plans = [
+    {
+      name: "Life Balance Pack",
+      price: "R$ 67,00",
+      priceValue: 67.00,
+      stripePriceId: "price_life_balance_pack",
+      period: "/mês",
+      subtitle: "Equilíbrio pessoal e bem-estar",
+      description: "Fitness, Viagens e Finanças pessoais",
+      microcopy: "Combo vida pessoal (3 assistentes).",
+      valueAnchor: "Seu bem-estar em primeiro lugar.",
+      features: [
+        "Fitness Assistant completo",
+        "Travel Assistant completo",
+        "Financial Assistant completo",
+        "Conversas ilimitadas"
+      ],
+      buttonText: "Assinar Life Balance",
+      buttonVariant: "default" as const,
+      popular: focusPlan === 'life_balance',
+      planType: 'life_balance' as const
+    },
     {
       name: "Growth Pack",
       price: "R$ 97,00",
@@ -129,7 +150,7 @@ const Pricing = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-7xl mx-auto">
           {plans.map((plan) => {
             const isCurrentPlan = isActive && planType === plan.planType;
             

@@ -64,6 +64,16 @@ const Footer = () => {
                   darcio@orbitha.io
                 </a>
               </li>
+              <li>
+                <a
+                  href="https://wa.me/5513991497873"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  WhatsApp: (13) 99149-7873
+                </a>
+              </li>
             </ul>
           </div>
         </div>
