@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { createAsaasCheckout } from "@/services/payment";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +20,6 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planT
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [billingInfo, setBillingInfo] = useState({ name: "", email: "", cpfCnpj: "" });
-    const [billingType, setBillingType] = useState("BOLETO");
     const [cpfCnpjError, setCpfCnpjError] = useState(false);
 
     // Pré-preencher dados quando o dialog abrir
@@ -64,7 +62,7 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planT
 
         setLoading(true);
         try {
-            const { url } = await createAsaasCheckout(planType as 'growth' | 'suite' | 'life_balance', billingInfo, billingType);
+            const { url } = await createAsaasCheckout(planType as 'growth' | 'suite' | 'life_balance', billingInfo, 'CREDIT_CARD');
             if (url) {
                 window.location.href = url;
             } else {
@@ -85,25 +83,12 @@ export function AsaasCheckoutDialog({ open, onOpenChange, value, planName, planT
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Pagamento via Pix ou Boleto</DialogTitle>
+                    <DialogTitle>Pagamento via cartão de crédito</DialogTitle>
                     <DialogDescription>
                         Para o plano: <strong>{planName}</strong> (R$ {value.toFixed(2)})
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                        <Label>Método de Pagamento</Label>
-                        <RadioGroup value={billingType} onValueChange={setBillingType}>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="BOLETO" id="boleto" />
-                                <Label htmlFor="boleto" className="cursor-pointer">Boleto Bancário</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="PIX" id="pix" />
-                                <Label htmlFor="pix" className="cursor-pointer">PIX (requer conta aprovada)</Label>
-                            </div>
-                        </RadioGroup>
-                    </div>
                     <div className="grid gap-2">
                         <Label htmlFor="name">Nome Completo</Label>
                         <Input
