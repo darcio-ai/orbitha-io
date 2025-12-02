@@ -161,8 +161,8 @@ const DashboardLayout = () => {
             <span className="text-lg font-bold">Orbitha</span>
           </Link>
 
-          {/* Mobile Navigation Tabs */}
-          <nav className="flex items-center gap-1">
+          {/* Mobile Navigation Tabs - Icons Only */}
+          <nav className="flex items-center gap-2">
             {mobileMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -171,14 +171,14 @@ const DashboardLayout = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-center p-2.5 rounded-full transition-colors ${
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-muted text-muted-foreground"
                   }`}
+                  title={item.name}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
+                  <Icon className="h-5 w-5" />
                 </Link>
               );
             })}
