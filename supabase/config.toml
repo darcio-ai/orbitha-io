@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.webhook-asaas]
 verify_jwt = false
+
+[functions.test-webhook-asaas]
+verify_jwt = false
