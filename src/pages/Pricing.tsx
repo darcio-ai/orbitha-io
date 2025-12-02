@@ -7,7 +7,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { createStripeCheckout } from "@/services/payment";
-import { AsaasCheckoutDialog } from "@/components/AsaasCheckoutDialog";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
 
 const Pricing = () => {
@@ -17,10 +16,6 @@ const Pricing = () => {
   const [user, setUser] = useState(null);
   const [loadingStripe, setLoadingStripe] = useState(false);
   const { subscription, isActive, planType, isLoading: subscriptionLoading } = useUserSubscription();
-
-  // Asaas Dialog State
-  const [asaasOpen, setAsaasOpen] = useState(false);
-  const [selectedPlanForAsaas, setSelectedPlanForAsaas] = useState<{ name: string, value: number, planType: string } | null>(null);
 
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
@@ -60,14 +55,8 @@ const Pricing = () => {
     }
   };
 
-  const handleAsaasClick = (plan: typeof plans[0]) => {
-    if (!user) {
-      toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
-      navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-      return;
-    }
-    setSelectedPlanForAsaas({ name: plan.name, value: plan.priceValue, planType: plan.planType });
-    setAsaasOpen(true);
+  const handleAsaasClick = (asaasLink: string) => {
+    window.open(asaasLink, '_blank');
   };
 
   const plans = [
@@ -90,7 +79,8 @@ const Pricing = () => {
       buttonText: "Assinar Life Balance",
       buttonVariant: "default" as const,
       popular: focusPlan === 'life_balance',
-      planType: 'life_balance' as const
+      planType: 'life_balance' as const,
+      asaasLink: 'https://www.asaas.com/c/qtkoc87xdrt3l8wj'
     },
     {
       name: "Growth Pack",
@@ -111,7 +101,8 @@ const Pricing = () => {
       buttonText: "Assinar Growth Pack",
       buttonVariant: "default" as const,
       popular: focusPlan === 'growth',
-      planType: 'growth' as const
+      planType: 'growth' as const,
+      asaasLink: 'https://www.asaas.com/c/aqw3t2xjukggwir1'
     },
     {
       name: "Orbitha Suite",
@@ -132,7 +123,8 @@ const Pricing = () => {
       buttonText: "Assinar Orbitha Suite",
       buttonVariant: "default" as const,
       popular: focusPlan === 'suite',
-      planType: 'suite' as const
+      planType: 'suite' as const,
+      asaasLink: 'https://www.asaas.com/c/1swscxe5qq9x1x1l'
     }
   ];
 
@@ -208,7 +200,7 @@ const Pricing = () => {
                   className="w-full"
                   variant="outline"
                   size="lg"
-                  onClick={() => handleAsaasClick(plan)}
+                  onClick={() => handleAsaasClick(plan.asaasLink)}
                   disabled={isCurrentPlan}
                 >
                   {isCurrentPlan ? "Plano Atual" : "Pagar com Pix"}
@@ -227,16 +219,6 @@ const Pricing = () => {
         {/* ... (FAQ kept same) ... */}
 
       </div>
-
-      {selectedPlanForAsaas && (
-        <AsaasCheckoutDialog
-          open={asaasOpen}
-          onOpenChange={setAsaasOpen}
-          value={selectedPlanForAsaas.value}
-          planName={selectedPlanForAsaas.name}
-          planType={selectedPlanForAsaas.planType}
-        />
-      )}
     </div>
   );
 };
