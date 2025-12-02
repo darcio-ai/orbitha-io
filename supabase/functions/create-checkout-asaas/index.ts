@@ -40,12 +40,16 @@ serve(async (req) => {
         console.log("Billing info:", billingInfo);
         console.log("Billing type:", billingType);
 
-        if (!planType || (planType !== 'growth' && planType !== 'suite')) {
+        if (!planType || !['growth', 'suite', 'life_balance'].includes(planType)) {
             throw new Error("Invalid plan type");
         }
 
-        const value = planType === 'growth' ? 97.00 : 147.00;
-        const description = planType === 'growth' ? "Assinatura Growth Pack" : "Assinatura Orbitha Suite";
+        const planConfig = {
+            life_balance: { value: 67.00, description: "Assinatura Life Balance Pack" },
+            growth: { value: 97.00, description: "Assinatura Growth Pack" },
+            suite: { value: 147.00, description: "Assinatura Orbitha Suite" }
+        };
+        const { value, description } = planConfig[planType];
 
         const asaasApiKey = Deno.env.get("ASAAS_API_KEY");
         const asaasApiUrl = Deno.env.get("ASAAS_API_URL");

@@ -7,21 +7,53 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
+import { createAsaasCheckout } from "@/services/payment";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const { subscription, isActive, planType, isLoading: subscriptionLoading } = useUserSubscription();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
   useEffect(() => {
     document.title = "Planos | Financial Assistant Premium";
+    
+    // Verificar se usuário está logado
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
   }, []);
 
-  const handleAsaasClick = (asaasLink: string) => {
-    window.open(asaasLink, '_blank');
+  const handleAsaasCheckout = async (planType: 'growth' | 'suite' | 'life_balance') => {
+    if (!user) {
+      toast({ 
+        title: "Login necessário", 
+        description: "Faça login para assinar.",
+        variant: "default"
+      });
+      navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const { url } = await createAsaasCheckout(planType, {}, 'UNDEFINED');
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      toast({
+        title: "Erro no pagamento",
+        description: error.message || "Ocorreu um erro ao processar o pagamento.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const plans = [
@@ -42,8 +74,7 @@ const Pricing = () => {
       buttonText: "Assinar Life Balance",
       buttonVariant: "default" as const,
       popular: focusPlan === 'life_balance',
-      planType: 'life_balance' as const,
-      asaasLink: 'https://www.asaas.com/c/qtkoc87xdrt3l8wj'
+      planType: 'life_balance' as const
     },
     {
       name: "Growth Pack",
@@ -62,8 +93,7 @@ const Pricing = () => {
       buttonText: "Assinar Growth Pack",
       buttonVariant: "default" as const,
       popular: focusPlan === 'growth',
-      planType: 'growth' as const,
-      asaasLink: 'https://www.asaas.com/c/aqw3t2xjukggwir1'
+      planType: 'growth' as const
     },
     {
       name: "Orbitha Suite",
@@ -82,8 +112,7 @@ const Pricing = () => {
       buttonText: "Assinar Orbitha Suite",
       buttonVariant: "default" as const,
       popular: focusPlan === 'suite',
-      planType: 'suite' as const,
-      asaasLink: 'https://www.asaas.com/c/1swscxe5qq9x1x1l'
+      planType: 'suite' as const
     }
   ];
 
@@ -150,10 +179,10 @@ const Pricing = () => {
                   className="w-full"
                   variant="default"
                   size="lg"
-                  onClick={() => handleAsaasClick(plan.asaasLink)}
-                  disabled={isCurrentPlan}
+                  onClick={() => handleAsaasCheckout(plan.planType)}
+                  disabled={loading || isCurrentPlan}
                 >
-                  {isCurrentPlan ? "Plano Atual" : "Pagar Agora"}
+                  {isCurrentPlan ? "Plano Atual" : loading ? "Processando..." : "Pagar Agora"}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   ✅ 7 dias de garantia incondicional<br />
