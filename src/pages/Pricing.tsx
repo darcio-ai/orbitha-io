@@ -6,54 +6,19 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { createStripeCheckout } from "@/services/payment";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const [user, setUser] = useState(null);
-  const [loadingStripe, setLoadingStripe] = useState(false);
   const { subscription, isActive, planType, isLoading: subscriptionLoading } = useUserSubscription();
 
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
   useEffect(() => {
     document.title = "Planos | Financial Assistant Premium";
-    // ... (meta tags logic kept same)
-
-    // Verificar se usuário está logado
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
   }, []);
-
-  // Removed MercadoPago initialization
-
-  const handleStripeCheckout = async (planType: 'growth' | 'suite' | 'life_balance') => {
-    if (!user) {
-      toast({ title: "Login necessário", description: "Faça login para assinar.", variant: "default" });
-      navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-      return;
-    }
-    
-    setLoadingStripe(true);
-    try {
-      const { url } = await createStripeCheckout(planType);
-      if (url) {
-        window.location.href = url;
-      }
-    } catch (error) {
-      toast({
-        title: "Erro no pagamento",
-        description: error.message || "Ocorreu um erro ao processar o pagamento.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoadingStripe(false);
-    }
-  };
 
   const handleAsaasClick = (asaasLink: string) => {
     window.open(asaasLink, '_blank');
@@ -63,8 +28,6 @@ const Pricing = () => {
     {
       name: "Life Balance Pack",
       price: "R$ 67,00",
-      priceValue: 67.00,
-      stripePriceId: "price_life_balance_pack",
       period: "/mês",
       subtitle: "Equilíbrio pessoal e bem-estar",
       description: "Fitness, Viagens e Finanças pessoais",
@@ -85,8 +48,6 @@ const Pricing = () => {
     {
       name: "Growth Pack",
       price: "R$ 97,00",
-      priceValue: 97.00,
-      stripePriceId: "price_1SXZ8cJVqrOuT3N7Frp0xJbv",
       period: "/mês",
       subtitle: "Pra vender mais e atender melhor",
       description: "Ideal para vendas, marketing e suporte",
@@ -107,8 +68,6 @@ const Pricing = () => {
     {
       name: "Orbitha Suite",
       price: "R$ 147,00",
-      priceValue: 147.00,
-      stripePriceId: "price_1SXZ9FJVqrOuT3N73PzMG5ca",
       period: "/mês",
       subtitle: "Negócio + vida pessoal",
       description: "Todos os 7 assistentes + recursos premium",
@@ -189,21 +148,12 @@ const Pricing = () => {
               <CardFooter className="flex-col gap-3 px-4 md:px-6">
                 <Button
                   className="w-full"
-                  variant={plan.buttonVariant}
-                  size="lg"
-                  onClick={() => handleStripeCheckout(plan.planType)}
-                  disabled={loadingStripe || isCurrentPlan}
-                >
-                  {isCurrentPlan ? "Plano Atual" : loadingStripe ? "Processando..." : "Pagar com Cartão"}
-                </Button>
-                <Button
-                  className="w-full"
-                  variant="outline"
+                  variant="default"
                   size="lg"
                   onClick={() => handleAsaasClick(plan.asaasLink)}
                   disabled={isCurrentPlan}
                 >
-                  {isCurrentPlan ? "Plano Atual" : "Pagar com Pix"}
+                  {isCurrentPlan ? "Plano Atual" : "Pagar Agora"}
                 </Button>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
                   ✅ 7 dias de garantia incondicional<br />
