@@ -197,6 +197,48 @@ export type Database = {
         }
         Relationships: []
       }
+      sales: {
+        Row: {
+          acquisition_channel: string
+          amount: number
+          created_at: string | null
+          external_payment_id: string | null
+          id: string
+          payment_method: string | null
+          product_name: string
+          product_type: string
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acquisition_channel: string
+          amount: number
+          created_at?: string | null
+          external_payment_id?: string | null
+          id?: string
+          payment_method?: string | null
+          product_name: string
+          product_type: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acquisition_channel?: string
+          amount?: number
+          created_at?: string | null
+          external_payment_id?: string | null
+          id?: string
+          payment_method?: string | null
+          product_name?: string
+          product_type?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

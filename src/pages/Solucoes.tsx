@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   MessageSquare, 
@@ -11,10 +11,16 @@ import {
   ArrowRight,
   Users,
   BarChart3,
-  Clock
+  Clock,
+  ShoppingCart
 } from "lucide-react";
 
 const Solucoes = () => {
+  const handleContact = (message?: string) => {
+    const text = message || "Oi! Quero saber mais sobre as soluções de IA da Orbitha";
+    window.open(`https://wa.me/5513991497873?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
   const solutions = [
     {
       icon: <MessageSquare className="h-12 w-12" />,
@@ -71,6 +77,34 @@ const Solucoes = () => {
       ],
       benefits: ["3x mais conversões", "Pipeline sempre organizado"],
       category: "Vendas"
+    },
+    {
+      icon: <BarChart3 className="h-12 w-12" />,
+      title: "Relatórios Inteligentes",
+      description: "Dashboards automáticos que transformam dados em insights acionáveis para seu negócio",
+      features: [
+        "Análise de métricas em tempo real",
+        "Previsões com IA",
+        "Alertas inteligentes",
+        "Visualizações personalizadas",
+        "Exportação automatizada"
+      ],
+      benefits: ["Decisões baseadas em dados", "Visibilidade total do negócio"],
+      category: "Analytics"
+    },
+    {
+      icon: <Zap className="h-12 w-12" />,
+      title: "Automação de Processos",
+      description: "Conecte diferentes ferramentas e crie fluxos automatizados que economizam horas do seu dia",
+      features: [
+        "Integrações múltiplas",
+        "Workflows customizados",
+        "Gatilhos inteligentes",
+        "Monitoramento em tempo real",
+        "Logs detalhados"
+      ],
+      benefits: ["80% menos trabalho manual", "Processos sem erros"],
+      category: "Automação"
     }
   ];
 
@@ -81,23 +115,49 @@ const Solucoes = () => {
     { icon: <Zap className="h-8 w-8" />, number: "3x", label: "Aumento na produtividade" }
   ];
 
+  const steps = [
+    {
+      number: "1",
+      title: "Consulta Inicial",
+      description: "Conversamos sobre seu negócio, processos atuais e identificamos oportunidades de automação."
+    },
+    {
+      number: "2",
+      title: "Desenvolvimento",
+      description: "Criamos seu agente de IA personalizado e integramos com suas ferramentas existentes."
+    },
+    {
+      number: "3",
+      title: "Treinamento & Deploy",
+      description: "Treinamos sua equipe e colocamos o agente em produção com suporte total."
+    },
+    {
+      number: "4",
+      title: "Otimização Contínua",
+      description: "Monitoramos performance e otimizamos continuamente para maximizar resultados."
+    }
+  ];
+
   return (
     <div className="min-h-screen pt-16">
       {/* Hero Section */}
       <section className="py-24 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6">
-              <Zap className="h-4 w-4 mr-2" />
-              Soluções em IA
-            </Badge>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
+              <Bot className="w-5 h-5" />
+              <span className="text-sm font-medium">Soluções B2B em IA</span>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Soluções que <span className="bg-gradient-primary bg-clip-text text-transparent">transformam</span>
+              Soluções que <span className="bg-gradient-primary bg-clip-text text-transparent">transformam</span> seu negócio
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Descubra como nossas soluções de inteligência artificial podem revolucionar 
-              os processos da sua empresa e aumentar sua produtividade.
+              Automatize processos, integre ferramentas e escale seu negócio com agentes de inteligência artificial 
+              desenvolvidos sob medida para suas necessidades.
             </p>
+            <Button size="lg" onClick={() => handleContact()} className="text-lg px-8">
+              Falar com Especialista
+            </Button>
           </div>
 
           {/* Stats */}
@@ -121,9 +181,52 @@ const Solucoes = () => {
         </div>
       </section>
 
+      {/* Benefits Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 lg:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <Card className="bg-card/50 backdrop-blur border-border/50">
+              <CardHeader>
+                <CardTitle className="text-xl">🚀 Implementação Rápida</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Agentes prontos em dias, não meses. Comece a economizar tempo imediatamente.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur border-border/50">
+              <CardHeader>
+                <CardTitle className="text-xl">🎯 100% Customizado</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Cada agente é desenvolvido especificamente para o seu negócio e processos.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-card/50 backdrop-blur border-border/50">
+              <CardHeader>
+                <CardTitle className="text-xl">💰 ROI Garantido</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Economize horas de trabalho manual e reduza custos operacionais drasticamente.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Solutions Section */}
       <section className="py-24">
         <div className="container mx-auto px-4 lg:px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Nossas <span className="text-primary">Soluções</span>
+          </h2>
           <div className="space-y-16">
             {solutions.map((solution, index) => (
               <Card key={index} className="bg-card border-border shadow-card overflow-hidden">
@@ -168,19 +271,36 @@ const Solucoes = () => {
                         </div>
                       ))}
                     </div>
-                    <Button className="w-full mt-8" asChild>
-                      <a
-                        href={`https://wa.me/5513991497873?text=Oi! Quero saber mais sobre: ${solution.title}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Quero essa solução
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </a>
+                    <Button className="w-full mt-8" onClick={() => handleContact(`Oi! Quero saber mais sobre: ${solution.title}`)}>
+                      Quero essa solução
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardContent>
                 </div>
               </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 lg:px-6 max-w-4xl">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            Como <span className="text-primary">Funciona</span>
+          </h2>
+
+          <div className="space-y-8">
+            {steps.map((step, index) => (
+              <div key={index} className="flex gap-6 items-start">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span className="text-xl font-bold text-primary">{step.number}</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
+                  <p className="text-muted-foreground">{step.description}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -191,21 +311,14 @@ const Solucoes = () => {
         <div className="container mx-auto px-4 lg:px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-6">
-              Pronto para começar?
+              Pronto para automatizar seu negócio?
             </h2>
             <p className="text-xl text-primary-foreground/80 mb-8">
-              Não deixe sua concorrência sair na frente. Vamos conversar sobre como 
-              podemos automatizar seus processos hoje mesmo.
+              Agende uma conversa gratuita e descubra como nossos agentes de IA podem transformar sua operação.
             </p>
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
-              <a
-                href="https://wa.me/5513991497873?text=Oi! Quero implementar soluções de IA na minha empresa"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Falar com Especialista
-              </a>
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-6" onClick={() => handleContact("Oi! Quero agendar uma consulta gratuita sobre automação com IA")}>
+              <MessageSquare className="mr-2 h-5 w-5" />
+              Agendar Consulta Gratuita
             </Button>
           </div>
         </div>

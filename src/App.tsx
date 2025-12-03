@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppFloat from "./components/WhatsAppFloat";
@@ -14,7 +14,6 @@ import Solucoes from "./pages/Solucoes";
 import Produtos from "./pages/Produtos";
 import Blog from "./pages/Blog";
 import Contato from "./pages/Contato";
-import AgentesIA from "./pages/AgentesIA";
 import FinancialAssistant from "./pages/FinancialAssistant";
 import BusinessAssistant from "./pages/BusinessAssistant";
 import TravelAssistant from "./pages/TravelAssistant";
@@ -63,7 +62,6 @@ function AppRoutes() {
       <Route path="/quem-sou" element={<><Header /><QuemSou /><Footer /><WhatsAppFloat /></>} />
       <Route path="/mentoria" element={<><Header /><Mentoria /><Footer /><WhatsAppFloat /></>} />
       <Route path="/solucoes" element={<><Header /><Solucoes /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/agentes-ia" element={<><Header /><AgentesIA /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes" element={<><Header /><Produtos /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes/financial-assistant" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistente-financeiro" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
@@ -80,6 +78,9 @@ function AppRoutes() {
       <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       <Route path="/planos" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       <Route path="/termos" element={<><Header /><Termos /><Footer /><WhatsAppFloat /></>} />
+      
+      {/* Redirect old route to new */}
+      <Route path="/agentes-ia" element={<Navigate to="/solucoes" replace />} />
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
