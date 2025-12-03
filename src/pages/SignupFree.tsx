@@ -141,7 +141,7 @@ const SignupFree = () => {
         const { data: agents, error: agentError } = await supabase
           .from("agents")
           .select("id")
-          .eq("name", "Financial Assistant")
+          .eq("name", "Assistente Financeiro")
           .eq("status", "active")
           .single();
 
@@ -151,7 +151,7 @@ const SignupFree = () => {
         }
 
         if (!agents) {
-          throw new Error("Agente Financial Assistant não encontrado. Por favor, contate o suporte.");
+          throw new Error("Agente Assistente Financeiro não encontrado. Por favor, contate o suporte.");
         }
 
         const { error: agentAccessError } = await supabase
@@ -193,7 +193,7 @@ const SignupFree = () => {
             Experimente os Assistentes de IA da Orbitha
           </CardTitle>
           <CardDescription className="text-base">
-            7 mensagens grátis para conhecer cada assistente antes de assinar
+            Conheça todos os assistentes antes de assinar
           </CardDescription>
         </CardHeader>
 
