@@ -40,6 +40,7 @@ import NotFound from "./pages/NotFound";
 import AdminSetup from "./pages/AdminSetup";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import ScrollToTop from "./components/ScrollToTop";
+import Termos from "./pages/Termos";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -78,6 +79,7 @@ function AppRoutes() {
       <Route path="/contato" element={<><Header /><Contato /><Footer /><WhatsAppFloat /></>} />
       <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       <Route path="/planos" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/termos" element={<><Header /><Termos /><Footer /><WhatsAppFloat /></>} />
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
