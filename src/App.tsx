@@ -88,7 +88,7 @@ function AppRoutes() {
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro-gratuito" element={<SignupFree />} />
       <Route path="/admin/setup" element={<AdminSetup />} />
-      <Route path="/admin/generate-dora" element={<AdminGenerateDora />} />
+      <Route path="/tools/generate-dora" element={<AdminGenerateDora />} />
       
       {/* Dashboard routes with sidebar */}
       <Route path="/dashboard" element={<DashboardLayout />}>
