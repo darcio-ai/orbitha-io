@@ -8,8 +8,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Edit, Ban, Key, Trash2, Plus, Search, Users } from "lucide-react";
+import { Edit, Ban, Key, Trash2, Plus, Search, Users, Bot } from "lucide-react";
 import { format } from "date-fns";
 import { AdminGuard } from "@/components/AdminGuard";
 
@@ -20,7 +22,14 @@ interface Profile {
   phone: string;
   email: string;
   created_at: string;
+  subscription_status: string | null;
   user_roles: Array<{ role: string }>;
+}
+
+interface Agent {
+  id: string;
+  name: string;
+  avatar_url: string | null;
 }
 
 const DashboardUsers = () => {
@@ -35,6 +44,8 @@ const DashboardUsers = () => {
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
+  const [userAgents, setUserAgents] = useState<Record<string, Agent[]>>({});
+  const [loadingAgents, setLoadingAgents] = useState<Record<string, boolean>>({});
   
   const [formData, setFormData] = useState({
     firstname: "",
@@ -70,7 +81,7 @@ const DashboardUsers = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("profiles")
-      .select("*, user_roles(role)")
+      .select("id, firstname, lastname, phone, email, created_at, subscription_status, user_roles(role)")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -84,6 +95,38 @@ const DashboardUsers = () => {
       setFilteredUsers(data || []);
     }
     setLoading(false);
+  };
+
+  const fetchUserAgents = async (userId: string) => {
+    if (userAgents[userId] || loadingAgents[userId]) return;
+    
+    setLoadingAgents(prev => ({ ...prev, [userId]: true }));
+    
+    const { data, error } = await supabase
+      .from("agents_users")
+      .select("agent_id, agents(id, name, avatar_url)")
+      .eq("user_id", userId);
+
+    if (!error && data) {
+      const agents: Agent[] = data
+        .map(au => au.agents as unknown as Agent | null)
+        .filter((a): a is Agent => a !== null);
+      setUserAgents(prev => ({ ...prev, [userId]: agents }));
+    }
+    
+    setLoadingAgents(prev => ({ ...prev, [userId]: false }));
+  };
+
+  const getSubscriptionBadge = (status: string | null) => {
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Ativo</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Pendente</Badge>;
+      case 'inactive':
+      default:
+        return <Badge variant="secondary" className="bg-muted text-muted-foreground">Inativo</Badge>;
+    }
   };
 
   const validatePhone = (phone: string) => {
@@ -109,7 +152,6 @@ const DashboardUsers = () => {
     }
 
     try {
-      // Refresh session before calling admin function
       const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
       
       if (sessionError || !session) {
@@ -128,7 +170,6 @@ const DashboardUsers = () => {
       });
 
       if (error) {
-        // Extract error message from edge function response
         const errorMessage = error.message || 'Erro desconhecido ao criar usuário';
         throw new Error(errorMessage);
       }
@@ -141,11 +182,9 @@ const DashboardUsers = () => {
       setFormData({ firstname: "", lastname: "", phone: "", email: "", password: "", role: "user" });
       fetchUsers();
     } catch (error: any) {
-      // Handle edge function errors
       let errorMessage = error.message;
       
       if (errorMessage.includes('400:')) {
-        // Extract the actual error message from edge function format
         const match = errorMessage.match(/{"error":"([^"]+)"}/);
         if (match) {
           errorMessage = match[1];
@@ -238,7 +277,6 @@ const DashboardUsers = () => {
     }
 
     try {
-      // Refresh session before calling admin function
       const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
       
       if (sessionError || !session) {
@@ -284,7 +322,6 @@ const DashboardUsers = () => {
   };
 
   const handleToggleSuspend = async (user: Profile) => {
-    // Implementação futura: adicionar coluna suspended no banco
     toast({
       title: "Funcionalidade em desenvolvimento",
       description: "Suspensão de usuário será implementada em breve.",
@@ -295,7 +332,6 @@ const DashboardUsers = () => {
     if (!selectedUser) return;
 
     try {
-      // Refresh session before calling admin function
       const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
       
       if (sessionError || !session) {
@@ -458,6 +494,8 @@ const DashboardUsers = () => {
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Telefone</TableHead>
+              <TableHead>Assinatura</TableHead>
+              <TableHead>Agentes</TableHead>
               <TableHead>Data de Cadastro</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -465,7 +503,7 @@ const DashboardUsers = () => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                   </div>
@@ -473,7 +511,7 @@ const DashboardUsers = () => {
               </TableRow>
             ) : paginatedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                   Nenhum usuário encontrado
                 </TableCell>
               </TableRow>
@@ -485,6 +523,49 @@ const DashboardUsers = () => {
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{user.phone}</TableCell>
+                  <TableCell>{getSubscriptionBadge(user.subscription_status)}</TableCell>
+                  <TableCell>
+                    {user.user_roles.some(r => r.role === 'admin') ? (
+                      <Badge variant="outline" className="text-xs">Todos (Admin)</Badge>
+                    ) : (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 px-2"
+                            onClick={() => fetchUserAgents(user.id)}
+                          >
+                            <Bot className="h-4 w-4 mr-1" />
+                            Ver
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64">
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-sm">Agentes vinculados</h4>
+                            {loadingAgents[user.id] ? (
+                              <p className="text-xs text-muted-foreground">Carregando...</p>
+                            ) : userAgents[user.id]?.length > 0 ? (
+                              <div className="space-y-1">
+                                {userAgents[user.id].map(agent => (
+                                  <div key={agent.id} className="flex items-center gap-2 text-sm">
+                                    {agent.avatar_url ? (
+                                      <img src={agent.avatar_url} alt="" className="w-5 h-5 rounded-full" />
+                                    ) : (
+                                      <Bot className="w-5 h-5 text-muted-foreground" />
+                                    )}
+                                    <span>{agent.name}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">Nenhum agente vinculado</p>
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </TableCell>
                   <TableCell>{format(new Date(user.created_at), "dd/MM/yyyy")}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">

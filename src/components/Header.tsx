@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import orbithaLogo from "@/assets/orbitha-logo-new.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,9 +48,8 @@ const Header = () => {
     { name: "Home", href: "/" },
     { name: "Quem Sou", href: "/quem-sou" },
     { name: "Mentoria", href: "/mentoria" },
-    { name: "Agentes de IA", href: "/agentes-ia" },
-    { name: "Assistentes de IA", href: "/assistentes" },
-    { name: "Soluções", href: "/solucoes" },
+    { name: "Soluções B2B", href: "/solucoes" },
+    { name: "Assistentes IA", href: "/assistentes" },
     { name: "Preços", href: "/pricing" },
     { name: "Blog", href: "/blog" },
     { name: "Contato", href: "/contato" },
@@ -208,24 +207,24 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {/* IA - Dropdown */}
+              {/* Soluções de IA - Dropdown */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-muted-foreground hover:text-primary hover:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary">
-                  IA
+                  Soluções de IA
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-52 gap-1 p-2">
+                  <ul className="grid w-56 gap-1 p-2">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/agentes-ia"
+                          to="/solucoes"
                           className={cn(
                             "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                            isActive("/agentes-ia") && "bg-accent/50"
+                            isActive("/solucoes") && "bg-accent/50"
                           )}
                         >
-                          <div className="text-sm font-medium">Agentes de IA</div>
-                          <p className="text-xs text-muted-foreground mt-1">Agentes personalizados</p>
+                          <div className="text-sm font-medium">Soluções B2B</div>
+                          <p className="text-xs text-muted-foreground mt-1">Automação e agentes para empresas</p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -238,26 +237,13 @@ const Header = () => {
                             isActive("/assistentes") && "bg-accent/50"
                           )}
                         >
-                          <div className="text-sm font-medium">Assistentes de IA</div>
-                          <p className="text-xs text-muted-foreground mt-1">Assistentes especializados</p>
+                          <div className="text-sm font-medium">Assistentes IA</div>
+                          <p className="text-xs text-muted-foreground mt-1">Teste nossos assistentes com demo</p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
                   </ul>
                 </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              {/* Soluções - Simple Link */}
-              <NavigationMenuItem>
-                <Link
-                  to="/solucoes"
-                  className={cn(
-                    "text-sm font-medium transition-all hover:text-primary px-3 py-2 rounded-md",
-                    isActive("/solucoes") ? "text-primary" : "text-muted-foreground"
-                  )}
-                >
-                  Soluções
-                </Link>
               </NavigationMenuItem>
 
               {/* Preços - Simple Link */}
