@@ -322,7 +322,11 @@ const Login = () => {
               </form>
             </div>
             <p className="px-8 text-center text-sm text-muted-foreground mt-4">
-              Ao continuar, você concorda com os termos de uso da Orbitha.
+              Ao continuar, você concorda com os{" "}
+              <Link to="/termos" className="text-primary hover:underline">
+                termos de uso
+              </Link>{" "}
+              da Orbitha.
             </p>
           </CardContent>
         </Card>

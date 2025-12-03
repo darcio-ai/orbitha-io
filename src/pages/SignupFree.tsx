@@ -171,8 +171,8 @@ const SignupFree = () => {
           description: "Sua conta foi criada com sucesso. Experimente nossos assistentes!",
         });
 
-        // Navigate to assistant
-        navigate("/assistentes/financial-assistant");
+        // Navigate to assistants page
+        navigate("/assistentes");
       }
     } catch (error: any) {
       toast({
