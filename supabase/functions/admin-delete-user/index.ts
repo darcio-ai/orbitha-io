@@ -56,22 +56,54 @@ Deno.serve(async (req) => {
       throw new Error('Insufficient permissions')
     }
 
-    const { userId } = await req.json()
+    const { userId, userIds } = await req.json()
+
+    // Support both single userId and array of userIds
+    const idsToDelete: string[] = userIds ? userIds : (userId ? [userId] : [])
+
+    if (idsToDelete.length === 0) {
+      throw new Error('Nenhum usuário especificado para exclusão')
+    }
 
     // Prevent admin from deleting themselves
-    if (userId === user.id) {
+    if (idsToDelete.includes(user.id)) {
       throw new Error('Você não pode deletar sua própria conta')
     }
 
-    // Delete user from auth (this will cascade delete from profiles and user_roles)
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId)
+    console.log(`Starting deletion of ${idsToDelete.length} user(s)`)
 
-    if (deleteError) throw deleteError
+    // Track results
+    const results: { success: string[]; failed: Array<{ id: string; error: string }> } = {
+      success: [],
+      failed: []
+    }
 
-    console.log(`User deleted successfully: ${userId}`)
+    // Delete each user
+    for (const id of idsToDelete) {
+      try {
+        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(id)
+
+        if (deleteError) {
+          console.error(`Failed to delete user ${id}:`, deleteError.message)
+          results.failed.push({ id, error: deleteError.message })
+        } else {
+          console.log(`User deleted successfully: ${id}`)
+          results.success.push(id)
+        }
+      } catch (err: any) {
+        console.error(`Exception deleting user ${id}:`, err.message)
+        results.failed.push({ id, error: err.message })
+      }
+    }
+
+    console.log(`Bulk delete completed: ${results.success.length} success, ${results.failed.length} failed`)
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true, 
+        deleted: results.success.length,
+        failed: results.failed 
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
