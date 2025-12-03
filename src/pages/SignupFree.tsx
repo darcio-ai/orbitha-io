@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
@@ -25,20 +24,18 @@ const signupSchema = z.object({
     .trim()
     .min(1, "WhatsApp é obrigatório")
     .refine((val) => {
-      // Remove all non-digit characters except +
-      const cleaned = val.replace(/[^\d+]/g, '');
-      // Check if it has at least 8 digits and starts with + or (
-      return cleaned.length >= 10 && (cleaned.startsWith('+') || val.startsWith('('));
+      // Remove all non-digit characters
+      const digits = val.replace(/\D/g, '');
+      // Must have at least 10 digits (DDD + number)
+      return digits.length >= 10;
     }, {
-      message: "Formato inválido. Use +55 (11) 99999-9999 ou internacional +xx"
+      message: "Digite um número válido com DDD (ex: 11999999999)"
     }),
   password: z.string()
     .min(6, "Senha deve ter pelo menos 6 caracteres")
     .max(100, "Senha muito longa"),
   confirmPassword: z.string(),
   age: z.string().optional(),
-  monthlyIncome: z.string().optional(),
-  financialGoal: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -55,25 +52,47 @@ const SignupFree = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
 
-  const financialGoal = watch("financialGoal");
-
-  // Format WhatsApp to international format
+  // Format WhatsApp: accepts any format, outputs +55 (XX) XXXXX-XXXX
   const formatWhatsApp = (value: string): string => {
-    // Remove all non-digit characters except +
-    let cleaned = value.replace(/[^\d+]/g, '');
+    // Extract only digits
+    let digits = value.replace(/\D/g, '');
     
-    // If starts with ( assume Brazilian format and add +55
-    if (value.trim().startsWith('(') && !cleaned.startsWith('+')) {
-      cleaned = '+55' + cleaned;
+    // If already has country code (starts with 55 and has 12-13 digits), keep it
+    if (digits.startsWith('55') && digits.length >= 12) {
+      return '+' + digits;
     }
     
-    return cleaned;
+    // Otherwise, add Brazilian country code
+    return '+55' + digits;
+  };
+
+  // Format display as user types
+  const formatPhoneDisplay = (value: string): string => {
+    // Extract only digits
+    let digits = value.replace(/\D/g, '');
+    
+    // Remove 55 prefix if present for formatting
+    if (digits.startsWith('55') && digits.length > 11) {
+      digits = digits.substring(2);
+    }
+    
+    // Format: (XX) XXXXX-XXXX
+    if (digits.length <= 2) {
+      return digits;
+    } else if (digits.length <= 7) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+    }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneDisplay(e.target.value);
+    e.target.value = formatted;
   };
 
   const onSubmit = async (data: SignupFormData) => {
@@ -84,7 +103,7 @@ const SignupFree = () => {
       const firstname = nameParts[0];
       const lastname = nameParts.slice(1).join(" ") || "";
       
-      // Format WhatsApp to international standard
+      // Format WhatsApp to international standard with +55
       const formattedWhatsApp = formatWhatsApp(data.whatsapp);
 
       // Create user with Supabase Auth
@@ -110,8 +129,6 @@ const SignupFree = () => {
             whatsapp: formattedWhatsApp,
             plan: "free",
             age: data.age ? parseInt(data.age) : null,
-            monthly_income: data.monthlyIncome ? parseFloat(data.monthlyIncome) : null,
-            financial_goal: data.financialGoal || null,
           })
           .eq("id", authData.user.id);
 
@@ -150,8 +167,8 @@ const SignupFree = () => {
         }
 
         toast({
-          title: "Bem-vindo ao Financial Assistant!",
-          description: "Sua conta gratuita foi criada com sucesso.",
+          title: "Bem-vindo à Orbitha!",
+          description: "Sua conta foi criada com sucesso. Experimente nossos assistentes!",
         });
 
         // Navigate to assistant
@@ -170,146 +187,90 @@ const SignupFree = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4">
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-foreground">
-            Comece Grátis com o Score Patrimonial
+          <CardTitle className="text-2xl font-bold text-foreground">
+            Experimente os Assistentes de IA da Orbitha
           </CardTitle>
-          <CardDescription className="text-lg">
-            Descubra seu Score Patrimonial 0-100 em menos de 2 minutos
+          <CardDescription className="text-base">
+            7 mensagens grátis para conhecer cada assistente antes de assinar
           </CardDescription>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Required Fields */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">Nome Completo *</Label>
-                <Input
-                  id="fullName"
-                  {...register("fullName")}
-                  placeholder="João Silva"
-                  disabled={isLoading}
-                />
-                {errors.fullName && (
-                  <p className="text-sm text-destructive mt-1">{errors.fullName.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  placeholder="joao@exemplo.com"
-                  disabled={isLoading}
-                />
-                {errors.email && (
-                  <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="whatsapp">WhatsApp *</Label>
-                <Input
-                  id="whatsapp"
-                  type="tel"
-                  {...register("whatsapp")}
-                  placeholder="+55 (11) 99999-9999"
-                  disabled={isLoading}
-                />
-                {errors.whatsapp && (
-                  <p className="text-sm text-destructive mt-1">{errors.whatsapp.message}</p>
-                )}
-                <p className="text-xs text-muted-foreground mt-1">
-                  Formatos aceitos: +55 (11) 99999-9999 ou internacional +xx
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="password">Senha *</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  {...register("password")}
-                  placeholder="Mínimo 6 caracteres"
-                  disabled={isLoading}
-                />
-                {errors.password && (
-                  <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="confirmPassword">Confirmar Senha *</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  {...register("confirmPassword")}
-                  placeholder="Digite a senha novamente"
-                  disabled={isLoading}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive mt-1">{errors.confirmPassword.message}</p>
-                )}
-              </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Label htmlFor="fullName">Nome Completo *</Label>
+              <Input
+                id="fullName"
+                {...register("fullName")}
+                placeholder="João Silva"
+                disabled={isLoading}
+              />
+              {errors.fullName && (
+                <p className="text-sm text-destructive mt-1">{errors.fullName.message}</p>
+              )}
             </div>
 
-            {/* Optional Fields */}
-            <div className="pt-4 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-4">
-                Campos opcionais (nos ajudam a personalizar sua experiência):
+            <div>
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                {...register("email")}
+                placeholder="joao@exemplo.com"
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="whatsapp">WhatsApp *</Label>
+              <Input
+                id="whatsapp"
+                type="tel"
+                {...register("whatsapp", {
+                  onChange: handlePhoneChange
+                })}
+                placeholder="(11) 99999-9999"
+                disabled={isLoading}
+              />
+              {errors.whatsapp && (
+                <p className="text-sm text-destructive mt-1">{errors.whatsapp.message}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">
+                +55 será adicionado automaticamente
               </p>
+            </div>
 
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="age">Idade</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    {...register("age")}
-                    placeholder="35"
-                    min="18"
-                    max="120"
-                    disabled={isLoading}
-                  />
-                </div>
+            <div>
+              <Label htmlFor="password">Senha *</Label>
+              <Input
+                id="password"
+                type="password"
+                {...register("password")}
+                placeholder="Mínimo 6 caracteres"
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
+              )}
+            </div>
 
-                <div>
-                  <Label htmlFor="monthlyIncome">Renda Mensal Aproximada</Label>
-                  <Input
-                    id="monthlyIncome"
-                    type="number"
-                    {...register("monthlyIncome")}
-                    placeholder="5000"
-                    min="0"
-                    step="0.01"
-                    disabled={isLoading}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="financialGoal">Objetivo Financeiro Principal</Label>
-                  <Select
-                    value={financialGoal}
-                    onValueChange={(value) => setValue("financialGoal", value)}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um objetivo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="organizar">Organizar finanças</SelectItem>
-                      <SelectItem value="investir">Investir melhor</SelectItem>
-                      <SelectItem value="casa">Comprar casa própria</SelectItem>
-                      <SelectItem value="aposentadoria">Aposentadoria</SelectItem>
-                      <SelectItem value="educacao">Educação dos filhos</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+            <div>
+              <Label htmlFor="confirmPassword">Confirmar Senha *</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                {...register("confirmPassword")}
+                placeholder="Digite a senha novamente"
+                disabled={isLoading}
+              />
+              {errors.confirmPassword && (
+                <p className="text-sm text-destructive mt-1">{errors.confirmPassword.message}</p>
+              )}
             </div>
 
             <Button
@@ -324,7 +285,7 @@ const SignupFree = () => {
                   Criando conta...
                 </>
               ) : (
-                "Criar Conta Gratuita"
+                "Criar Conta"
               )}
             </Button>
           </form>
