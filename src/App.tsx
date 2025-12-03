@@ -40,6 +40,7 @@ import AdminSetup from "./pages/AdminSetup";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import ScrollToTop from "./components/ScrollToTop";
 import Termos from "./pages/Termos";
+import AdminGenerateDora from "./pages/AdminGenerateDora";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -87,6 +88,7 @@ function AppRoutes() {
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro-gratuito" element={<SignupFree />} />
       <Route path="/admin/setup" element={<AdminSetup />} />
+      <Route path="/admin/generate-dora" element={<AdminGenerateDora />} />
       
       {/* Dashboard routes with sidebar */}
       <Route path="/dashboard" element={<DashboardLayout />}>
