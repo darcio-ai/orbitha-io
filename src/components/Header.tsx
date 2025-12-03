@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import orbithaLogo from "@/assets/orbitha-logo-new.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,10 +43,14 @@ const Header = () => {
     navigate("/");
   };
 
-  const navigation = [
+  // Mobile navigation - flat list
+  const mobileNavigation = [
     { name: "Home", href: "/" },
-    { name: "Soluções", href: "/solucoes" },
+    { name: "Quem Sou", href: "/quem-sou" },
+    { name: "Mentoria", href: "/mentoria" },
+    { name: "Agentes de IA", href: "/agentes-ia" },
     { name: "Assistentes de IA", href: "/assistentes" },
+    { name: "Soluções", href: "/solucoes" },
     { name: "Preços", href: "/pricing" },
     { name: "Blog", href: "/blog" },
     { name: "Contato", href: "/contato" },
@@ -107,7 +120,7 @@ const Header = () => {
           {isMenuOpen && (
             <div className="mt-2 p-3 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20">
               <div className="space-y-1">
-                {navigation.map((item) => (
+                {mobileNavigation.map((item) => (
                   <a
                     key={item.name}
                     href={item.href}
@@ -126,7 +139,7 @@ const Header = () => {
           )}
         </div>
 
-        {/* Desktop Navigation - Glass Capsule */}
+        {/* Desktop Navigation - Glass Capsule with Dropdowns */}
         <nav className="hidden md:flex items-center justify-between h-16 px-6 rounded-full backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
@@ -140,21 +153,153 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Navigation Links */}
-          <div className="flex items-center gap-6 lg:gap-8">
-            {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className={`text-sm font-medium transition-all hover:text-primary relative group whitespace-nowrap ${
-                  isActive(item.href) ? "text-primary" : "text-muted-foreground"
-                }`}
-              >
-                {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-primary group-hover:w-full transition-all duration-300"/>
-              </a>
-            ))}
-          </div>
+          {/* Navigation Links with Dropdowns */}
+          <NavigationMenu>
+            <NavigationMenuList className="gap-1">
+              {/* Home - Simple Link */}
+              <NavigationMenuItem>
+                <Link
+                  to="/"
+                  className={cn(
+                    "text-sm font-medium transition-all hover:text-primary px-3 py-2 rounded-md",
+                    isActive("/") ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  Home
+                </Link>
+              </NavigationMenuItem>
+
+              {/* Sobre - Dropdown */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent text-muted-foreground hover:text-primary hover:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary">
+                  Sobre
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-48 gap-1 p-2">
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/quem-sou"
+                          className={cn(
+                            "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                            isActive("/quem-sou") && "bg-accent/50"
+                          )}
+                        >
+                          <div className="text-sm font-medium">Quem Sou</div>
+                          <p className="text-xs text-muted-foreground mt-1">Conheça minha história</p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/mentoria"
+                          className={cn(
+                            "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                            isActive("/mentoria") && "bg-accent/50"
+                          )}
+                        >
+                          <div className="text-sm font-medium">Mentoria</div>
+                          <p className="text-xs text-muted-foreground mt-1">Mentoria personalizada</p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* IA - Dropdown */}
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent text-muted-foreground hover:text-primary hover:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-primary">
+                  IA
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-52 gap-1 p-2">
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/agentes-ia"
+                          className={cn(
+                            "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                            isActive("/agentes-ia") && "bg-accent/50"
+                          )}
+                        >
+                          <div className="text-sm font-medium">Agentes de IA</div>
+                          <p className="text-xs text-muted-foreground mt-1">Agentes personalizados</p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/assistentes"
+                          className={cn(
+                            "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                            isActive("/assistentes") && "bg-accent/50"
+                          )}
+                        >
+                          <div className="text-sm font-medium">Assistentes de IA</div>
+                          <p className="text-xs text-muted-foreground mt-1">Assistentes especializados</p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              {/* Soluções - Simple Link */}
+              <NavigationMenuItem>
+                <Link
+                  to="/solucoes"
+                  className={cn(
+                    "text-sm font-medium transition-all hover:text-primary px-3 py-2 rounded-md",
+                    isActive("/solucoes") ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  Soluções
+                </Link>
+              </NavigationMenuItem>
+
+              {/* Preços - Simple Link */}
+              <NavigationMenuItem>
+                <Link
+                  to="/pricing"
+                  className={cn(
+                    "text-sm font-medium transition-all hover:text-primary px-3 py-2 rounded-md",
+                    isActive("/pricing") ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  Preços
+                </Link>
+              </NavigationMenuItem>
+
+              {/* Blog - Simple Link */}
+              <NavigationMenuItem>
+                <Link
+                  to="/blog"
+                  className={cn(
+                    "text-sm font-medium transition-all hover:text-primary px-3 py-2 rounded-md",
+                    isActive("/blog") ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  Blog
+                </Link>
+              </NavigationMenuItem>
+
+              {/* Contato - Simple Link */}
+              <NavigationMenuItem>
+                <Link
+                  to="/contato"
+                  className={cn(
+                    "text-sm font-medium transition-all hover:text-primary px-3 py-2 rounded-md",
+                    isActive("/contato") ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  Contato
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
 
           {/* Profile Icon / Logout */}
           {isLoggedIn ? (
