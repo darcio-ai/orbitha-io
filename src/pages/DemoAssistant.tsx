@@ -26,8 +26,8 @@ const DemoAssistant = () => {
   const [isLimitReached, setIsLimitReached] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ demo real: 5 interações por assistente
-  const effectiveLimit = 5;
+  // ✅ demo real: usa limite do config (7 interações)
+  const effectiveLimit = assistant?.demoLimit || 7;
 
   // pra autoscroll no chat
   const bottomRef = useRef<HTMLDivElement | null>(null);
