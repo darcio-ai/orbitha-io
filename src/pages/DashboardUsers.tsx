@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Edit, Ban, Key, Trash2, Plus, Search, Users, Bot } from "lucide-react";
 import { format } from "date-fns";
@@ -47,6 +48,11 @@ const DashboardUsers = () => {
   const [userAgents, setUserAgents] = useState<Record<string, Agent[]>>({});
   const [loadingAgents, setLoadingAgents] = useState<Record<string, boolean>>({});
   
+  // Mass deletion states
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+  
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -75,6 +81,7 @@ const DashboardUsers = () => {
     );
     setFilteredUsers(filtered);
     setCurrentPage(1);
+    setSelectedUsers([]);
   }, [searchTerm, users]);
 
   const fetchUsers = async () => {
@@ -138,6 +145,78 @@ const DashboardUsers = () => {
       return { valid: false, message: "Telefone deve ter 12 ou 13 dígitos" };
     }
     return { valid: true, cleaned };
+  };
+
+  // Selection handlers
+  const handleSelectUser = (userId: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedUsers.length === paginatedUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(paginatedUsers.map(u => u.id));
+    }
+  };
+
+  // Bulk delete handler
+  const handleBulkDelete = async () => {
+    setBulkDeleting(true);
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
+      
+      if (sessionError || !session) {
+        throw new Error('Sessão expirada. Por favor, faça login novamente.');
+      }
+
+      const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+        body: { userIds: selectedUsers },
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Erro ao excluir usuários');
+      }
+
+      const result = data as { deleted?: number; failed?: Array<{ id: string; error: string }> };
+      
+      if (result.failed && result.failed.length > 0) {
+        toast({
+          variant: "destructive",
+          title: `${result.deleted || 0} usuário(s) excluído(s), ${result.failed.length} falha(s)`,
+          description: result.failed.map(f => f.error).join(', '),
+        });
+      } else {
+        toast({
+          title: `${result.deleted || selectedUsers.length} usuário(s) excluído(s) com sucesso!`,
+        });
+      }
+
+      setIsBulkDeleteOpen(false);
+      setSelectedUsers([]);
+      fetchUsers();
+    } catch (error: any) {
+      let errorMessage = error.message;
+      
+      if (errorMessage.includes('400:')) {
+        const match = errorMessage.match(/{"error":"([^"]+)"}/);
+        if (match) {
+          errorMessage = match[1];
+        }
+      }
+      
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir usuários",
+        description: errorMessage,
+      });
+    } finally {
+      setBulkDeleting(false);
+    }
   };
 
   const handleCreateUser = async () => {
@@ -394,87 +473,98 @@ const DashboardUsers = () => {
 
   return (
     <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold">Usuários</h1>
-        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Usuário
+        <div className="flex gap-2">
+          {selectedUsers.length > 0 && (
+            <Button 
+              variant="destructive" 
+              onClick={() => setIsBulkDeleteOpen(true)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Excluir {selectedUsers.length} selecionado(s)
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Novo Usuário</DialogTitle>
-              <DialogDescription>
-                Preencha os dados do novo usuário
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstname">Nome</Label>
-                <Input
-                  id="firstname"
-                  value={formData.firstname}
-                  onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastname">Sobrenome</Label>
-                <Input
-                  id="lastname"
-                  value={formData.lastname}
-                  onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Telefone (ex: 5548991893313)</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
-                  placeholder="5548991893313"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="role">Perfil</Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Usuário</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
-                Cancelar
+          )}
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Usuário
               </Button>
-              <Button onClick={handleCreateUser}>Criar</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Criar Novo Usuário</DialogTitle>
+                <DialogDescription>
+                  Preencha os dados do novo usuário
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstname">Nome</Label>
+                  <Input
+                    id="firstname"
+                    value={formData.firstname}
+                    onChange={(e) => setFormData({ ...formData, firstname: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastname">Sobrenome</Label>
+                  <Input
+                    id="lastname"
+                    value={formData.lastname}
+                    onChange={(e) => setFormData({ ...formData, lastname: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefone (ex: 5548991893313)</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, "") })}
+                    placeholder="5548991893313"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Senha</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="role">Perfil</Label>
+                  <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">Usuário</SelectItem>
+                      <SelectItem value="admin">Administrador</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleCreateUser}>Criar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="mb-4 relative">
@@ -491,6 +581,12 @@ const DashboardUsers = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox 
+                  checked={selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0}
+                  onCheckedChange={handleSelectAll}
+                />
+              </TableHead>
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Telefone</TableHead>
@@ -503,7 +599,7 @@ const DashboardUsers = () => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8">
+                <TableCell colSpan={8} className="text-center py-8">
                   <div className="flex justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                   </div>
@@ -511,13 +607,19 @@ const DashboardUsers = () => {
               </TableRow>
             ) : paginatedUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Nenhum usuário encontrado
                 </TableCell>
               </TableRow>
             ) : (
               paginatedUsers.map((user) => (
                 <TableRow key={user.id}>
+                  <TableCell>
+                    <Checkbox 
+                      checked={selectedUsers.includes(user.id)}
+                      onCheckedChange={() => handleSelectUser(user.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">
                     {user.firstname} {user.lastname}
                   </TableCell>
@@ -761,6 +863,29 @@ const DashboardUsers = () => {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteUser} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <AlertDialog open={isBulkDeleteOpen} onOpenChange={setIsBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão em Massa</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir {selectedUsers.length} usuário(s)? 
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBulkDelete} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={bulkDeleting}
+            >
+              {bulkDeleting ? "Excluindo..." : `Excluir ${selectedUsers.length} usuário(s)`}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

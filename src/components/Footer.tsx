@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import orbithaLogo from "@/assets/orbitha-logo-new.png";
 
@@ -6,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 lg:px-6 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
           {/* Logo e Descrição */}
           <div className="col-span-1 md:col-span-2 text-center md:text-left">
             <div className="flex items-center space-x-3 mb-4 justify-center md:justify-start">
@@ -25,9 +24,9 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Links Rápidos */}
+          {/* Navegação */}
           <div className="text-center md:text-left">
-            <h3 className="text-base font-semibold mb-4">Links Rápidos</h3>
+            <h3 className="text-base font-semibold mb-4">Navegação</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -35,8 +34,35 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/quem-sou" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Quem Sou
+                </Link>
+              </li>
+              <li>
+                <Link to="/mentoria" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Mentoria
+                </Link>
+              </li>
+              <li>
+                <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Preços
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Soluções */}
+          <div className="text-center md:text-left">
+            <h3 className="text-base font-semibold mb-4">Soluções</h3>
+            <ul className="space-y-2">
+              <li>
                 <Link to="/solucoes" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Soluções
+                  Soluções B2B
+                </Link>
+              </li>
+              <li>
+                <Link to="/assistentes" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Assistentes IA
                 </Link>
               </li>
               <li>
