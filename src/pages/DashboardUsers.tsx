@@ -157,10 +157,18 @@ const DashboardUsers = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === paginatedUsers.length) {
+    // Filter out admin users - they cannot be deleted
+    const selectableUsers = paginatedUsers.filter(
+      u => !u.user_roles.some(r => r.role === 'admin')
+    );
+    
+    const allSelected = selectableUsers.length > 0 && 
+      selectableUsers.every(u => selectedUsers.includes(u.id));
+    
+    if (allSelected) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(paginatedUsers.map(u => u.id));
+      setSelectedUsers(selectableUsers.map(u => u.id));
     }
   };
 
@@ -583,8 +591,14 @@ const DashboardUsers = () => {
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox 
-                  checked={selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0}
+                  checked={
+                    paginatedUsers.filter(u => !u.user_roles.some(r => r.role === 'admin')).length > 0 &&
+                    paginatedUsers
+                      .filter(u => !u.user_roles.some(r => r.role === 'admin'))
+                      .every(u => selectedUsers.includes(u.id))
+                  }
                   onCheckedChange={handleSelectAll}
+                  disabled={paginatedUsers.every(u => u.user_roles.some(r => r.role === 'admin'))}
                 />
               </TableHead>
               <TableHead>Nome</TableHead>
@@ -618,6 +632,7 @@ const DashboardUsers = () => {
                     <Checkbox 
                       checked={selectedUsers.includes(user.id)}
                       onCheckedChange={() => handleSelectUser(user.id)}
+                      disabled={user.user_roles.some(r => r.role === 'admin')}
                     />
                   </TableCell>
                   <TableCell className="font-medium">
@@ -714,7 +729,10 @@ const DashboardUsers = () => {
                           setSelectedUser(user);
                           setIsDeleteOpen(true);
                         }}
-                        title="Excluir"
+                        title={user.user_roles.some(r => r.role === 'admin') 
+                          ? "Administradores não podem ser excluídos" 
+                          : "Excluir"}
+                        disabled={user.user_roles.some(r => r.role === 'admin')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
