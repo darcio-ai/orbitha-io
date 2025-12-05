@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -136,15 +135,17 @@ const Contato = () => {
       {/* Hero Section */}
       <section className="py-24 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Entre em Contato
-            </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-primary/30 mb-6">
+              <MessageSquare className="w-6 h-6 text-primary" />
+              <span className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
+                Entre em Contato
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-left">
               Vamos <span className="bg-gradient-primary bg-clip-text text-transparent">conversar?</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-3xl text-left">
               Me conta: o que tá tirando o seu sono ou te dando dor de cabeça aí no dia a dia? 
               Vamos descobrir juntos como a automação pode te ajudar a resolver isso.
             </p>

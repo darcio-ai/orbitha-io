@@ -21,8 +21,6 @@ const Pricing = () => {
   const focusPlan = searchParams.get('focus'); // 'suite' ou 'growth'
 
   useEffect(() => {
-    document.title = "Planos | Financial Assistant Premium";
-    
     // Verificar se usuário está logado
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
