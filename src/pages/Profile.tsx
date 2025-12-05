@@ -108,6 +108,7 @@ const Profile = () => {
   };
 
   const getPlanName = (plan: string | null) => {
+    if (plan === "life_balance") return "Life Balance";
     if (plan === "growth") return "Growth Pack";
     if (plan === "suite") return "Orbitha Suite";
     return "Nenhum";
