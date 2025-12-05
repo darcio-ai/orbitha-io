@@ -71,6 +71,13 @@ serve(async (req) => {
             if (userId && planType !== 'unknown') {
                 console.log(`Updating subscription for user ${userId} - Plan: ${planType}`);
                 
+                // Get user email for confirmation
+                const { data: profileData } = await supabase
+                    .from("profiles")
+                    .select("email, firstname")
+                    .eq("id", userId)
+                    .single();
+                
                 // Update profile
                 const { error: profileError } = await supabase
                     .from("profiles")
@@ -78,7 +85,9 @@ serve(async (req) => {
                         asaas_customer_id: customerId,
                         subscription_status: 'active',
                         subscription_plan: planType,
-                        subscription_id: paymentId
+                        subscription_id: paymentId,
+                        subscription_amount: payment.value,
+                        subscription_start_date: new Date().toISOString()
                     })
                     .eq("id", userId);
 
@@ -86,6 +95,29 @@ serve(async (req) => {
                     console.error("Error updating profile:", profileError);
                 } else {
                     console.log("Profile updated successfully");
+                    
+                    // Send purchase confirmation email
+                    if (profileData?.email) {
+                        try {
+                            const planNames: Record<string, string> = {
+                                life_balance: 'Life Balance',
+                                growth: 'Growth',
+                                suite: 'Suite Completa'
+                            };
+                            
+                            await supabase.functions.invoke('send-purchase-confirmation', {
+                                body: {
+                                    email: profileData.email,
+                                    name: profileData.firstname || 'Cliente',
+                                    planName: planNames[planType] || planType,
+                                    amount: payment.value
+                                }
+                            });
+                            console.log("Purchase confirmation email sent");
+                        } catch (emailError) {
+                            console.error("Error sending confirmation email:", emailError);
+                        }
+                    }
                 }
 
                 // Get agents for this plan

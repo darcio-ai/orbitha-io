@@ -194,9 +194,11 @@ export type Database = {
           phone: string
           plan: string | null
           stripe_customer_id: string | null
+          subscription_amount: number | null
           subscription_end_date: string | null
           subscription_id: string | null
           subscription_plan: string | null
+          subscription_start_date: string | null
           subscription_status: string | null
           whatsapp: string
         }
@@ -215,9 +217,11 @@ export type Database = {
           phone: string
           plan?: string | null
           stripe_customer_id?: string | null
+          subscription_amount?: number | null
           subscription_end_date?: string | null
           subscription_id?: string | null
           subscription_plan?: string | null
+          subscription_start_date?: string | null
           subscription_status?: string | null
           whatsapp?: string
         }
@@ -236,9 +240,11 @@ export type Database = {
           phone?: string
           plan?: string | null
           stripe_customer_id?: string | null
+          subscription_amount?: number | null
           subscription_end_date?: string | null
           subscription_id?: string | null
           subscription_plan?: string | null
+          subscription_start_date?: string | null
           subscription_status?: string | null
           whatsapp?: string
         }
