@@ -110,13 +110,6 @@ const Contato = () => {
 
   const contactInfo = [
     {
-      icon: <MessageSquare className="h-6 w-6" />,
-      title: "WhatsApp",
-      description: "Fale diretamente com a Dora",
-      action: "Iniciar conversa",
-      link: "https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
-    },
-    {
       icon: <Mail className="h-6 w-6" />,
       title: "Email",
       description: "contato@orbitha.io",
@@ -277,29 +270,36 @@ const Contato = () => {
 
           {/* Contact Info & CTA */}
           <div className="space-y-8">
-            {/* WhatsApp CTA */}
-            <Card className="bg-gradient-primary text-primary-foreground">
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center">
-                  <MessageSquare className="mr-3 h-8 w-8" />
-                  Fale com a Dora agora
-                </CardTitle>
-                <p className="text-primary-foreground/80">
-                  Precisa de uma resposta rápida? Converse diretamente com nossa IA especialista
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Button variant="secondary" size="lg" className="w-full" asChild>
-                  <a
-                    href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageSquare className="mr-2 h-5 w-5" />
-                    Iniciar conversa no WhatsApp
-                  </a>
-                </Button>
-              </CardContent>
+            {/* WhatsApp CTA with Dora */}
+            <Card className="bg-gradient-primary text-primary-foreground overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                <div className="p-6 md:p-8 flex flex-col justify-center">
+                  <CardTitle className="text-2xl flex items-center mb-4">
+                    <MessageSquare className="mr-3 h-8 w-8" />
+                    Fale com a Dora agora
+                  </CardTitle>
+                  <p className="text-primary-foreground/80 mb-6">
+                    Converse diretamente com nossa IA especialista
+                  </p>
+                  <Button variant="secondary" size="lg" className="w-full" asChild>
+                    <a
+                      href="https://wa.me/5513991497873?text=Oi! Quero conhecer as soluções da Orbitha"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageSquare className="mr-2 h-5 w-5" />
+                      Iniciar conversa no WhatsApp
+                    </a>
+                  </Button>
+                </div>
+                <div className="hidden md:flex items-center justify-center p-4">
+                  <img 
+                    src="/img/dora-avatar.png" 
+                    alt="Dora - IA Especialista da Orbitha"
+                    className="w-48 h-48 object-cover rounded-full border-4 border-primary-foreground/20 shadow-lg"
+                  />
+                </div>
+              </div>
             </Card>
 
             {/* Contact Methods */}

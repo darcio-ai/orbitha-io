@@ -301,6 +301,77 @@ const BlogPost = () => {
         <h2>Conclusão</h2>
         <p>Um chatbot bem implementado é um membro valioso da equipe, não apenas uma ferramenta. Invista tempo no planejamento e colha os frutos no longo prazo.</p>
       `
+    },
+    "principais-ias-do-momento": {
+      title: "As Principais IAs do Momento: ChatGPT, Claude, Gemini e Mais",
+      category: "Tendências",
+      readTime: "5 min",
+      date: "28 Nov 2024",
+      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=600&fit=crop",
+      content: `
+        <p>O mercado de inteligência artificial está em constante evolução, com novas ferramentas e modelos surgindo a cada mês. Neste artigo, vamos explorar as principais IAs disponíveis atualmente e como cada uma pode ajudar seu negócio.</p>
+
+        <h2>ChatGPT (OpenAI)</h2>
+        <p>O pioneiro que popularizou a IA conversacional para o grande público.</p>
+        <ul>
+          <li><strong>Pontos fortes:</strong> Versatilidade, grande base de conhecimento, plugins e GPTs customizados</li>
+          <li><strong>Ideal para:</strong> Escrita de conteúdo, programação, análise de dados, brainstorming</li>
+          <li><strong>Modelos:</strong> GPT-4o (mais rápido) e GPT-4 Turbo (mais capaz)</li>
+        </ul>
+
+        <h2>Claude (Anthropic)</h2>
+        <p>Conhecido por conversas mais naturais e contextos extremamente longos.</p>
+        <ul>
+          <li><strong>Pontos fortes:</strong> Contexto de até 200k tokens, respostas mais seguras, análise de documentos</li>
+          <li><strong>Ideal para:</strong> Análise de documentos longos, escrita criativa, tarefas que exigem nuance</li>
+          <li><strong>Modelos:</strong> Claude 3.5 Sonnet (equilibrado) e Claude 3 Opus (mais poderoso)</li>
+        </ul>
+
+        <h2>Gemini (Google)</h2>
+        <p>A aposta do Google com forte integração ao ecossistema da empresa.</p>
+        <ul>
+          <li><strong>Pontos fortes:</strong> Multimodalidade nativa (texto, imagem, código), integração com Google Workspace</li>
+          <li><strong>Ideal para:</strong> Pesquisa, análise de imagens, produtividade no Google</li>
+          <li><strong>Modelos:</strong> Gemini Pro, Gemini Ultra, Gemini Flash (mais rápido)</li>
+        </ul>
+
+        <h2>Llama (Meta)</h2>
+        <p>A alternativa open source que democratiza o acesso à IA avançada.</p>
+        <ul>
+          <li><strong>Pontos fortes:</strong> Código aberto, pode ser hospedado localmente, altamente customizável</li>
+          <li><strong>Ideal para:</strong> Empresas que precisam de controle total dos dados, desenvolvedores, pesquisadores</li>
+          <li><strong>Modelos:</strong> Llama 3.1 (8B, 70B, 405B parâmetros)</li>
+        </ul>
+
+        <h2>Midjourney e DALL-E</h2>
+        <p>As principais IAs para geração de imagens.</p>
+        <ul>
+          <li><strong>Midjourney:</strong> Imagens mais artísticas e estilizadas, comunidade ativa no Discord</li>
+          <li><strong>DALL-E 3:</strong> Integrado ao ChatGPT, excelente para precisão em detalhes e texto em imagens</li>
+        </ul>
+
+        <h2>Qual escolher para sua empresa?</h2>
+        <p>A escolha depende do seu caso de uso:</p>
+        <ul>
+          <li><strong>Atendimento ao cliente:</strong> ChatGPT ou Claude (com APIs)</li>
+          <li><strong>Análise de documentos:</strong> Claude (pelo contexto longo)</li>
+          <li><strong>Geração de imagens:</strong> Midjourney ou DALL-E</li>
+          <li><strong>Privacidade de dados:</strong> Llama (hospedado internamente)</li>
+          <li><strong>Produtividade Google:</strong> Gemini</li>
+        </ul>
+
+        <h2>O futuro das IAs</h2>
+        <p>Estamos apenas no começo. Nos próximos meses, esperamos ver:</p>
+        <ul>
+          <li>IAs cada vez mais especializadas por setor</li>
+          <li>Melhor integração com ferramentas empresariais</li>
+          <li>Custos mais acessíveis</li>
+          <li>Regulamentações mais claras</li>
+        </ul>
+
+        <h2>Conclusão</h2>
+        <p>Não existe "a melhor IA" universal. O segredo é entender as necessidades específicas do seu negócio e experimentar diferentes ferramentas. Muitas oferecem versões gratuitas ou trials que permitem testar antes de investir.</p>
+      `
     }
   };
 
@@ -315,9 +386,9 @@ const BlogPost = () => {
             <p className="text-muted-foreground mb-8">
               O artigo que você procura não existe ou foi removido.
             </p>
-            <Button asChild>
+            <Button size="lg" className="text-lg px-6 py-3" asChild>
               <Link to="/blog">
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 h-5 w-5" />
                 Voltar para o blog
               </Link>
             </Button>
@@ -343,9 +414,9 @@ const BlogPost = () => {
       <div className="container mx-auto px-4 -mt-32 relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Button variant="ghost" className="mb-6" asChild>
+          <Button variant="ghost" size="lg" className="mb-6 text-lg px-6 py-3" asChild>
             <Link to="/blog">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="mr-2 h-5 w-5" />
               Voltar para o blog
             </Link>
           </Button>
