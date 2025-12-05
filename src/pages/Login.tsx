@@ -65,15 +65,15 @@ const Login = () => {
     };
     checkUser();
 
-    // Load saved credentials if remember me was checked
+    // Load saved email if remember me was checked
     const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
     if (savedRememberMe) {
       const savedEmail = localStorage.getItem('savedEmail');
-      const savedPassword = localStorage.getItem('savedPassword');
       if (savedEmail) setEmailOrWhatsApp(savedEmail);
-      if (savedPassword) setPassword(savedPassword);
       setRememberMe(true);
     }
+    // Clean up any previously stored passwords (security fix)
+    localStorage.removeItem('savedPassword');
   }, [navigate, redirectTo]);
 
   const handleGoogleLogin = async () => {
@@ -147,15 +147,13 @@ const Login = () => {
       }
 
       if (data.session) {
-        // Store remember me preference and credentials
+        // Store remember me preference (email only, never password)
         if (rememberMe) {
           localStorage.setItem('rememberMe', 'true');
           localStorage.setItem('savedEmail', emailOrWhatsApp);
-          localStorage.setItem('savedPassword', password);
         } else {
           localStorage.removeItem('rememberMe');
           localStorage.removeItem('savedEmail');
-          localStorage.removeItem('savedPassword');
         }
 
         await syncUserProfile(data.session.user);
