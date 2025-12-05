@@ -44,6 +44,13 @@ export type Database = {
             foreignKeyName: "agent_messages_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
+            referencedRelation: "agent_public_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_messages_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
@@ -126,10 +133,50 @@ export type Database = {
             foreignKeyName: "agents_users_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
+            referencedRelation: "agent_public_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agents_users_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
             referencedRelation: "agents"
             referencedColumns: ["id"]
           },
         ]
+      }
+      contact_messages: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          read: boolean
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          read?: boolean
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          read?: boolean
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -267,7 +314,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      agent_public_info: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          model: string | null
+          name: string | null
+          status: Database["public"]["Enums"]["agent_status"] | null
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          model?: string | null
+          name?: string | null
+          status?: Database["public"]["Enums"]["agent_status"] | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          model?: string | null
+          name?: string | null
+          status?: Database["public"]["Enums"]["agent_status"] | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_agents: {
