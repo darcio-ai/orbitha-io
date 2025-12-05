@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, CreditCard, Crown } from "lucide-react";
+import { Loader2, User, CreditCard, Crown, Shield, Mail, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatCpfCnpj } from "@/lib/utils";
+import { z } from "zod";
 
 interface ProfileData {
   firstname: string;
@@ -20,6 +21,9 @@ interface ProfileData {
   billing_name: string | null;
   cpf_cnpj: string | null;
 }
+
+const emailSchema = z.string().email("Email inválido");
+const passwordSchema = z.string().min(6, "A senha deve ter pelo menos 6 caracteres");
 
 const Profile = () => {
   const { toast } = useToast();
@@ -35,6 +39,15 @@ const Profile = () => {
     billing_name: null,
     cpf_cnpj: null,
   });
+
+  // Estados para alteração de email
+  const [newEmail, setNewEmail] = useState("");
+  const [changingEmail, setChangingEmail] = useState(false);
+
+  // Estados para alteração de senha
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -99,6 +112,90 @@ const Profile = () => {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangeEmail = async () => {
+    try {
+      emailSchema.parse(newEmail);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        toast({
+          title: "Erro",
+          description: err.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    setChangingEmail(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ email: newEmail });
+
+      if (error) throw error;
+
+      toast({
+        title: "Verificação enviada",
+        description: "Um link de confirmação foi enviado para o novo email. Verifique sua caixa de entrada.",
+      });
+      setNewEmail("");
+    } catch (error: any) {
+      console.error("Erro ao alterar email:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível alterar o email.",
+        variant: "destructive",
+      });
+    } finally {
+      setChangingEmail(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      passwordSchema.parse(newPassword);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        toast({
+          title: "Erro",
+          description: err.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: "Senha alterada com sucesso!",
+      });
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      console.error("Erro ao alterar senha:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível alterar a senha.",
+        variant: "destructive",
+      });
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -171,7 +268,7 @@ const Profile = () => {
                 className="bg-muted"
               />
               <p className="text-xs text-muted-foreground">
-                O email não pode ser alterado aqui
+                Para alterar o email, use a seção "Segurança" abaixo
               </p>
             </div>
 
@@ -198,6 +295,89 @@ const Profile = () => {
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Salvar Alterações
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Segurança */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              <CardTitle>Segurança</CardTitle>
+            </div>
+            <CardDescription>
+              Altere seu email ou senha de acesso
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Alterar Email */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <Label className="text-base font-medium">Alterar Email</Label>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newEmail">Novo Email</Label>
+                <Input
+                  id="newEmail"
+                  type="email"
+                  placeholder="Digite o novo email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Um link de confirmação será enviado para o novo email. Você precisará confirmar para concluir a alteração.
+                </p>
+              </div>
+              <Button 
+                onClick={handleChangeEmail} 
+                disabled={changingEmail || !newEmail}
+                variant="outline"
+              >
+                {changingEmail && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Alterar Email
+              </Button>
+            </div>
+
+            <Separator />
+
+            {/* Alterar Senha */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+                <Label className="text-base font-medium">Alterar Senha</Label>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">Nova Senha</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Repita a nova senha"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button 
+                onClick={handleChangePassword} 
+                disabled={changingPassword || !newPassword || !confirmPassword}
+                variant="outline"
+              >
+                {changingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Alterar Senha
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
