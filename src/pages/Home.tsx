@@ -127,17 +127,50 @@ const Home = () => {
                 className="absolute right-0 top-1/2 -translate-y-1/2 h-full w-auto object-contain animate-float"
               />
 
-              {/* HUD Card 1: Data Growth Chart */}
+              {/* HUD Card 1: Data Growth Line Chart */}
               <div className="absolute top-4 md:top-12 left-0 w-48 md:w-64 p-3 md:p-4 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20 shadow-cyber-glow animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 <p className="text-xs text-muted-foreground mb-2">Crescimento de Dados (TB)</p>
-                <div className="h-16 md:h-24 flex items-end gap-1">
-                  {[40, 55, 45, 70, 60, 85, 95].map((height, i) => (
-                    <div 
-                      key={i} 
-                      className="flex-1 bg-gradient-to-t from-primary to-primary-glow rounded-t transition-all hover:scale-105"
-                      style={{ height: `${height}%` }}
+                <div className="h-16 md:h-24 relative">
+                  <svg className="w-full h-full" viewBox="0 0 200 80" preserveAspectRatio="none">
+                    {/* Grid lines */}
+                    <line x1="0" y1="20" x2="200" y2="20" stroke="hsl(var(--border))" strokeOpacity="0.2" />
+                    <line x1="0" y1="40" x2="200" y2="40" stroke="hsl(var(--border))" strokeOpacity="0.2" />
+                    <line x1="0" y1="60" x2="200" y2="60" stroke="hsl(var(--border))" strokeOpacity="0.2" />
+                    
+                    {/* Gradient fill under line */}
+                    <defs>
+                      <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M0,60 Q25,55 40,48 T80,35 T120,28 T160,18 T200,8 V80 H0 Z"
+                      fill="url(#lineGradient)"
                     />
-                  ))}
+                    
+                    {/* Line */}
+                    <path
+                      d="M0,60 Q25,55 40,48 T80,35 T120,28 T160,18 T200,8"
+                      fill="none"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      className="drop-shadow-[0_0_6px_hsl(var(--primary))]"
+                    />
+                    
+                    {/* Data points */}
+                    {[[0, 60], [40, 48], [80, 35], [120, 28], [160, 18], [200, 8]].map(([x, y], i) => (
+                      <circle
+                        key={i}
+                        cx={x}
+                        cy={y}
+                        r="3"
+                        fill="hsl(var(--primary))"
+                        className="drop-shadow-[0_0_4px_hsl(var(--primary))]"
+                      />
+                    ))}
+                  </svg>
                 </div>
               </div>
 
