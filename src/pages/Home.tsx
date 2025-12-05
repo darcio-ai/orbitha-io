@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   Bot, 
   Calendar, 
@@ -69,13 +68,12 @@ const Home = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left: Text Content */}
             <div className="space-y-6 md:space-y-8 animate-fade-in text-center lg:text-left">
-              <Badge 
-                variant="secondary" 
-                className="backdrop-blur-xl bg-card/10 border border-border/20 text-primary px-3 md:px-4 py-2 mx-auto lg:mx-0 w-fit"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                Inteligência Artificial para Empresas
-              </Badge>
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-primary/30">
+                <Sparkles className="w-6 h-6 text-primary" />
+                <span className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
+                  Inteligência Artificial para Empresas
+                </span>
+              </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-7xl font-space font-bold leading-tight">
                 <span className="block text-foreground">Explorando o</span>

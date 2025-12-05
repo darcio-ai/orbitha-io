@@ -94,10 +94,12 @@ const Blog = () => {
       <section className="py-24 bg-gradient-hero">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="max-w-4xl">
-            <Badge variant="secondary" className="mb-6">
-              <BookOpen className="h-4 w-4 mr-2" />
-              Blog & Insights
-            </Badge>
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-primary/30 mb-6">
+              <BookOpen className="w-6 h-6 text-primary" />
+              <span className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
+                Blog & Insights
+              </span>
+            </div>
             <h1 className="text-6xl md:text-8xl font-bold mb-6 text-left">
               Insights sobre <span className="bg-gradient-primary bg-clip-text text-transparent">IA e Automação</span>
             </h1>

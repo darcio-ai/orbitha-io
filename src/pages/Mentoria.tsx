@@ -91,7 +91,7 @@ const Mentoria = () => {
         
         <div className="container mx-auto relative z-10">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="mb-12">
               <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-primary/30 mb-8">
                 <Sparkles className="w-6 h-6 text-primary" />
                 <span className="text-lg font-semibold bg-gradient-primary bg-clip-text text-transparent">
