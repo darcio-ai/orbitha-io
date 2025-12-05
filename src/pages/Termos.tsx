@@ -192,8 +192,8 @@ const Termos = () => {
               <ul className="space-y-2 ml-4">
                 <li>
                   <strong>Email:</strong>{" "}
-                  <a href="mailto:darcio@orbitha.io" className="text-primary hover:underline">
-                    darcio@orbitha.io
+                  <a href="mailto:contato@orbitha.io" className="text-primary hover:underline">
+                    contato@orbitha.io
                   </a>
                 </li>
                 <li>
