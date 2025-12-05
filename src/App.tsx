@@ -36,7 +36,6 @@ import ManageUserAgents from "./pages/ManageUserAgents";
 import DashboardLayout from "./components/DashboardLayout";
 import ChatAgent from "./pages/ChatAgent";
 import NotFound from "./pages/NotFound";
-import AdminSetup from "./pages/AdminSetup";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import ScrollToTop from "./components/ScrollToTop";
 import Termos from "./pages/Termos";
@@ -87,7 +86,6 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro-gratuito" element={<SignupFree />} />
-      <Route path="/admin/setup" element={<AdminSetup />} />
       <Route path="/tools/generate-dora" element={<AdminGenerateDora />} />
       
       {/* Dashboard routes with sidebar */}
