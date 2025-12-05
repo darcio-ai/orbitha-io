@@ -7,18 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { syncUserProfile } from "@/services/profile";
+import { usePasswordCheck } from "@/hooks/usePasswordCheck";
 
 const Login = () => {
   const [emailOrWhatsApp, setEmailOrWhatsApp] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPasswordWarning, setShowPasswordWarning] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const { checkPassword } = usePasswordCheck();
 
   // Prioritize redirectTo from URL, then location state, then default to /dashboard
   const redirectTo = searchParams.get('redirectTo') || (location.state as any)?.from || "/dashboard";
@@ -131,6 +134,19 @@ const Login = () => {
         // Se o erro for de credenciais inválidas, pode ser que o usuário não exista
         // Vamos tentar criar a conta (SignUp)
         if (error.message.includes("Invalid login credentials")) {
+          // Check if password is compromised before creating account
+          const isCompromised = await checkPassword(password);
+          if (isCompromised) {
+            setShowPasswordWarning(true);
+            toast({
+              title: "Senha comprometida",
+              description: "Esta senha apareceu em vazamentos de dados. Por segurança, escolha outra senha para criar sua conta.",
+              variant: "destructive",
+            });
+            setLoading(false);
+            return;
+          }
+          
           // Tentar criar conta
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email: loginEmail,
@@ -138,6 +154,13 @@ const Login = () => {
             options: {
               emailRedirectTo: `${window.location.origin}${redirectTo}`,
             }
+          });
+          
+          if (signUpError) throw signUpError;
+          
+          toast({
+            title: "Conta criada!",
+            description: "Verifique seu email para confirmar o cadastro.",
           });
           return;
         }
@@ -274,10 +297,20 @@ const Login = () => {
                     type="password"
                     placeholder="••••••••"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setShowPasswordWarning(false);
+                    }}
                     required
                     disabled={loading}
+                    className={showPasswordWarning ? "border-destructive focus-visible:ring-destructive" : ""}
                   />
+                  {showPasswordWarning && (
+                    <div className="flex items-center gap-2 text-sm text-destructive mt-1">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span>Esta senha foi vazada. Escolha outra.</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle, CheckCircle2, Shield } from "lucide-react";
+import { usePasswordCheck } from "@/hooks/usePasswordCheck";
 
 const signupSchema = z.object({
   fullName: z.string()
@@ -47,14 +48,31 @@ const SignupFree = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { isCompromised, isChecking, checkPassword, resetCheck } = usePasswordCheck();
+  const [passwordValue, setPasswordValue] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
+
+  // Watch password field and check when it changes
+  const watchedPassword = watch("password");
+  
+  useEffect(() => {
+    if (watchedPassword && watchedPassword.length >= 6) {
+      const debounceTimer = setTimeout(() => {
+        checkPassword(watchedPassword);
+      }, 500);
+      return () => clearTimeout(debounceTimer);
+    } else {
+      resetCheck();
+    }
+  }, [watchedPassword, checkPassword, resetCheck]);
 
   // Format WhatsApp: accepts any format, outputs +55 (XX) XXXXX-XXXX
   const formatWhatsApp = (value: string): string => {
@@ -96,6 +114,16 @@ const SignupFree = () => {
   };
 
   const onSubmit = async (data: SignupFormData) => {
+    // Block submission if password is compromised
+    if (isCompromised) {
+      toast({
+        title: "Senha comprometida",
+        description: "Por segurança, escolha uma senha diferente que não tenha aparecido em vazamentos de dados.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -253,9 +281,34 @@ const SignupFree = () => {
                 {...register("password")}
                 placeholder="Mínimo 6 caracteres"
                 disabled={isLoading}
+                className={isCompromised ? "border-destructive focus-visible:ring-destructive" : ""}
               />
               {errors.password && (
                 <p className="text-sm text-destructive mt-1">{errors.password.message}</p>
+              )}
+              
+              {/* Password check status */}
+              {watchedPassword && watchedPassword.length >= 6 && (
+                <div className="mt-2">
+                  {isChecking && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Verificando segurança da senha...</span>
+                    </div>
+                  )}
+                  {!isChecking && isCompromised === true && (
+                    <div className="flex items-center gap-2 text-sm text-destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <span>Esta senha apareceu em vazamentos de dados. Escolha outra.</span>
+                    </div>
+                  )}
+                  {!isChecking && isCompromised === false && (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>Senha não encontrada em vazamentos conhecidos</span>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -277,15 +330,23 @@ const SignupFree = () => {
               type="submit"
               className="w-full"
               size="lg"
-              disabled={isLoading}
+              disabled={isLoading || isChecking || isCompromised === true}
             >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Criando conta...
                 </>
+              ) : isChecking ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verificando senha...
+                </>
               ) : (
-                "Criar Conta"
+                <>
+                  <Shield className="mr-2 h-4 w-4" />
+                  Criar Conta
+                </>
               )}
             </Button>
           </form>
