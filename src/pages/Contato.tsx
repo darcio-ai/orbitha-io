@@ -6,11 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   MessageSquare, 
   Mail, 
-  Phone, 
-  MapPin, 
   Clock,
   Send,
   CheckCircle
@@ -27,12 +26,59 @@ const Contato = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  const validateForm = (): string | null => {
+    if (!formData.name.trim() || formData.name.length > 100) {
+      return "Nome é obrigatório (máximo 100 caracteres)";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email) || formData.email.length > 255) {
+      return "Email inválido";
+    }
+    if (formData.company && formData.company.length > 100) {
+      return "Nome da empresa muito longo (máximo 100 caracteres)";
+    }
+    if (formData.phone && formData.phone.length > 20) {
+      return "Telefone muito longo (máximo 20 caracteres)";
+    }
+    if (!formData.message.trim() || formData.message.length < 10) {
+      return "Mensagem muito curta (mínimo 10 caracteres)";
+    }
+    if (formData.message.length > 1000) {
+      return "Mensagem muito longa (máximo 1000 caracteres)";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const validationError = validateForm();
+    if (validationError) {
+      toast({
+        title: "Erro de validação",
+        description: validationError,
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
-    // Simular envio do formulário
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.functions.invoke('send-contact', {
+        body: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          company: formData.company.trim() || null,
+          phone: formData.phone.trim() || null,
+          message: formData.message.trim()
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
       toast({
         title: "Mensagem enviada!",
         description: "Entraremos em contato em breve. Obrigado!"
@@ -44,8 +90,15 @@ const Contato = () => {
         phone: "",
         message: ""
       });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao enviar",
+        description: error.message || "Tente novamente mais tarde.",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -100,7 +153,7 @@ const Contato = () => {
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               Me conta: o que tá tirando o seu sono ou te dando dor de cabeça aí no dia a dia? 
-              Vamos descobrir juntos como a automação pode te ajudar a resolver isso. 💡
+              Vamos descobrir juntos como a automação pode te ajudar a resolver isso.
             </p>
           </div>
         </div>
@@ -128,6 +181,7 @@ const Contato = () => {
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        maxLength={100}
                         placeholder="Seu nome completo"
                       />
                     </div>
@@ -140,6 +194,7 @@ const Contato = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
+                        maxLength={255}
                         placeholder="seu@email.com"
                       />
                     </div>
@@ -153,6 +208,7 @@ const Contato = () => {
                         name="company"
                         value={formData.company}
                         onChange={handleChange}
+                        maxLength={100}
                         placeholder="Nome da sua empresa"
                       />
                     </div>
@@ -163,6 +219,7 @@ const Contato = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        maxLength={20}
                         placeholder="(11) 99999-9999"
                       />
                     </div>
@@ -176,9 +233,14 @@ const Contato = () => {
                       value={formData.message}
                       onChange={handleChange}
                       required
+                      minLength={10}
+                      maxLength={1000}
                       placeholder="Conte sobre o seu desafio ou dúvida..."
                       rows={6}
                     />
+                    <p className="text-xs text-muted-foreground text-right">
+                      {formData.message.length}/1000
+                    </p>
                   </div>
 
                   <Button 

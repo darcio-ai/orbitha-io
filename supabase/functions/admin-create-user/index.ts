@@ -5,6 +5,47 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Input validation helpers
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return email && typeof email === 'string' && email.length <= 255 && emailRegex.test(email);
+}
+
+function isValidPassword(password: string): { valid: boolean; message?: string } {
+  if (!password || typeof password !== 'string') {
+    return { valid: false, message: 'Senha é obrigatória' };
+  }
+  if (password.length < 6) {
+    return { valid: false, message: 'Senha deve ter pelo menos 6 caracteres' };
+  }
+  if (password.length > 72) {
+    return { valid: false, message: 'Senha deve ter no máximo 72 caracteres' };
+  }
+  return { valid: true };
+}
+
+function isValidName(name: string): boolean {
+  return name && typeof name === 'string' && name.length >= 1 && name.length <= 100;
+}
+
+function isValidPhone(phone: string): boolean {
+  if (!phone) return true; // Phone is optional
+  return typeof phone === 'string' && phone.length <= 20;
+}
+
+function isValidRole(role: string): boolean {
+  const validRoles = ['admin', 'user'];
+  return validRoles.includes(role);
+}
+
+function maskEmail(email: string): string {
+  if (!email) return '***';
+  const [localPart, domain] = email.split('@');
+  if (!localPart || !domain) return '***';
+  const maskedLocal = localPart.substring(0, 2) + '***';
+  return `${maskedLocal}@${domain}`;
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -34,8 +75,8 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
     
     if (authError) {
-      console.error('Auth error:', authError)
-      throw new Error(`Auth error: ${authError.message}`)
+      console.error('Auth error')
+      throw new Error('Authentication failed')
     }
     
     if (!user) {
@@ -43,7 +84,7 @@ Deno.serve(async (req) => {
       throw new Error('User not found')
     }
     
-    console.log('Authenticated user:', user.id)
+    console.log('Admin action by user:', user.id)
 
     // Verify the caller is an admin
     const { data: roleData } = await supabaseAdmin
@@ -58,15 +99,61 @@ Deno.serve(async (req) => {
 
     const { email, password, firstname, lastname, phone, role } = await req.json()
 
+    // Validate all inputs
+    if (!isValidEmail(email)) {
+      return new Response(
+        JSON.stringify({ error: 'Email inválido' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const passwordValidation = isValidPassword(password)
+    if (!passwordValidation.valid) {
+      return new Response(
+        JSON.stringify({ error: passwordValidation.message }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!isValidName(firstname)) {
+      return new Response(
+        JSON.stringify({ error: 'Nome é obrigatório (máximo 100 caracteres)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!isValidName(lastname)) {
+      return new Response(
+        JSON.stringify({ error: 'Sobrenome é obrigatório (máximo 100 caracteres)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!isValidPhone(phone)) {
+      return new Response(
+        JSON.stringify({ error: 'Telefone inválido (máximo 20 caracteres)' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (role && !isValidRole(role)) {
+      return new Response(
+        JSON.stringify({ error: 'Role inválida' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('Creating user:', maskEmail(email))
+
     // Create user with admin client (doesn't affect current session)
     const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
       user_metadata: {
-        firstname,
-        lastname,
-        phone
+        firstname: firstname.trim(),
+        lastname: lastname.trim(),
+        phone: phone?.trim() || ''
       }
     })
 
@@ -94,12 +181,12 @@ Deno.serve(async (req) => {
 
     if (roleError) throw roleError
 
-    console.log(`User created successfully: ${email}`)
+    console.log('User created successfully')
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        user: userData.user
+        user: { id: userData.user.id }
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -107,7 +194,7 @@ Deno.serve(async (req) => {
       },
     )
   } catch (error) {
-    console.error('Error creating user:', error.message)
+    console.error('Error creating user')
     
     // Return user-friendly error messages
     let errorMessage = error.message
