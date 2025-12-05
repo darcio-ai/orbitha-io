@@ -12,6 +12,39 @@ if (!OPENAI_API_KEY) {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_MAX = 10; // Max requests per window
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  if (!record || now > record.resetTime) {
+    // New window
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    return true;
+  }
+  
+  record.count++;
+  return false;
+}
+
+// Clean up old entries periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of rateLimitMap.entries()) {
+    if (now > record.resetTime) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 60 * 1000); // Clean every minute
+
 /**
  * BASE: tom + regras gerais da Orbitha
  */
@@ -77,8 +110,40 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+                     req.headers.get("x-real-ip") ||
+                     "unknown";
+    
+    // Check rate limit
+    if (isRateLimited(clientIP)) {
+      console.log(`Rate limit exceeded for IP: ${clientIP}`);
+      return new Response(
+        JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em 1 minuto." }), 
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     const body = await req.json();
     const { assistantId, userText, history } = body;
+
+    // Input validation
+    if (!assistantId || typeof assistantId !== 'string' || assistantId.length > 50) {
+      return new Response(
+        JSON.stringify({ error: "assistantId inválido" }), 
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+    
+    if (!userText || typeof userText !== 'string' || userText.length > 2000) {
+      return new Response(
+        JSON.stringify({ error: "Mensagem inválida ou muito longa (máx 2000 caracteres)" }), 
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     const system = SYSTEMS[assistantId] || BASE_SYSTEM;
 
@@ -107,9 +172,9 @@ REGRAS:
       { role: "system", content: system + "\n\n" + jsonInstruction },
       ...safeHistory.map((m: any) => ({
         role: m.sender === "user" ? "user" : "assistant",
-        content: String(m.text || ""),
+        content: String(m.text || "").slice(0, 2000),
       })),
-      { role: "user", content: String(userText || "") },
+      { role: "user", content: String(userText || "").slice(0, 2000) },
     ];
 
     const completion = await openai.chat.completions.create({
@@ -161,6 +226,7 @@ REGRAS:
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err: any) {
+    console.error("Demo chat error:", err?.message || err);
     return new Response(JSON.stringify({ error: err?.message || "Erro" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },

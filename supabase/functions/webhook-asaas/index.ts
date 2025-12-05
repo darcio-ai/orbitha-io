@@ -8,8 +8,29 @@ const PLAN_AGENT_MAPPING: Record<string, string[]> = {
     suite: ['fitness', 'travel', 'financial', 'sales', 'marketing', 'support', 'business']
 };
 
+// Webhook token for verification (set in Supabase secrets)
+const ASAAS_WEBHOOK_TOKEN = Deno.env.get("ASAAS_WEBHOOK_TOKEN");
+
 serve(async (req) => {
     try {
+        // Verify webhook token if configured
+        if (ASAAS_WEBHOOK_TOKEN) {
+            const providedToken = req.headers.get("asaas-access-token") || 
+                                  req.headers.get("x-asaas-token") ||
+                                  new URL(req.url).searchParams.get("token");
+            
+            if (providedToken !== ASAAS_WEBHOOK_TOKEN) {
+                console.error("Invalid webhook token provided");
+                return new Response(JSON.stringify({ error: "Unauthorized" }), {
+                    headers: { "Content-Type": "application/json" },
+                    status: 401,
+                });
+            }
+            console.log("Webhook token verified successfully");
+        } else {
+            console.warn("ASAAS_WEBHOOK_TOKEN not configured - accepting all requests (INSECURE)");
+        }
+
         const body = await req.json();
         const { event, payment } = body;
 
@@ -26,6 +47,16 @@ serve(async (req) => {
             const userId = payment.externalReference;
             const customerId = payment.customer;
             const paymentId = payment.id;
+
+            // Validate userId format (UUID)
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!userId || !uuidRegex.test(userId)) {
+                console.error("Invalid or missing userId in externalReference:", userId);
+                return new Response(JSON.stringify({ error: "Invalid user reference" }), {
+                    headers: { "Content-Type": "application/json" },
+                    status: 400,
+                });
+            }
 
             // Infer plan type from value or description
             let planType = 'unknown';
