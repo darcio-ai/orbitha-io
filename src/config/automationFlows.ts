@@ -15,31 +15,31 @@ export interface AutomationFlow {
 export const automationFlows: AutomationFlow[] = [
   {
     id: "flow-1",
-    name: "Automação de Leads",
-    shortDescription: "Capture e qualifique leads automaticamente",
-    description: "Fluxo completo de captura, qualificação e nutrição de leads integrando formulários, CRM e email marketing.",
-    image: "/flows/flow-1.png",
-    category: "Vendas",
-    integrations: ["Google Forms", "HubSpot", "Mailchimp", "WhatsApp"],
+    name: "Disparador Inteligente Whats",
+    shortDescription: "Envie mensagens em massa com segurança e personalização",
+    description: "Potencialize Suas Vendas com o Disparador Inteligente de WhatsApp. Chega de perder tempo enviando mensagens uma a uma. Nossa ferramenta de automação transforma sua lista de contatos em clientes ativos, com tecnologia pensada para garantir a entrega e a conversão.",
+    image: "/flows/disparo-whats.png",
+    category: "Marketing",
+    integrations: ["WhatsApp", "Google Sheets", "Planilhas Google"],
     features: [
-      "Captura automática de leads de múltiplas fontes",
-      "Qualificação por scoring inteligente",
-      "Envio de sequências de email personalizadas",
-      "Notificação em tempo real para o time de vendas",
-      "Sincronização com CRM"
+      "Humanização Real: Áudios que chegam como 'gravados na hora' (não como arquivo encaminhado)",
+      "Personalização em Escala: Chame cada cliente pelo nome automaticamente",
+      "Segurança Anti-Bloqueio: Rotação de mensagens e delays inteligentes",
+      "Multimídia Completa: Envie PDFs, imagens com legendas ou textos",
+      "Gestão Simples: Tudo controlado por planilha do Google"
     ],
     benefits: [
-      "3x mais leads qualificados",
-      "Redução de 70% no tempo de resposta",
-      "Zero leads perdidos"
+      "Taxa de escuta e resposta drasticamente maior",
+      "Conexão imediata com clientes",
+      "Proteção do seu número contra bloqueio"
     ],
     steps: [
-      { title: "Captura", description: "Lead preenche formulário ou envia mensagem" },
-      { title: "Enriquecimento", description: "Dados são validados e enriquecidos automaticamente" },
-      { title: "Qualificação", description: "IA analisa e atribui score ao lead" },
-      { title: "Distribuição", description: "Lead é enviado para o vendedor certo" }
+      { title: "Configure a Planilha", description: "Preencha sua lista de contatos na planilha Google" },
+      { title: "Escolha o Formato", description: "Selecione entre texto, áudio, imagem ou PDF" },
+      { title: "Personalize", description: "Configure mensagens variadas e delays inteligentes" },
+      { title: "Dispare", description: "Inicie o envio automatizado e acompanhe os resultados" }
     ],
-    estimatedTime: "Implementação em 3-5 dias"
+    estimatedTime: "Implementação em 1-2 dias"
   },
   {
     id: "flow-2",

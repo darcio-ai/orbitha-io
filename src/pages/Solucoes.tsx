@@ -147,6 +147,7 @@ const Solucoes = () => {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       "Vendas": "bg-green-500/10 text-green-600 border-green-500/20",
+      "Marketing": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
       "Atendimento": "bg-blue-500/10 text-blue-600 border-blue-500/20",
       "Analytics": "bg-purple-500/10 text-purple-600 border-purple-500/20",
       "Customer Success": "bg-orange-500/10 text-orange-600 border-orange-500/20"
