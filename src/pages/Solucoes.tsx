@@ -226,7 +226,7 @@ const Solucoes = () => {
                   <img 
                     src={flow.image} 
                     alt={flow.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-4"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
@@ -283,7 +283,7 @@ const Solucoes = () => {
                   <img 
                     src={selectedFlow.image} 
                     alt={selectedFlow.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-4"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
