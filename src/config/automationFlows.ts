@@ -43,31 +43,31 @@ export const automationFlows: AutomationFlow[] = [
   },
   {
     id: "flow-2",
-    name: "Atendimento Inteligente",
-    shortDescription: "Suporte 24/7 com IA conversacional",
-    description: "Automatize o atendimento ao cliente com IA que entende contexto, resolve problemas e escala quando necessário.",
-    image: "/flows/flow-2.png",
-    category: "Atendimento",
-    integrations: ["WhatsApp Business", "Zendesk", "Notion", "Slack"],
+    name: "Automação de Vendas Blindada",
+    shortDescription: "Meio de Pagamento → CRM + WhatsApp com segurança anti-fraude",
+    description: "Elimine o trabalho manual e garanta segurança total nas suas vendas. Este fluxo automatizado processa pagamentos do Mercado Pago, valida a transação em tempo real para evitar fraudes, notifica sua equipe via WhatsApp e organiza o cliente automaticamente no seu CRM (Pipedrive).",
+    image: "/flows/vendas-blindada.png",
+    category: "Vendas",
+    integrations: ["Mercado Pago", "Pipedrive", "WhatsApp", "Evolution API"],
     features: [
-      "Respostas instantâneas 24/7",
-      "Base de conhecimento integrada",
-      "Escalação inteligente para humanos",
-      "Histórico completo de conversas",
-      "Análise de sentimento em tempo real"
+      "Monitoramento Instantâneo: Captura vendas via Webhook do Mercado Pago",
+      "Segurança Anti-Fraude: Valida pagamentos na API oficial (previne webhooks falsos)",
+      "Filtro Inteligente: Processa apenas vendas com status 'aprovado'",
+      "Notificação WhatsApp: Alerta imediato com valor, ID e produto via Evolution API",
+      "Gestão de CRM: Cria/atualiza contato e abre Deal no Pipedrive automaticamente"
     ],
     benefits: [
-      "95% das dúvidas resolvidas automaticamente",
-      "Atendimento 24/7 sem custo adicional",
-      "NPS aumentado em 40%"
+      "Zero trabalho manual no processamento de vendas",
+      "Proteção total contra golpes e fraudes",
+      "Equipe notificada em tempo real"
     ],
     steps: [
-      { title: "Recepção", description: "Cliente inicia conversa em qualquer canal" },
-      { title: "Análise", description: "IA identifica intenção e contexto" },
-      { title: "Resolução", description: "Resposta automática ou ação executada" },
-      { title: "Feedback", description: "Registro e aprendizado contínuo" }
+      { title: "Captura", description: "Webhook recebe a notificação de venda do Mercado Pago" },
+      { title: "Validação", description: "API oficial confirma se o pagamento é real e aprovado" },
+      { title: "Notificação", description: "Alerta enviado via WhatsApp para sua equipe" },
+      { title: "CRM", description: "Contato criado/atualizado e Deal aberto no Pipedrive" }
     ],
-    estimatedTime: "Implementação em 5-7 dias"
+    estimatedTime: "Implementação em 2-3 dias"
   },
   {
     id: "flow-3",
