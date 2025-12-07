@@ -242,7 +242,7 @@ const Solucoes = () => {
                   <Badge variant="outline" className={`w-fit mb-2 ${getCategoryColor(flow.category)}`}>
                     {flow.category}
                   </Badge>
-                  <CardTitle className="text-lg line-clamp-1">{flow.name}</CardTitle>
+                  <CardTitle className="text-lg line-clamp-2">{flow.name}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="line-clamp-2">
