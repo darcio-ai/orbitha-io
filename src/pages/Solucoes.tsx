@@ -496,11 +496,11 @@ const Solucoes = () => {
               Pronto para automatizar seu negócio?
             </h2>
             <p className="text-xl text-primary-foreground/80 mb-8">
-              Agende uma conversa gratuita e descubra como nossos agentes de IA podem transformar sua operação.
+              Agende um bate papo e descubra como nossos agentes de IA podem transformar sua operação.
             </p>
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-6" onClick={() => handleContact("Oi! Quero agendar uma consulta gratuita sobre automação com IA")}>
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-6" onClick={() => handleContact("Oi! Quero agendar um bate papo sobre automação com IA")}>
               <MessageSquare className="mr-2 h-5 w-5" />
-              Agendar Consulta Gratuita
+              Agendar um Bate Papo
             </Button>
           </div>
         </div>
