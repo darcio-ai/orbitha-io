@@ -99,30 +99,30 @@ export const automationFlows: AutomationFlow[] = [
   },
   {
     id: "flow-4",
-    name: "Onboarding de Clientes",
-    shortDescription: "Jornada de boas-vindas automatizada",
-    description: "Automatize todo o processo de onboarding de novos clientes com sequências de emails, tarefas e check-ins.",
-    image: "/flows/flow-4.png",
-    category: "Customer Success",
-    integrations: ["Stripe", "Mailchimp", "Calendly", "Notion"],
+    name: "Conheça a Dora: Atendimento WhatsApp com IA",
+    shortDescription: "Agente de IA para atendimento 24/7 no WhatsApp",
+    description: "A Dora não é apenas um chatbot; é a agente de inteligência artificial oficial da Orbitha, projetada para transformar o atendimento da sua empresa. Operando 24 horas por dia, 7 dias por semana, a Dora combina a empatia humana com a precisão da tecnologia para qualificar leads, tirar dúvidas e agendar reuniões automaticamente.",
+    image: "/flows/dora-ai.png",
+    category: "Atendimento",
+    integrations: ["WhatsApp", "OpenAI", "Google Calendar", "Supabase"],
     features: [
-      "Sequência de boas-vindas personalizada",
-      "Agendamento automático de calls de kickoff",
-      "Checklist de onboarding interativo",
-      "Alertas de clientes em risco",
-      "Métricas de adoção do produto"
+      "Omnicanal e Acessível: Entende textos e ouve áudios (transcrição automática)",
+      "Memória Inteligente: Lembra do nome do cliente e do histórico da conversa",
+      "Venda Consultiva: Diagnostica dores do cliente e oferece soluções ideais",
+      "Gestão de Agenda Real: Integrada ao Google Calendar, agenda reuniões sem conflitos",
+      "Atendimento 24/7: Disponível a qualquer hora, todos os dias da semana"
     ],
     benefits: [
-      "Time-to-value reduzido em 50%",
-      "Churn nos primeiros 30 dias reduzido",
-      "Experiência consistente para todos os clientes"
+      "Atendimento contínuo sem equipe de plantão",
+      "Leads qualificados automaticamente antes da reunião",
+      "Zero conflitos de agenda com integração direta ao calendário"
     ],
     steps: [
-      { title: "Ativação", description: "Cliente finaliza compra/contrato" },
-      { title: "Boas-vindas", description: "Sequência de emails é disparada" },
-      { title: "Kickoff", description: "Call de onboarding é agendada automaticamente" },
-      { title: "Acompanhamento", description: "Check-ins e métricas são monitorados" }
+      { title: "Recepção", description: "Cliente envia mensagem no WhatsApp (texto ou áudio)" },
+      { title: "Compreensão", description: "Dora transcreve áudios e entende a necessidade" },
+      { title: "Qualificação", description: "Identifica dores e apresenta soluções personalizadas" },
+      { title: "Agendamento", description: "Verifica disponibilidade e agenda reunião no Google Calendar" }
     ],
-    estimatedTime: "Implementação em 4-6 dias"
+    estimatedTime: "Implementação em 5-7 dias"
   }
 ];
