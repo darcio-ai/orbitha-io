@@ -71,31 +71,31 @@ export const automationFlows: AutomationFlow[] = [
   },
   {
     id: "flow-3",
-    name: "Relatórios Automáticos",
-    shortDescription: "Dashboards e relatórios sem esforço manual",
-    description: "Gere relatórios automaticamente coletando dados de múltiplas fontes e enviando insights por email ou Slack.",
-    image: "/flows/flow-3.png",
-    category: "Analytics",
-    integrations: ["Google Sheets", "PostgreSQL", "Slack", "Email"],
+    name: "Agente SDR com Inteligência Artificial",
+    shortDescription: "Nunca mais deixe um lead 'esfriar' com follow-up automático",
+    description: "Aumente suas taxas de conversão recuperando leads que pararam de responder. Esta automação avançada atua como um SDR (Pré-vendas) incansável, monitorando seus leads 24/7 e entrando em ação estrategicamente quando o contato é interrompido.",
+    image: "/flows/sdr-followup.png",
+    category: "Vendas",
+    integrations: ["OpenAI", "WhatsApp", "Supabase", "Notion"],
     features: [
-      "Coleta automática de dados de múltiplas fontes",
-      "Geração de gráficos e visualizações",
-      "Envio programado por email/Slack",
-      "Alertas de métricas críticas",
-      "Comparativos históricos automáticos"
+      "Vox IA: Agente baseado em GPT-4o que lê o histórico e cria mensagens personalizadas",
+      "Monitoramento Ativo: Sistema verifica constantemente se leads pararam de responder",
+      "Primeira Tentativa (30 min): Mensagem amigável e contextualizada para retomar o diálogo",
+      "Segunda Tentativa (2h): Mensagem persuasiva com gatilhos de urgência e incentivos",
+      "Finalização Inteligente (4h): Encerra atendimento e atualiza CRM automaticamente"
     ],
     benefits: [
-      "10h/semana economizadas em relatórios manuais",
-      "Dados sempre atualizados",
-      "Decisões baseadas em dados reais"
+      "Leads nunca mais 'esfriam' por falta de follow-up",
+      "Recuperação automática de oportunidades perdidas",
+      "Base de dados sempre limpa e organizada"
     ],
     steps: [
-      { title: "Coleta", description: "Dados são extraídos das fontes configuradas" },
-      { title: "Processamento", description: "Métricas são calculadas e comparadas" },
-      { title: "Visualização", description: "Gráficos e tabelas são gerados" },
-      { title: "Distribuição", description: "Relatório enviado aos destinatários" }
+      { title: "Monitoramento", description: "Sistema detecta quando um Novo Lead para de responder" },
+      { title: "1ª Tentativa", description: "Após 30 min, IA envia mensagem amigável e contextualizada" },
+      { title: "2ª Tentativa", description: "Após 2h, mensagem persuasiva com urgência e desconto" },
+      { title: "Finalização", description: "Após 4h, encerra atendimento e atualiza o CRM" }
     ],
-    estimatedTime: "Implementação em 2-4 dias"
+    estimatedTime: "Implementação em 3-5 dias"
   },
   {
     id: "flow-4",
