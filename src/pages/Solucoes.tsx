@@ -115,7 +115,7 @@ const Solucoes = () => {
   ];
 
   const stats = [
-    { icon: <Users className="h-8 w-8" />, number: "100+", label: "Empresas atendidas" },
+    { icon: <Clock className="h-8 w-8" />, number: "500+", label: "Horas economizadas/mês" },
     { icon: <BarChart3 className="h-8 w-8" />, number: "95%", label: "Redução no tempo de resposta" },
     { icon: <Clock className="h-8 w-8" />, number: "24/7", label: "Disponibilidade" },
     { icon: <Zap className="h-8 w-8" />, number: "3x", label: "Aumento na produtividade" }
