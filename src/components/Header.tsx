@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import orbithaLogo from "@/assets/orbitha-logo-new.png";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,11 +13,21 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+
+type MobileMenuItem = 
+  | { type: "link"; name: string; href: string }
+  | { type: "group"; name: string; items: { name: string; href: string; description: string }[] };
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [openGroups, setOpenGroups] = useState<string[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -43,16 +53,36 @@ const Header = () => {
     navigate("/");
   };
 
-  // Mobile navigation - flat list
-  const mobileNavigation = [
-    { name: "Home", href: "/" },
-    { name: "Quem Sou", href: "/quem-sou" },
-    { name: "Mentoria", href: "/mentoria" },
-    { name: "Soluções B2B", href: "/solucoes" },
-    { name: "Assistentes IA", href: "/assistentes" },
-    { name: "Preços", href: "/pricing" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contato", href: "/contato" },
+  const toggleGroup = (name: string) => {
+    setOpenGroups(prev => 
+      prev.includes(name) 
+        ? prev.filter(g => g !== name) 
+        : [...prev, name]
+    );
+  };
+
+  // Mobile navigation - structured like desktop
+  const mobileMenuStructure: MobileMenuItem[] = [
+    { type: "link", name: "Home", href: "/" },
+    {
+      type: "group",
+      name: "Sobre",
+      items: [
+        { name: "Quem Sou", href: "/quem-sou", description: "Conheça minha história" },
+        { name: "Mentoria", href: "/mentoria", description: "Mentoria personalizada" },
+      ],
+    },
+    {
+      type: "group",
+      name: "Soluções de IA",
+      items: [
+        { name: "Soluções B2B", href: "/solucoes", description: "Automação e agentes para empresas" },
+        { name: "Assistentes IA", href: "/assistentes", description: "Teste nossos assistentes com demo" },
+      ],
+    },
+    { type: "link", name: "Preços", href: "/pricing" },
+    { type: "link", name: "Blog", href: "/blog" },
+    { type: "link", name: "Contato", href: "/contato" },
   ];
 
   const isActive = (href: string) => location.pathname === href || location.hash === href;
@@ -115,24 +145,79 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Mobile Menu */}
+          {/* Mobile Menu with Accordions */}
           {isMenuOpen && (
             <div className="mt-2 p-3 rounded-2xl backdrop-blur-xl bg-card/10 border border-border/20">
               <div className="space-y-1">
-                {mobileNavigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                      isActive(item.href) 
-                        ? "text-primary bg-primary/10" 
-                        : "text-muted-foreground hover:bg-card/20"
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </a>
-                ))}
+                {mobileMenuStructure.map((item) => {
+                  if (item.type === "link") {
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.href}
+                        className={cn(
+                          "block px-4 py-2.5 text-sm font-medium rounded-lg transition-all",
+                          isActive(item.href) 
+                            ? "text-primary bg-primary/10" 
+                            : "text-muted-foreground hover:bg-card/20"
+                        )}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item.name}
+                      </Link>
+                    );
+                  }
+
+                  // Group with collapsible
+                  const isOpen = openGroups.includes(item.name);
+                  const hasActiveChild = item.items.some(sub => isActive(sub.href));
+
+                  return (
+                    <Collapsible
+                      key={item.name}
+                      open={isOpen}
+                      onOpenChange={() => toggleGroup(item.name)}
+                    >
+                      <CollapsibleTrigger className={cn(
+                        "flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium rounded-lg transition-all",
+                        hasActiveChild 
+                          ? "text-primary bg-primary/10" 
+                          : "text-muted-foreground hover:bg-card/20"
+                      )}>
+                        <span>{item.name}</span>
+                        <ChevronDown className={cn(
+                          "h-4 w-4 transition-transform duration-200",
+                          isOpen && "rotate-180"
+                        )} />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="pl-4 mt-1 space-y-1">
+                        {item.items.map((subItem) => (
+                          <Link
+                            key={subItem.name}
+                            to={subItem.href}
+                            className={cn(
+                              "block px-4 py-2.5 rounded-lg transition-all",
+                              isActive(subItem.href) 
+                                ? "bg-accent/50" 
+                                : "hover:bg-card/20"
+                            )}
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <div className={cn(
+                              "text-sm font-medium",
+                              isActive(subItem.href) ? "text-primary" : "text-foreground"
+                            )}>
+                              {subItem.name}
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {subItem.description}
+                            </p>
+                          </Link>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
               </div>
             </div>
           )}
