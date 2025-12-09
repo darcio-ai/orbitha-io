@@ -40,6 +40,7 @@ import DashboardRedirect from "./pages/DashboardRedirect";
 import ScrollToTop from "./components/ScrollToTop";
 import Termos from "./pages/Termos";
 import AdminGenerateDora from "./pages/AdminGenerateDora";
+import DashboardAppointments from "./pages/DashboardAppointments";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -97,6 +98,7 @@ function AppRoutes() {
         <Route path="agents" element={<DashboardAgents />} />
         <Route path="agents-for-user" element={<DashboardAgentsForUser />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="appointments" element={<DashboardAppointments />} />
       </Route>
       
       {/* Chat route */}

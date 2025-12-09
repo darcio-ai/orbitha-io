@@ -35,3 +35,12 @@ verify_jwt = false
 
 [functions.send-contact]
 verify_jwt = false
+
+[functions.clients]
+verify_jwt = false
+
+[functions.appointments]
+verify_jwt = false
+
+[functions.check-availability]
+verify_jwt = false

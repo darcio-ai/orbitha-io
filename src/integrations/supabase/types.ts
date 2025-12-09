@@ -14,6 +14,65 @@ export type Database = {
   }
   public: {
     Tables: {
+      agendamentos: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          data_fim: string
+          data_inicio: string
+          data_txt: string
+          descricao: string | null
+          google_event_id: string | null
+          horario_txt: string
+          id: string
+          lembrete_1dia: boolean
+          lembrete_2hs: boolean
+          status: Database["public"]["Enums"]["appointment_status"]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          data_fim: string
+          data_inicio: string
+          data_txt: string
+          descricao?: string | null
+          google_event_id?: string | null
+          horario_txt: string
+          id?: string
+          lembrete_1dia?: boolean
+          lembrete_2hs?: boolean
+          status?: Database["public"]["Enums"]["appointment_status"]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          data_fim?: string
+          data_inicio?: string
+          data_txt?: string
+          descricao?: string | null
+          google_event_id?: string | null
+          horario_txt?: string
+          id?: string
+          lembrete_1dia?: boolean
+          lembrete_2hs?: boolean
+          status?: Database["public"]["Enums"]["appointment_status"]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agendamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_messages: {
         Row: {
           agent_id: string
@@ -144,6 +203,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clientes: {
+        Row: {
+          conversa_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          nome: string
+          telefone: string
+          updated_at: string
+        }
+        Insert: {
+          conversa_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome: string
+          telefone: string
+          updated_at?: string
+        }
+        Update: {
+          conversa_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string
+          telefone?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       contact_messages: {
         Row: {
@@ -392,6 +481,12 @@ export type Database = {
     Enums: {
       agent_status: "active" | "suspended" | "deleted"
       app_role: "admin" | "user"
+      appointment_status:
+        | "agendado"
+        | "confirmado"
+        | "cancelado"
+        | "reagendado"
+        | "concluido"
       message_writer: "user" | "assistant"
     }
     CompositeTypes: {
@@ -522,6 +617,13 @@ export const Constants = {
     Enums: {
       agent_status: ["active", "suspended", "deleted"],
       app_role: ["admin", "user"],
+      appointment_status: [
+        "agendado",
+        "confirmado",
+        "cancelado",
+        "reagendado",
+        "concluido",
+      ],
       message_writer: ["user", "assistant"],
     },
   },
