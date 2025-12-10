@@ -174,18 +174,35 @@ async function deleteGoogleCalendarEvent(eventId: string): Promise<boolean> {
   }
 }
 
-// Formatar data para texto legível
+// Timezone do Brasil (São Paulo)
+const BRAZIL_TIMEZONE = "America/Sao_Paulo";
+
+// Formatar data para texto legível no horário brasileiro
 function formatDateText(date: Date): string {
-  const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
-  const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
-                 "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: BRAZIL_TIMEZONE,
+  };
   
-  return `${dias[date.getDay()]}, ${date.getDate()} de ${meses[date.getMonth()]}`;
+  const formatted = new Intl.DateTimeFormat("pt-BR", options).format(date);
+  // Capitaliza primeira letra do dia da semana
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
 function formatTimeText(startDate: Date, endDate: Date): string {
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return `${pad(startDate.getHours())}:${pad(startDate.getMinutes())} - ${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`;
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: BRAZIL_TIMEZONE,
+  };
+  
+  const startTime = new Intl.DateTimeFormat("pt-BR", options).format(startDate);
+  const endTime = new Intl.DateTimeFormat("pt-BR", options).format(endDate);
+  
+  return `${startTime} - ${endTime}`;
 }
 
 Deno.serve(async (req) => {
