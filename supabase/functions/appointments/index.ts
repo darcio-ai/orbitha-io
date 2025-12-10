@@ -426,7 +426,8 @@ Deno.serve(async (req) => {
         updateData.data_txt = formatDateText(startDate);
         updateData.horario_txt = formatTimeText(startDate, endDate);
         
-        if (!status) updateData.status = "reagendado";
+        // Mantém como "agendado" para facilitar buscas (não muda para "reagendado")
+        // O campo updated_at já indica que houve alteração
 
         // Atualizar no Google Calendar
         if (current.google_event_id) {
