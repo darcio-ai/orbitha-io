@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.check-availability]
 verify_jwt = false
+
+[functions.sync-calendar]
+verify_jwt = false
