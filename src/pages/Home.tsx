@@ -309,7 +309,7 @@ const Home = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img src={doraAvatar} alt="Dora" className="mr-2 h-5 md:h-6 w-5 md:w-6 rounded-full object-cover" />
+                <img src={doraAvatar} alt="Dora" className="mr-2 h-8 md:h-10 w-8 md:w-10 rounded-full object-cover" />
                 Conversar com a Dora
               </a>
             </Button>
