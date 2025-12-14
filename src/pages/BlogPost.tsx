@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -15,39 +17,38 @@ const BlogPost = () => {
       readTime: "5 min",
       date: "15 Jan 2024",
       image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=600&fit=crop",
-      content: `
-        <p>A inteligência artificial tem transformado radicalmente a forma como as empresas se relacionam com seus clientes. Neste artigo, vamos explorar como essa tecnologia está revolucionando o atendimento ao cliente.</p>
+      content: `A inteligência artificial tem transformado radicalmente a forma como as empresas se relacionam com seus clientes. Neste artigo, vamos explorar como essa tecnologia está revolucionando o atendimento ao cliente.
 
-        <h2>O que mudou no atendimento</h2>
-        <p>Nos últimos anos, vimos uma evolução significativa na forma como as empresas atendem seus clientes. A IA trouxe possibilidades que antes pareciam impossíveis:</p>
-        <ul>
-          <li>Atendimento 24/7 sem custo adicional</li>
-          <li>Respostas instantâneas e precisas</li>
-          <li>Personalização em escala</li>
-          <li>Análise de sentimento em tempo real</li>
-        </ul>
+## O que mudou no atendimento
 
-        <h2>Benefícios práticos da IA no atendimento</h2>
-        <p>As empresas que implementam IA em seus processos de atendimento observam benefícios imediatos:</p>
-        <ul>
-          <li><strong>Redução de custos:</strong> Menos necessidade de equipes grandes</li>
-          <li><strong>Aumento na satisfação:</strong> Respostas mais rápidas e precisas</li>
-          <li><strong>Escalabilidade:</strong> Atender milhares de clientes simultaneamente</li>
-          <li><strong>Insights valiosos:</strong> Dados sobre comportamento e preferências dos clientes</li>
-        </ul>
+Nos últimos anos, vimos uma evolução significativa na forma como as empresas atendem seus clientes. A IA trouxe possibilidades que antes pareciam impossíveis:
 
-        <h2>Como implementar na sua empresa</h2>
-        <p>A implementação de IA no atendimento não precisa ser complexa. Comece com:</p>
-        <ol>
-          <li>Identificar os pontos de dor no atendimento atual</li>
-          <li>Escolher as ferramentas certas para seu negócio</li>
-          <li>Treinar sua equipe para trabalhar com IA</li>
-          <li>Monitorar e ajustar continuamente</li>
-        </ol>
+- Atendimento 24/7 sem custo adicional
+- Respostas instantâneas e precisas
+- Personalização em escala
+- Análise de sentimento em tempo real
 
-        <h2>Conclusão</h2>
-        <p>A IA não veio para substituir o atendimento humano, mas para potencializá-lo. As empresas que souberem combinar tecnologia e humanização terão uma vantagem competitiva significativa no mercado.</p>
-      `
+## Benefícios práticos da IA no atendimento
+
+As empresas que implementam IA em seus processos de atendimento observam benefícios imediatos:
+
+- **Redução de custos:** Menos necessidade de equipes grandes
+- **Aumento na satisfação:** Respostas mais rápidas e precisas
+- **Escalabilidade:** Atender milhares de clientes simultaneamente
+- **Insights valiosos:** Dados sobre comportamento e preferências dos clientes
+
+## Como implementar na sua empresa
+
+A implementação de IA no atendimento não precisa ser complexa. Comece com:
+
+1. Identificar os pontos de dor no atendimento atual
+2. Escolher as ferramentas certas para seu negócio
+3. Treinar sua equipe para trabalhar com IA
+4. Monitorar e ajustar continuamente
+
+## Conclusão
+
+A IA não veio para substituir o atendimento humano, mas para potencializá-lo. As empresas que souberem combinar tecnologia e humanização terão uma vantagem competitiva significativa no mercado.`
     },
     "whatsapp-business-api-guia-automacao": {
       title: "WhatsApp Business API: Guia completo para automação",
@@ -55,44 +56,43 @@ const BlogPost = () => {
       readTime: "8 min",
       date: "12 Jan 2024",
       image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=600&fit=crop",
-      content: `
-        <p>O WhatsApp Business API é uma ferramenta poderosa para empresas que desejam automatizar e escalar seu atendimento via WhatsApp. Vamos explorar tudo que você precisa saber.</p>
+      content: `O WhatsApp Business API é uma ferramenta poderosa para empresas que desejam automatizar e escalar seu atendimento via WhatsApp. Vamos explorar tudo que você precisa saber.
 
-        <h2>O que é WhatsApp Business API?</h2>
-        <p>Diferente do WhatsApp Business comum, a API permite integrações avançadas e automações que transformam a forma como você se comunica com seus clientes.</p>
+## O que é WhatsApp Business API?
 
-        <h2>Principais recursos</h2>
-        <ul>
-          <li>Mensagens automáticas programadas</li>
-          <li>Integração com CRM e sistemas internos</li>
-          <li>Chatbots inteligentes</li>
-          <li>Métricas e relatórios detalhados</li>
-          <li>Múltiplos atendentes simultâneos</li>
-        </ul>
+Diferente do WhatsApp Business comum, a API permite integrações avançadas e automações que transformam a forma como você se comunica com seus clientes.
 
-        <h2>Como começar</h2>
-        <p>Para implementar o WhatsApp Business API, você precisará:</p>
-        <ol>
-          <li>Verificar se sua empresa se qualifica</li>
-          <li>Escolher um provedor oficial (BSP)</li>
-          <li>Configurar sua conta e número</li>
-          <li>Desenvolver ou integrar seu chatbot</li>
-          <li>Treinar sua equipe</li>
-        </ol>
+## Principais recursos
 
-        <h2>Casos de uso práticos</h2>
-        <p>Algumas aplicações práticas que trazem resultados imediatos:</p>
-        <ul>
-          <li>Confirmação automática de pedidos</li>
-          <li>Lembretes de compromissos</li>
-          <li>Atendimento pré-venda 24/7</li>
-          <li>Suporte técnico automatizado</li>
-          <li>Pesquisas de satisfação</li>
-        </ul>
+- Mensagens automáticas programadas
+- Integração com CRM e sistemas internos
+- Chatbots inteligentes
+- Métricas e relatórios detalhados
+- Múltiplos atendentes simultâneos
 
-        <h2>Conclusão</h2>
-        <p>O WhatsApp Business API é um investimento que se paga rapidamente através da eficiência operacional e satisfação do cliente que proporciona.</p>
-      `
+## Como começar
+
+Para implementar o WhatsApp Business API, você precisará:
+
+1. Verificar se sua empresa se qualifica
+2. Escolher um provedor oficial (BSP)
+3. Configurar sua conta e número
+4. Desenvolver ou integrar seu chatbot
+5. Treinar sua equipe
+
+## Casos de uso práticos
+
+Algumas aplicações práticas que trazem resultados imediatos:
+
+- Confirmação automática de pedidos
+- Lembretes de compromissos
+- Atendimento pré-venda 24/7
+- Suporte técnico automatizado
+- Pesquisas de satisfação
+
+## Conclusão
+
+O WhatsApp Business API é um investimento que se paga rapidamente através da eficiência operacional e satisfação do cliente que proporciona.`
     },
     "processos-pme-automatizar": {
       title: "5 processos que toda PME deveria automatizar",
@@ -100,52 +100,51 @@ const BlogPost = () => {
       readTime: "6 min",
       date: "10 Jan 2024",
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop",
-      content: `
-        <p>Pequenas e médias empresas frequentemente perdem tempo com tarefas repetitivas que poderiam ser automatizadas. Descubra os 5 processos essenciais para automatizar agora.</p>
+      content: `Pequenas e médias empresas frequentemente perdem tempo com tarefas repetitivas que poderiam ser automatizadas. Descubra os 5 processos essenciais para automatizar agora.
 
-        <h2>1. Atendimento ao cliente inicial</h2>
-        <p>O primeiro contato com o cliente pode ser totalmente automatizado, garantindo:</p>
-        <ul>
-          <li>Resposta imediata 24/7</li>
-          <li>Qualificação automática de leads</li>
-          <li>Direcionamento para o setor correto</li>
-        </ul>
+## 1. Atendimento ao cliente inicial
 
-        <h2>2. Gestão de agendamentos</h2>
-        <p>Elimine o vai-e-vem de mensagens para marcar horários:</p>
-        <ul>
-          <li>Calendário sempre atualizado</li>
-          <li>Lembretes automáticos</li>
-          <li>Redução de no-shows</li>
-        </ul>
+O primeiro contato com o cliente pode ser totalmente automatizado, garantindo:
 
-        <h2>3. Follow-up de vendas</h2>
-        <p>Nunca mais perca uma venda por esquecimento:</p>
-        <ul>
-          <li>Sequências de follow-up automáticas</li>
-          <li>Personalização em escala</li>
-          <li>Aumento da taxa de conversão</li>
-        </ul>
+- Resposta imediata 24/7
+- Qualificação automática de leads
+- Direcionamento para o setor correto
 
-        <h2>4. Controle financeiro básico</h2>
-        <p>Automação financeira traz clareza e previsibilidade:</p>
-        <ul>
-          <li>Registro automático de receitas</li>
-          <li>Controle de inadimplência</li>
-          <li>Relatórios instantâneos</li>
-        </ul>
+## 2. Gestão de agendamentos
 
-        <h2>5. Gestão de estoque</h2>
-        <p>Para empresas com produtos físicos:</p>
-        <ul>
-          <li>Alertas de estoque baixo</li>
-          <li>Integração com vendas</li>
-          <li>Previsão de demanda</li>
-        </ul>
+Elimine o vai-e-vem de mensagens para marcar horários:
 
-        <h2>Por onde começar?</h2>
-        <p>Priorize o processo que mais consome tempo da sua equipe atualmente. A automatização deve trazer alívio imediato e resultados mensuráveis.</p>
-      `
+- Calendário sempre atualizado
+- Lembretes automáticos
+- Redução de no-shows
+
+## 3. Follow-up de vendas
+
+Nunca mais perca uma venda por esquecimento:
+
+- Sequências de follow-up automáticas
+- Personalização em escala
+- Aumento da taxa de conversão
+
+## 4. Controle financeiro básico
+
+Automação financeira traz clareza e previsibilidade:
+
+- Registro automático de receitas
+- Controle de inadimplência
+- Relatórios instantâneos
+
+## 5. Gestão de estoque
+
+Para empresas com produtos físicos:
+
+- Alertas de estoque baixo
+- Integração com vendas
+- Previsão de demanda
+
+## Por onde começar?
+
+Priorize o processo que mais consome tempo da sua equipe atualmente. A automatização deve trazer alívio imediato e resultados mensuráveis.`
     },
     "zapier-vs-n8n-ferramenta-escolher": {
       title: "Zapier vs n8n: Qual ferramenta escolher para sua empresa?",
@@ -153,60 +152,59 @@ const BlogPost = () => {
       readTime: "7 min",
       date: "8 Jan 2024",
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop",
-      content: `
-        <p>Comparativo completo entre Zapier e n8n para ajudar você a escolher a melhor ferramenta de automação para sua empresa.</p>
+      content: `Comparativo completo entre Zapier e n8n para ajudar você a escolher a melhor ferramenta de automação para sua empresa.
 
-        <h2>Zapier: O líder consolidado</h2>
-        <p><strong>Vantagens:</strong></p>
-        <ul>
-          <li>Interface super intuitiva</li>
-          <li>Milhares de integrações prontas</li>
-          <li>Suporte excelente</li>
-          <li>Não requer conhecimento técnico</li>
-        </ul>
-        <p><strong>Desvantagens:</strong></p>
-        <ul>
-          <li>Custo pode ser alto com escala</li>
-          <li>Menos flexibilidade para casos complexos</li>
-          <li>Dependência de um serviço terceiro</li>
-        </ul>
+## Zapier: O líder consolidado
 
-        <h2>n8n: O poder da flexibilidade</h2>
-        <p><strong>Vantagens:</strong></p>
-        <ul>
-          <li>Open source e gratuito</li>
-          <li>Altamente customizável</li>
-          <li>Pode ser hospedado internamente</li>
-          <li>Suporte a código customizado</li>
-        </ul>
-        <p><strong>Desvantagens:</strong></p>
-        <ul>
-          <li>Curva de aprendizado maior</li>
-          <li>Requer conhecimento técnico</li>
-          <li>Menos integrações nativas</li>
-        </ul>
+**Vantagens:**
 
-        <h2>Quando escolher Zapier</h2>
-        <p>Escolha Zapier se você:</p>
-        <ul>
-          <li>Precisa de algo funcional rapidamente</li>
-          <li>Não tem equipe técnica</li>
-          <li>Usa aplicações populares (Google, Slack, etc)</li>
-          <li>Valoriza suporte e estabilidade</li>
-        </ul>
+- Interface super intuitiva
+- Milhares de integrações prontas
+- Suporte excelente
+- Não requer conhecimento técnico
 
-        <h2>Quando escolher n8n</h2>
-        <p>Escolha n8n se você:</p>
-        <ul>
-          <li>Tem ou pode contratar conhecimento técnico</li>
-          <li>Precisa de automações complexas</li>
-          <li>Quer controle total dos seus dados</li>
-          <li>Busca reduzir custos no longo prazo</li>
-        </ul>
+**Desvantagens:**
 
-        <h2>Conclusão</h2>
-        <p>Ambas são ótimas ferramentas. A escolha depende do perfil da sua empresa, orçamento disponível e necessidades técnicas específicas.</p>
-      `
+- Custo pode ser alto com escala
+- Menos flexibilidade para casos complexos
+- Dependência de um serviço terceiro
+
+## n8n: O poder da flexibilidade
+
+**Vantagens:**
+
+- Open source e gratuito
+- Altamente customizável
+- Pode ser hospedado internamente
+- Suporte a código customizado
+
+**Desvantagens:**
+
+- Curva de aprendizado maior
+- Requer conhecimento técnico
+- Menos integrações nativas
+
+## Quando escolher Zapier
+
+Escolha Zapier se você:
+
+- Precisa de algo funcional rapidamente
+- Não tem equipe técnica
+- Usa aplicações populares (Google, Slack, etc)
+- Valoriza suporte e estabilidade
+
+## Quando escolher n8n
+
+Escolha n8n se você:
+
+- Tem ou pode contratar conhecimento técnico
+- Precisa de automações complexas
+- Quer controle total dos seus dados
+- Busca reduzir custos no longo prazo
+
+## Conclusão
+
+Ambas são ótimas ferramentas. A escolha depende do perfil da sua empresa, orçamento disponível e necessidades técnicas específicas.`
     },
     "roi-automacao-calcular-retorno": {
       title: "ROI da automação: Como calcular o retorno do investimento",
@@ -214,45 +212,43 @@ const BlogPost = () => {
       readTime: "4 min",
       date: "5 Jan 2024",
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop",
-      content: `
-        <p>Entenda como medir o retorno do investimento das suas iniciativas de automação e justificar novos projetos.</p>
+      content: `Entenda como medir o retorno do investimento das suas iniciativas de automação e justificar novos projetos.
 
-        <h2>Métricas essenciais para acompanhar</h2>
-        <ul>
-          <li><strong>Tempo economizado:</strong> Horas/semana que a equipe deixou de gastar</li>
-          <li><strong>Redução de erros:</strong> Diminuição de retrabalho e correções</li>
-          <li><strong>Aumento de capacidade:</strong> Mais clientes atendidos com mesma equipe</li>
-          <li><strong>Satisfação do cliente:</strong> NPS e outras métricas de experiência</li>
-        </ul>
+## Métricas essenciais para acompanhar
 
-        <h2>Fórmula básica do ROI</h2>
-        <p>ROI = (Ganhos - Custos) / Custos x 100</p>
-        <p>Onde:</p>
-        <ul>
-          <li>Ganhos = Economia de tempo + Aumento de receita + Redução de erros</li>
-          <li>Custos = Investimento inicial + Custos mensais + Treinamento</li>
-        </ul>
+- **Tempo economizado:** Horas/semana que a equipe deixou de gastar
+- **Redução de erros:** Diminuição de retrabalho e correções
+- **Aumento de capacidade:** Mais clientes atendidos com mesma equipe
+- **Satisfação do cliente:** NPS e outras métricas de experiência
 
-        <h2>Exemplo prático</h2>
-        <p>Empresa que automatizou atendimento:</p>
-        <ul>
-          <li>Investimento: R$ 5.000 (setup) + R$ 500/mês</li>
-          <li>Economia: 40h/mês de equipe = R$ 2.000</li>
-          <li>Aumento de vendas: 15% = R$ 3.000/mês</li>
-          <li>ROI no primeiro ano: 900%</li>
-        </ul>
+## Fórmula básica do ROI
 
-        <h2>Dicas para maximizar ROI</h2>
-        <ol>
-          <li>Comece com processos de alto impacto</li>
-          <li>Meça antes e depois com rigor</li>
-          <li>Ajuste e otimize continuamente</li>
-          <li>Documente ganhos intangíveis</li>
-        </ol>
+ROI = (Ganhos - Custos) / Custos x 100
 
-        <h2>Conclusão</h2>
-        <p>A automação quase sempre se paga em poucos meses. O segredo é escolher os processos certos e medir os resultados adequadamente.</p>
-      `
+Onde:
+
+- Ganhos = Economia de tempo + Aumento de receita + Redução de erros
+- Custos = Investimento inicial + Custos mensais + Treinamento
+
+## Exemplo prático
+
+Empresa que automatizou atendimento:
+
+- Investimento: R$ 5.000 (setup) + R$ 500/mês
+- Economia: 40h/mês de equipe = R$ 2.000
+- Aumento de vendas: 15% = R$ 3.000/mês
+- ROI no primeiro ano: 900%
+
+## Dicas para maximizar ROI
+
+1. Comece com processos de alto impacto
+2. Meça antes e depois com rigor
+3. Ajuste e otimize continuamente
+4. Documente ganhos intangíveis
+
+## Conclusão
+
+A automação quase sempre se paga em poucos meses. O segredo é escolher os processos certos e medir os resultados adequadamente.`
     },
     "chatbots-inteligentes-respostas-automaticas": {
       title: "Chatbots inteligentes: Além das respostas automáticas",
@@ -260,47 +256,47 @@ const BlogPost = () => {
       readTime: "6 min",
       date: "3 Jan 2024",
       image: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=1200&h=600&fit=crop",
-      content: `
-        <p>Chatbots modernos vão muito além de respostas automáticas. Descubra como criar assistentes virtuais que realmente agregam valor.</p>
+      content: `Chatbots modernos vão muito além de respostas automáticas. Descubra como criar assistentes virtuais que realmente agregam valor.
 
-        <h2>O que diferencia um chatbot inteligente</h2>
-        <ul>
-          <li>Compreensão de contexto e intenção</li>
-          <li>Personalização baseada em histórico</li>
-          <li>Aprendizado contínuo com interações</li>
-          <li>Integração com sistemas internos</li>
-        </ul>
+## O que diferencia um chatbot inteligente
 
-        <h2>Casos de uso avançados</h2>
-        <p><strong>Vendas consultivas:</strong></p>
-        <p>O chatbot faz perguntas qualificadoras e recomenda produtos específicos baseado nas necessidades do cliente.</p>
+- Compreensão de contexto e intenção
+- Personalização baseada em histórico
+- Aprendizado contínuo com interações
+- Integração com sistemas internos
 
-        <p><strong>Suporte técnico inteligente:</strong></p>
-        <p>Diagnóstico de problemas através de perguntas direcionadas e resolução passo a passo.</p>
+## Casos de uso avançados
 
-        <p><strong>Onboarding de clientes:</strong></p>
-        <p>Guiar novos usuários através dos recursos do produto de forma personalizada.</p>
+**Vendas consultivas:**
 
-        <h2>Como criar um chatbot que funciona</h2>
-        <ol>
-          <li>Mapeie as jornadas mais comuns dos usuários</li>
-          <li>Desenvolva uma personalidade consistente</li>
-          <li>Prepare respostas para cenários complexos</li>
-          <li>Tenha sempre uma saída para atendimento humano</li>
-          <li>Teste exaustivamente antes de lançar</li>
-        </ol>
+O chatbot faz perguntas qualificadoras e recomenda produtos específicos baseado nas necessidades do cliente.
 
-        <h2>Erros comuns a evitar</h2>
-        <ul>
-          <li>Chatbot que tenta fazer tudo sozinho</li>
-          <li>Respostas genéricas demais</li>
-          <li>Dificuldade para falar com humano</li>
-          <li>Não aprender com interações passadas</li>
-        </ul>
+**Suporte técnico inteligente:**
 
-        <h2>Conclusão</h2>
-        <p>Um chatbot bem implementado é um membro valioso da equipe, não apenas uma ferramenta. Invista tempo no planejamento e colha os frutos no longo prazo.</p>
-      `
+Diagnóstico de problemas através de perguntas direcionadas e resolução passo a passo.
+
+**Onboarding de clientes:**
+
+Guiar novos usuários através dos recursos do produto de forma personalizada.
+
+## Como criar um chatbot que funciona
+
+1. Mapeie as jornadas mais comuns dos usuários
+2. Desenvolva uma personalidade consistente
+3. Prepare respostas para cenários complexos
+4. Tenha sempre uma saída para atendimento humano
+5. Teste exaustivamente antes de lançar
+
+## Erros comuns a evitar
+
+- Chatbot que tenta fazer tudo sozinho
+- Respostas genéricas demais
+- Dificuldade para falar com humano
+- Não aprender com interações passadas
+
+## Conclusão
+
+Um chatbot bem implementado é um membro valioso da equipe, não apenas uma ferramenta. Invista tempo no planejamento e colha os frutos no longo prazo.`
     },
     "principais-ias-do-momento": {
       title: "As Principais IAs do Momento: ChatGPT, Claude, Gemini e Mais",
@@ -308,70 +304,69 @@ const BlogPost = () => {
       readTime: "5 min",
       date: "28 Nov 2024",
       image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=600&fit=crop",
-      content: `
-        <p>O mercado de inteligência artificial está em constante evolução, com novas ferramentas e modelos surgindo a cada mês. Neste artigo, vamos explorar as principais IAs disponíveis atualmente e como cada uma pode ajudar seu negócio.</p>
+      content: `O mercado de inteligência artificial está em constante evolução, com novas ferramentas e modelos surgindo a cada mês. Neste artigo, vamos explorar as principais IAs disponíveis atualmente e como cada uma pode ajudar seu negócio.
 
-        <h2>ChatGPT (OpenAI)</h2>
-        <p>O pioneiro que popularizou a IA conversacional para o grande público.</p>
-        <ul>
-          <li><strong>Pontos fortes:</strong> Versatilidade, grande base de conhecimento, plugins e GPTs customizados</li>
-          <li><strong>Ideal para:</strong> Escrita de conteúdo, programação, análise de dados, brainstorming</li>
-          <li><strong>Modelos:</strong> GPT-4o (mais rápido) e GPT-4 Turbo (mais capaz)</li>
-        </ul>
+## ChatGPT (OpenAI)
 
-        <h2>Claude (Anthropic)</h2>
-        <p>Conhecido por conversas mais naturais e contextos extremamente longos.</p>
-        <ul>
-          <li><strong>Pontos fortes:</strong> Contexto de até 200k tokens, respostas mais seguras, análise de documentos</li>
-          <li><strong>Ideal para:</strong> Análise de documentos longos, escrita criativa, tarefas que exigem nuance</li>
-          <li><strong>Modelos:</strong> Claude 3.5 Sonnet (equilibrado) e Claude 3 Opus (mais poderoso)</li>
-        </ul>
+O pioneiro que popularizou a IA conversacional para o grande público.
 
-        <h2>Gemini (Google)</h2>
-        <p>A aposta do Google com forte integração ao ecossistema da empresa.</p>
-        <ul>
-          <li><strong>Pontos fortes:</strong> Multimodalidade nativa (texto, imagem, código), integração com Google Workspace</li>
-          <li><strong>Ideal para:</strong> Pesquisa, análise de imagens, produtividade no Google</li>
-          <li><strong>Modelos:</strong> Gemini Pro, Gemini Ultra, Gemini Flash (mais rápido)</li>
-        </ul>
+- **Pontos fortes:** Versatilidade, grande base de conhecimento, plugins e GPTs customizados
+- **Ideal para:** Escrita de conteúdo, programação, análise de dados, brainstorming
+- **Modelos:** GPT-4o (mais rápido) e GPT-4 Turbo (mais capaz)
 
-        <h2>Llama (Meta)</h2>
-        <p>A alternativa open source que democratiza o acesso à IA avançada.</p>
-        <ul>
-          <li><strong>Pontos fortes:</strong> Código aberto, pode ser hospedado localmente, altamente customizável</li>
-          <li><strong>Ideal para:</strong> Empresas que precisam de controle total dos dados, desenvolvedores, pesquisadores</li>
-          <li><strong>Modelos:</strong> Llama 3.1 (8B, 70B, 405B parâmetros)</li>
-        </ul>
+## Claude (Anthropic)
 
-        <h2>Midjourney e DALL-E</h2>
-        <p>As principais IAs para geração de imagens.</p>
-        <ul>
-          <li><strong>Midjourney:</strong> Imagens mais artísticas e estilizadas, comunidade ativa no Discord</li>
-          <li><strong>DALL-E 3:</strong> Integrado ao ChatGPT, excelente para precisão em detalhes e texto em imagens</li>
-        </ul>
+Conhecido por conversas mais naturais e contextos extremamente longos.
 
-        <h2>Qual escolher para sua empresa?</h2>
-        <p>A escolha depende do seu caso de uso:</p>
-        <ul>
-          <li><strong>Atendimento ao cliente:</strong> ChatGPT ou Claude (com APIs)</li>
-          <li><strong>Análise de documentos:</strong> Claude (pelo contexto longo)</li>
-          <li><strong>Geração de imagens:</strong> Midjourney ou DALL-E</li>
-          <li><strong>Privacidade de dados:</strong> Llama (hospedado internamente)</li>
-          <li><strong>Produtividade Google:</strong> Gemini</li>
-        </ul>
+- **Pontos fortes:** Contexto de até 200k tokens, respostas mais seguras, análise de documentos
+- **Ideal para:** Análise de documentos longos, escrita criativa, tarefas que exigem nuance
+- **Modelos:** Claude 3.5 Sonnet (equilibrado) e Claude 3 Opus (mais poderoso)
 
-        <h2>O futuro das IAs</h2>
-        <p>Estamos apenas no começo. Nos próximos meses, esperamos ver:</p>
-        <ul>
-          <li>IAs cada vez mais especializadas por setor</li>
-          <li>Melhor integração com ferramentas empresariais</li>
-          <li>Custos mais acessíveis</li>
-          <li>Regulamentações mais claras</li>
-        </ul>
+## Gemini (Google)
 
-        <h2>Conclusão</h2>
-        <p>Não existe "a melhor IA" universal. O segredo é entender as necessidades específicas do seu negócio e experimentar diferentes ferramentas. Muitas oferecem versões gratuitas ou trials que permitem testar antes de investir.</p>
-      `
+A aposta do Google com forte integração ao ecossistema da empresa.
+
+- **Pontos fortes:** Multimodalidade nativa (texto, imagem, código), integração com Google Workspace
+- **Ideal para:** Pesquisa, análise de imagens, produtividade no Google
+- **Modelos:** Gemini Pro, Gemini Ultra, Gemini Flash (mais rápido)
+
+## Llama (Meta)
+
+A alternativa open source que democratiza o acesso à IA avançada.
+
+- **Pontos fortes:** Código aberto, pode ser hospedado localmente, altamente customizável
+- **Ideal para:** Empresas que precisam de controle total dos dados, desenvolvedores, pesquisadores
+- **Modelos:** Llama 3.1 (8B, 70B, 405B parâmetros)
+
+## Midjourney e DALL-E
+
+As principais IAs para geração de imagens.
+
+- **Midjourney:** Imagens mais artísticas e estilizadas, comunidade ativa no Discord
+- **DALL-E 3:** Integrado ao ChatGPT, excelente para precisão em detalhes e texto em imagens
+
+## Qual escolher para sua empresa?
+
+A escolha depende do seu caso de uso:
+
+- **Atendimento ao cliente:** ChatGPT ou Claude (com APIs)
+- **Análise de documentos:** Claude (pelo contexto longo)
+- **Geração de imagens:** Midjourney ou DALL-E
+- **Privacidade de dados:** Llama (hospedado internamente)
+- **Produtividade Google:** Gemini
+
+## O futuro das IAs
+
+Estamos apenas no começo. Nos próximos meses, esperamos ver:
+
+- IAs cada vez mais especializadas por setor
+- Melhor integração com ferramentas empresariais
+- Custos mais acessíveis
+- Regulamentações mais claras
+
+## Conclusão
+
+Não existe "a melhor IA" universal. O segredo é entender as necessidades específicas do seu negócio e experimentar diferentes ferramentas. Muitas oferecem versões gratuitas ou trials que permitem testar antes de investir.`
     }
   };
 
@@ -469,8 +464,11 @@ const BlogPost = () => {
                 prose-ol:text-muted-foreground prose-ol:my-4
                 prose-li:my-2
                 prose-strong:text-foreground prose-strong:font-semibold"
-              dangerouslySetInnerHTML={{ __html: article.content }}
-            />
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {article.content}
+              </ReactMarkdown>
+            </div>
           </Card>
 
           {/* CTA Section */}
