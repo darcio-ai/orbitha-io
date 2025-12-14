@@ -13,23 +13,28 @@ const ASAAS_WEBHOOK_TOKEN = Deno.env.get("ASAAS_WEBHOOK_TOKEN");
 
 serve(async (req) => {
     try {
-        // Verify webhook token if configured
-        if (ASAAS_WEBHOOK_TOKEN) {
-            const providedToken = req.headers.get("asaas-access-token") || 
-                                  req.headers.get("x-asaas-token") ||
-                                  new URL(req.url).searchParams.get("token");
-            
-            if (providedToken !== ASAAS_WEBHOOK_TOKEN) {
-                console.error("Invalid webhook token provided");
-                return new Response(JSON.stringify({ error: "Unauthorized" }), {
-                    headers: { "Content-Type": "application/json" },
-                    status: 401,
-                });
-            }
-            console.log("Webhook token verified successfully");
-        } else {
-            console.warn("ASAAS_WEBHOOK_TOKEN not configured - accepting all requests (INSECURE)");
+        // SECURITY: Fail closed when webhook token is not configured
+        if (!ASAAS_WEBHOOK_TOKEN) {
+            console.error("ASAAS_WEBHOOK_TOKEN not configured - rejecting request for security");
+            return new Response(JSON.stringify({ error: "Webhook not configured" }), {
+                headers: { "Content-Type": "application/json" },
+                status: 500,
+            });
         }
+
+        // Verify webhook token
+        const providedToken = req.headers.get("asaas-access-token") || 
+                              req.headers.get("x-asaas-token") ||
+                              new URL(req.url).searchParams.get("token");
+        
+        if (providedToken !== ASAAS_WEBHOOK_TOKEN) {
+            console.error("Invalid webhook token provided");
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
+                headers: { "Content-Type": "application/json" },
+                status: 401,
+            });
+        }
+        console.log("Webhook token verified successfully");
 
         const body = await req.json();
         const { event, payment } = body;
