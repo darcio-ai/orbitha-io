@@ -19,7 +19,7 @@ const WhatsAppFloat = () => {
         <img 
           src={doraAvatar} 
           alt="Dora - Assistente Virtual" 
-          className="w-16 h-16 rounded-full object-cover border-4 border-green-500 group-hover:border-green-400"
+          className="w-16 h-16 rounded-full object-cover"
         />
         <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">

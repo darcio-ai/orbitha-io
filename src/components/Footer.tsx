@@ -91,8 +91,8 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="https://wa.me/5513991497873"
+              <a
+                  href="https://wa.me/5513991497873?text=Oi! Quero falar com a Orbitha"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors"
