@@ -199,7 +199,7 @@ const Termos = () => {
                 <li>
                   <strong>WhatsApp:</strong>{" "}
                   <a 
-                    href="https://wa.me/5513991497873" 
+                    href="https://wa.me/5513991497873?text=Oi! Tenho uma dúvida sobre os termos de uso" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-primary hover:underline"

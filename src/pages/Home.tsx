@@ -10,6 +10,7 @@ import {
   Sparkles 
 } from "lucide-react";
 import astronautHero from "@/assets/astronaut-hero.png";
+import doraAvatar from "@/assets/dora-whatsapp.png";
 
 const Home = () => {
   const solutions = [
@@ -308,7 +309,7 @@ const Home = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <MessageSquare className="mr-2 h-4 md:h-5 w-4 md:w-5" />
+                <img src={doraAvatar} alt="Dora" className="mr-2 h-5 md:h-6 w-5 md:w-6 rounded-full object-cover" />
                 Conversar com a Dora
               </a>
             </Button>
