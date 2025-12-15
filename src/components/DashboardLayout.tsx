@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User, BarChart3 } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User, BarChart3, Cpu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -113,6 +113,12 @@ const DashboardLayout = () => {
       name: "Analytics",
       icon: BarChart3,
       path: "/dashboard/analytics",
+      adminOnly: true,
+    },
+    {
+      name: "Uso de IA",
+      icon: Cpu,
+      path: "/dashboard/ai-usage",
       adminOnly: true,
     },
     {

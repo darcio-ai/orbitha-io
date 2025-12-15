@@ -27,6 +27,27 @@ const MODELS_WITHOUT_TEMPERATURE = [
   'o4-mini-2025-04-16',
 ];
 
+// Pricing per 1M tokens (USD)
+const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  'gpt-5-2025-08-07': { input: 1.25, output: 10.00 },
+  'gpt-5-mini-2025-08-07': { input: 0.25, output: 2.00 },
+  'gpt-5-nano-2025-08-07': { input: 0.05, output: 0.40 },
+  'gpt-4.1-2025-04-14': { input: 2.00, output: 8.00 },
+  'gpt-4.1-mini-2025-04-14': { input: 0.40, output: 1.60 },
+  'gpt-4o': { input: 2.50, output: 10.00 },
+  'gpt-4o-mini': { input: 0.15, output: 0.60 },
+  'gpt-4-turbo': { input: 10.00, output: 30.00 },
+  'gpt-4': { input: 30.00, output: 60.00 },
+  'gpt-3.5-turbo': { input: 0.50, output: 1.50 },
+  'o3-2025-04-16': { input: 2.00, output: 8.00 },
+  'o4-mini-2025-04-16': { input: 1.10, output: 4.40 },
+};
+
+function calculateCost(model: string, promptTokens: number, completionTokens: number): number {
+  const pricing = MODEL_PRICING[model] || { input: 2.50, output: 10.00 }; // default gpt-4o
+  return (promptTokens * pricing.input + completionTokens * pricing.output) / 1_000_000;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -204,6 +225,7 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
       model: agent.model,
       messages: messages,
       stream: true,
+      stream_options: { include_usage: true }, // Enable usage tracking in streaming
     };
 
     if (supportsTemperature && agent.temperature !== null) {
@@ -245,6 +267,8 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
     const decoder = new TextDecoder();
 
     let fullResponse = '';
+    let promptTokens = 0;
+    let completionTokens = 0;
 
     const stream = new ReadableStream({
       async start(controller) {
@@ -264,6 +288,12 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
                 try {
                   const parsed = JSON.parse(data);
                   const content = parsed.choices?.[0]?.delta?.content;
+                  
+                  // Capture usage from the final chunk (when choices is empty)
+                  if (parsed.usage) {
+                    promptTokens = parsed.usage.prompt_tokens || 0;
+                    completionTokens = parsed.usage.completion_tokens || 0;
+                  }
                   
                   if (content) {
                     fullResponse += content;
@@ -288,13 +318,38 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
               });
             
             const duration = Date.now() - startTime;
+            const estimatedCost = calculateCost(agent.model, promptTokens, completionTokens);
+            
+            // Log usage metrics
             console.log('[chat-agent] Response:', {
               userId: userId.substring(0, 8) + '***',
               agentId: agentId.substring(0, 8) + '***',
               model: agent.model,
               durationMs: duration,
               responseLength: fullResponse.length,
+              promptTokens,
+              completionTokens,
+              totalTokens: promptTokens + completionTokens,
+              estimatedCostUSD: estimatedCost.toFixed(6),
             });
+
+            // Save usage to ai_usage_logs table
+            const { error: logError } = await supabase
+              .from('ai_usage_logs')
+              .insert({
+                user_id: userId,
+                agent_id: agentId,
+                function_name: 'chat-agent',
+                model: agent.model,
+                prompt_tokens: promptTokens,
+                completion_tokens: completionTokens,
+                estimated_cost_usd: estimatedCost,
+                duration_ms: duration,
+              });
+
+            if (logError) {
+              console.error('[chat-agent] Error saving usage log:', logError);
+            }
           }
 
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));

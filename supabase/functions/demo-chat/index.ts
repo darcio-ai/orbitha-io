@@ -13,6 +13,27 @@ if (!OPENAI_API_KEY) {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
+// Pricing per 1M tokens (USD)
+const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  'gpt-5-2025-08-07': { input: 1.25, output: 10.00 },
+  'gpt-5-mini-2025-08-07': { input: 0.25, output: 2.00 },
+  'gpt-5-nano-2025-08-07': { input: 0.05, output: 0.40 },
+  'gpt-4.1-2025-04-14': { input: 2.00, output: 8.00 },
+  'gpt-4.1-mini-2025-04-14': { input: 0.40, output: 1.60 },
+  'gpt-4o': { input: 2.50, output: 10.00 },
+  'gpt-4o-mini': { input: 0.15, output: 0.60 },
+  'gpt-4-turbo': { input: 10.00, output: 30.00 },
+  'gpt-4': { input: 30.00, output: 60.00 },
+  'gpt-3.5-turbo': { input: 0.50, output: 1.50 },
+  'o3-2025-04-16': { input: 2.00, output: 8.00 },
+  'o4-mini-2025-04-16': { input: 1.10, output: 4.40 },
+};
+
+function calculateCost(model: string, promptTokens: number, completionTokens: number): number {
+  const pricing = MODEL_PRICING[model] || { input: 0.15, output: 0.60 }; // default gpt-4o-mini
+  return (promptTokens * pricing.input + completionTokens * pricing.output) / 1_000_000;
+}
+
 // Optional user identification for logging
 async function getOptionalUserId(authHeader: string | null): Promise<string | null> {
   if (!authHeader) return null;
@@ -132,6 +153,8 @@ const SYSTEMS: Record<string, string> = {
   fitness: BASE_SYSTEM + "\n" + SPECIFIC_SYSTEMS.fitness,
 };
 
+const MODEL_USED = "gpt-4o-mini";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -148,6 +171,11 @@ Deno.serve(async (req) => {
     // Optional authentication check for logging
     const authHeader = req.headers.get("Authorization");
     const userId = await getOptionalUserId(authHeader);
+    
+    // Initialize Supabase for logging
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
     
     // Check rate limit
     if (isRateLimited(clientIP)) {
@@ -215,7 +243,7 @@ REGRAS:
     ];
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: MODEL_USED,
       messages,
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -223,6 +251,11 @@ REGRAS:
     });
 
     const raw = completion.choices?.[0]?.message?.content || "{}";
+    
+    // Extract token usage
+    const promptTokens = completion.usage?.prompt_tokens || 0;
+    const completionTokens = completion.usage?.completion_tokens || 0;
+    const estimatedCost = calculateCost(MODEL_USED, promptTokens, completionTokens);
 
     // Parse seguro do JSON
     let data: any;
@@ -260,6 +293,8 @@ REGRAS:
     const reply = replyParts.join("\n\n");
     
     const duration = Date.now() - startTime;
+    
+    // Log usage metrics
     console.log('[demo-chat] Request completed:', {
       assistantId,
       userId: userId ? userId.substring(0, 8) + '***' : 'anonymous',
@@ -267,7 +302,30 @@ REGRAS:
       durationMs: duration,
       historyLength: safeHistory.length,
       responseLength: reply.length,
+      model: MODEL_USED,
+      promptTokens,
+      completionTokens,
+      totalTokens: promptTokens + completionTokens,
+      estimatedCostUSD: estimatedCost.toFixed(6),
     });
+
+    // Save usage to ai_usage_logs table
+    const { error: logError } = await supabase
+      .from('ai_usage_logs')
+      .insert({
+        user_id: userId, // Can be null for anonymous users
+        agent_id: null, // Demo doesn't have a specific agent
+        function_name: 'demo-chat',
+        model: MODEL_USED,
+        prompt_tokens: promptTokens,
+        completion_tokens: completionTokens,
+        estimated_cost_usd: estimatedCost,
+        duration_ms: duration,
+      });
+
+    if (logError) {
+      console.error('[demo-chat] Error saving usage log:', logError);
+    }
 
     return new Response(JSON.stringify({ reply }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
