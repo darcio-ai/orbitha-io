@@ -42,6 +42,7 @@ import Termos from "./pages/Termos";
 import AdminGenerateDora from "./pages/AdminGenerateDora";
 import DashboardAppointments from "./pages/DashboardAppointments";
 import DashboardAnalytics from "./pages/DashboardAnalytics";
+import DashboardAIUsage from "./pages/DashboardAIUsage";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -95,6 +96,7 @@ function AppRoutes() {
         <Route index element={<DashboardRedirect />} />
         <Route path="panel" element={<Dashboard />} />
         <Route path="analytics" element={<DashboardAnalytics />} />
+        <Route path="ai-usage" element={<DashboardAIUsage />} />
         <Route path="users" element={<DashboardUsers />} />
         <Route path="users/:userId/agents" element={<ManageUserAgents />} />
         <Route path="agents" element={<DashboardAgents />} />

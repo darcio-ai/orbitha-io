@@ -204,6 +204,63 @@ export type Database = {
           },
         ]
       }
+      ai_usage_logs: {
+        Row: {
+          agent_id: string | null
+          completion_tokens: number
+          created_at: string | null
+          duration_ms: number | null
+          estimated_cost_usd: number
+          function_name: string
+          id: string
+          model: string
+          prompt_tokens: number
+          total_tokens: number | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          completion_tokens?: number
+          created_at?: string | null
+          duration_ms?: number | null
+          estimated_cost_usd?: number
+          function_name: string
+          id?: string
+          model: string
+          prompt_tokens?: number
+          total_tokens?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          completion_tokens?: number
+          created_at?: string | null
+          duration_ms?: number | null
+          estimated_cost_usd?: number
+          function_name?: string
+          id?: string
+          model?: string
+          prompt_tokens?: number
+          total_tokens?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agent_public_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clientes: {
         Row: {
           conversa_id: string | null
