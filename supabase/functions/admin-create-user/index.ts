@@ -5,6 +5,35 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Leaked password check using k-anonymity (HaveIBeenPwned API)
+async function checkLeakedPassword(password: string): Promise<boolean> {
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+
+    const prefix = hashHex.substring(0, 5);
+    const suffix = hashHex.substring(5);
+
+    const response = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { 'Add-Padding': 'true' },
+    });
+
+    if (!response.ok) {
+      console.warn('HIBP API error, skipping check');
+      return false;
+    }
+
+    const text = await response.text();
+    return text.split('\n').some(line => line.split(':')[0].trim() === suffix);
+  } catch (error) {
+    console.warn('Error checking leaked password:', error);
+    return false;
+  }
+}
+
 // Input validation helpers
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,6 +168,16 @@ Deno.serve(async (req) => {
     if (role && !isValidRole(role)) {
       return new Response(
         JSON.stringify({ error: 'Role inválida' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Check if password has been leaked
+    const isLeaked = await checkLeakedPassword(password);
+    if (isLeaked) {
+      console.warn('Attempt to create user with leaked password');
+      return new Response(
+        JSON.stringify({ error: 'Esta senha foi encontrada em vazamentos de dados. Por favor, escolha uma senha diferente.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
