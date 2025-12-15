@@ -6,13 +6,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Models that support temperature parameter
+// Models that support temperature parameter (GPT-5+ and newer models don't support it)
 const MODELS_WITH_TEMPERATURE = [
   'gpt-4o',
   'gpt-4o-mini',
   'gpt-4-turbo',
   'gpt-4',
-  'gpt-3.5-turbo'
+  'gpt-3.5-turbo',
+  // GPT-4.1 models
+  'gpt-4.1-2025-04-14',
+  'gpt-4.1-mini-2025-04-14',
+];
+
+// Models that require max_completion_tokens instead of max_tokens
+const MODELS_WITHOUT_TEMPERATURE = [
+  'gpt-5-2025-08-07',
+  'gpt-5-mini-2025-08-07',
+  'gpt-5-nano-2025-08-07',
+  'o3-2025-04-16',
+  'o4-mini-2025-04-16',
 ];
 
 Deno.serve(async (req) => {
@@ -198,7 +210,15 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
       requestBody.temperature = agent.temperature;
     }
 
-    console.log('Calling OpenAI with model:', agent.model, 'Temperature:', supportsTemperature ? agent.temperature : 'not supported');
+    const startTime = Date.now();
+    console.log('[chat-agent] Request:', {
+      userId: userId.substring(0, 8) + '***',
+      agentId: agentId.substring(0, 8) + '***',
+      model: agent.model,
+      temperature: supportsTemperature ? agent.temperature : 'not_supported',
+      historyLength: conversationHistory.length,
+      messageLength: message.length,
+    });
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -266,6 +286,15 @@ INFORMAÇÕES DO USUÁRIO (NÃO PERGUNTE ISSO):
                 message: fullResponse,
                 writer: 'assistant'
               });
+            
+            const duration = Date.now() - startTime;
+            console.log('[chat-agent] Response:', {
+              userId: userId.substring(0, 8) + '***',
+              agentId: agentId.substring(0, 8) + '***',
+              model: agent.model,
+              durationMs: duration,
+              responseLength: fullResponse.length,
+            });
           }
 
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));

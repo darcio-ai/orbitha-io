@@ -1,4 +1,5 @@
 import OpenAI from "https://esm.sh/openai@4.0.0";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,6 +12,25 @@ if (!OPENAI_API_KEY) {
 }
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+
+// Optional user identification for logging
+async function getOptionalUserId(authHeader: string | null): Promise<string | null> {
+  if (!authHeader) return null;
+  
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    
+    if (error || !user) return null;
+    return user.id;
+  } catch {
+    return null;
+  }
+}
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -118,14 +138,23 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const startTime = Date.now();
+    
     // Get client IP for rate limiting
     const clientIP = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
                      req.headers.get("x-real-ip") ||
                      "unknown";
     
+    // Optional authentication check for logging
+    const authHeader = req.headers.get("Authorization");
+    const userId = await getOptionalUserId(authHeader);
+    
     // Check rate limit
     if (isRateLimited(clientIP)) {
-      console.log(`Rate limit exceeded for IP: ${clientIP}`);
+      console.log('[demo-chat] Rate limit exceeded:', {
+        ip: clientIP.substring(0, 8) + '***',
+        userId: userId ? userId.substring(0, 8) + '***' : 'anonymous',
+      });
       return new Response(
         JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em 1 minuto." }), 
         {
@@ -229,12 +258,22 @@ REGRAS:
     ].filter(Boolean);
 
     const reply = replyParts.join("\n\n");
+    
+    const duration = Date.now() - startTime;
+    console.log('[demo-chat] Request completed:', {
+      assistantId,
+      userId: userId ? userId.substring(0, 8) + '***' : 'anonymous',
+      ip: clientIP.substring(0, 8) + '***',
+      durationMs: duration,
+      historyLength: safeHistory.length,
+      responseLength: reply.length,
+    });
 
     return new Response(JSON.stringify({ reply }), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (err: any) {
-    console.error("Demo chat error:", err?.message || err);
+    console.error("[demo-chat] Error:", err?.message || err);
     return new Response(JSON.stringify({ error: err?.message || "Erro" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
