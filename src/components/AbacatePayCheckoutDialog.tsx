@@ -26,7 +26,6 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
   const [cpfCnpjError, setCpfCnpjError] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('PIX');
   const [showFallback, setShowFallback] = useState(false);
-  const [fallbackLoading, setFallbackLoading] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -55,28 +54,45 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
     }
   }, [open]);
 
-  const handleAbacatePay = async () => {
+  const validateForm = () => {
     if (!billingInfo.name || !billingInfo.email || !billingInfo.cpfCnpj) {
       toast({ title: "Campos obrigatórios", description: "Preencha todos os campos.", variant: "destructive" });
-      return;
+      return false;
     }
 
     if (!validateCpfCnpj(billingInfo.cpfCnpj)) {
       setCpfCnpjError(true);
       toast({ title: "CPF/CNPJ inválido", description: "Verifique o documento digitado.", variant: "destructive" });
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const handlePayment = async () => {
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
-      const { url } = await createAbacatePayCheckout(planType, billingInfo, paymentMethod);
-      if (url) {
-        window.location.href = url;
+      if (paymentMethod === 'PIX') {
+        // PIX via Abacate Pay
+        const { url } = await createAbacatePayCheckout(planType, billingInfo, 'PIX');
+        if (url) {
+          window.location.href = url;
+        } else {
+          throw new Error("Não foi possível gerar o link de pagamento");
+        }
       } else {
-        throw new Error("Não foi possível gerar o link de pagamento");
+        // Cartão via Asaas diretamente
+        const { url } = await createAsaasCheckout(planType, billingInfo, 'CREDIT_CARD');
+        if (url) {
+          window.location.href = url;
+        } else {
+          throw new Error("Não foi possível gerar o link de pagamento");
+        }
       }
     } catch (error: any) {
-      console.error("Abacate Pay error:", error);
+      console.error("Payment error:", error);
       setShowFallback(true);
       toast({
         title: "Erro no processamento",
@@ -89,26 +105,14 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
   };
 
   const handleStripeFallback = async () => {
-    setFallbackLoading('stripe');
+    setLoading(true);
     try {
       const { url } = await createStripeCheckout(planType);
       if (url) window.location.href = url;
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } finally {
-      setFallbackLoading(null);
-    }
-  };
-
-  const handleAsaasFallback = async () => {
-    setFallbackLoading('asaas');
-    try {
-      const { url } = await createAsaasCheckout(planType, billingInfo, 'CREDIT_CARD');
-      if (url) window.location.href = url;
-    } catch (error: any) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
-    } finally {
-      setFallbackLoading(null);
+      setLoading(false);
     }
   };
 
@@ -202,7 +206,7 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
             </div>
 
             <DialogFooter>
-              <Button onClick={handleAbacatePay} disabled={loading} className="w-full">
+              <Button onClick={handlePayment} disabled={loading} className="w-full">
                 {loading ? "Processando..." : `Pagar com ${paymentMethod === 'PIX' ? 'PIX' : 'Cartão'}`}
               </Button>
             </DialogFooter>
@@ -218,21 +222,11 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
               <Button
                 variant="outline"
                 onClick={handleStripeFallback}
-                disabled={fallbackLoading === 'stripe'}
+                disabled={loading}
                 className="w-full"
               >
                 <CreditCard className="w-4 h-4 mr-2" />
-                {fallbackLoading === 'stripe' ? 'Redirecionando...' : 'Cartão Internacional (Stripe)'}
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={handleAsaasFallback}
-                disabled={fallbackLoading === 'asaas'}
-                className="w-full"
-              >
-                <CreditCard className="w-4 h-4 mr-2" />
-                {fallbackLoading === 'asaas' ? 'Redirecionando...' : 'Cartão Nacional (Asaas)'}
+                {loading ? 'Redirecionando...' : 'Cartão Internacional (Stripe)'}
               </Button>
 
               <Button

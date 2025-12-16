@@ -16,19 +16,31 @@ const DashboardRedirect = () => {
           return;
         }
 
-        const { data: rolesData } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", session.user.id);
+        // Buscar role e perfil em paralelo
+        const [rolesResult, profileResult] = await Promise.all([
+          supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id),
+          supabase
+            .from("profiles")
+            .select("subscription_status")
+            .eq("id", session.user.id)
+            .single()
+        ]);
 
-        const isAdmin = rolesData?.some(r => r.role === 'admin');
+        const isAdmin = rolesResult.data?.some(r => r.role === 'admin');
+        const hasActiveSubscription = profileResult.data?.subscription_status === 'active';
         
         if (isAdmin) {
           // Admin vai para o painel principal
           navigate("/dashboard/panel", { replace: true });
-        } else {
-          // User vai para página de seus agentes atribuídos
+        } else if (hasActiveSubscription) {
+          // Usuário com assinatura ativa vai para assistentes
           navigate("/dashboard/agents-for-user", { replace: true });
+        } else {
+          // Usuário sem assinatura vai para página de preços
+          navigate("/pricing", { replace: true });
         }
       } catch (error) {
         console.error("Error checking role:", error);
