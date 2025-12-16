@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
+import { usePasswordCheck } from "@/hooks/usePasswordCheck";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, CreditCard, Crown, Shield, Mail, Lock } from "lucide-react";
+import { Loader2, User, CreditCard, Crown, Shield, Mail, Lock, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatCpfCnpj } from "@/lib/utils";
 import { z } from "zod";
@@ -28,6 +29,7 @@ const passwordSchema = z.string().min(6, "A senha deve ter pelo menos 6 caracter
 const Profile = () => {
   const { toast } = useToast();
   const { subscription, isActive, planType, isLoading: subscriptionLoading } = useUserSubscription();
+  const { isCompromised, isChecking, checkPassword, resetCheck } = usePasswordCheck();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -48,6 +50,32 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordChecked, setPasswordChecked] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Verificar senha vazada com debounce
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      resetCheck();
+      setPasswordChecked(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      await checkPassword(newPassword);
+      setPasswordChecked(true);
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [newPassword, checkPassword, resetCheck]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -170,6 +198,16 @@ const Profile = () => {
       toast({
         title: "Erro",
         description: "As senhas não coincidem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Verificar se a senha foi vazada
+    if (isCompromised) {
+      toast({
+        title: "Senha comprometida",
+        description: "Esta senha foi encontrada em vazamentos de dados. Por favor, escolha outra senha.",
         variant: "destructive",
       });
       return;
@@ -347,7 +385,7 @@ const Profile = () => {
                 <Lock className="h-4 w-4 text-muted-foreground" />
                 <Label className="text-base font-medium">Alterar Senha</Label>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">Nova Senha</Label>
                   <Input
@@ -356,7 +394,29 @@ const Profile = () => {
                     placeholder="Mínimo 6 caracteres"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
+                    className={isCompromised ? "border-destructive" : ""}
                   />
+                  {/* Feedback de verificação de senha */}
+                  {newPassword.length >= 6 && (
+                    <div className="flex items-center gap-2 text-sm">
+                      {isChecking ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                          <span className="text-muted-foreground">Verificando segurança...</span>
+                        </>
+                      ) : isCompromised ? (
+                        <>
+                          <AlertTriangle className="h-4 w-4 text-destructive" />
+                          <span className="text-destructive">Esta senha foi vazada em um data breach. Escolha outra.</span>
+                        </>
+                      ) : passwordChecked ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                          <span className="text-green-600">Senha segura</span>
+                        </>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
@@ -371,7 +431,7 @@ const Profile = () => {
               </div>
               <Button 
                 onClick={handleChangePassword} 
-                disabled={changingPassword || !newPassword || !confirmPassword}
+                disabled={changingPassword || !newPassword || !confirmPassword || isChecking || isCompromised === true}
                 variant="outline"
               >
                 {changingPassword && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
