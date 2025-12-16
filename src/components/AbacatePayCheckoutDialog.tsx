@@ -55,8 +55,15 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
   }, [open]);
 
   const validateForm = () => {
-    if (!billingInfo.name || !billingInfo.email || !billingInfo.cpfCnpj) {
+    if (!billingInfo.name || !billingInfo.email || !billingInfo.cpfCnpj || !billingInfo.cellphone) {
       toast({ title: "Campos obrigatórios", description: "Preencha todos os campos.", variant: "destructive" });
+      return false;
+    }
+
+    // Validar telefone (mínimo 10 dígitos)
+    const phoneDigits = billingInfo.cellphone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      toast({ title: "Celular inválido", description: "Digite um número de celular válido.", variant: "destructive" });
       return false;
     }
 
@@ -176,12 +183,13 @@ export function AbacatePayCheckoutDialog({ open, onOpenChange, value, planName, 
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="cellphone">Celular</Label>
+                <Label htmlFor="cellphone">Celular *</Label>
                 <Input
                   id="cellphone"
                   placeholder="(11) 99999-9999"
                   value={billingInfo.cellphone}
                   onChange={e => setBillingInfo({ ...billingInfo, cellphone: e.target.value })}
+                  required
                 />
               </div>
 
