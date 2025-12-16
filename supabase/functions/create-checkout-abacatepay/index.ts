@@ -49,12 +49,13 @@ serve(async (req) => {
       throw new Error("Invalid plan type");
     }
 
-    if (!billingInfo?.name || !billingInfo?.email || !billingInfo?.cpfCnpj) {
-      throw new Error("Missing billing information");
+    if (!billingInfo?.name || !billingInfo?.email || !billingInfo?.cpfCnpj || !billingInfo?.cellphone) {
+      throw new Error("Missing billing information (name, email, cpfCnpj, cellphone required)");
     }
 
     const plan = planConfig[planType];
-    const siteUrl = Deno.env.get("SITE_URL") || "https://orbitha.com.br";
+    // Use www subdomain to avoid SSL certificate issues with naked domain
+    const siteUrl = Deno.env.get("SITE_URL") || "https://www.orbitha.com.br";
 
     console.log(`Creating Abacate Pay billing for user ${user.id}, plan: ${planType}, method: ${paymentMethod}`);
 
