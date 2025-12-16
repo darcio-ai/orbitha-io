@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
-import { AsaasCheckoutDialog } from "@/components/AsaasCheckoutDialog";
+import { AbacatePayCheckoutDialog } from "@/components/AbacatePayCheckoutDialog";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const Pricing = () => {
     });
   }, []);
 
-  const handleAsaasCheckout = (planType: 'growth' | 'suite' | 'life_balance', planName: string, value: number) => {
+  const handlePayment = (planType: 'growth' | 'suite' | 'life_balance', planName: string, value: number) => {
     if (!user) {
       toast({ 
         title: "Login necessário", 
@@ -168,7 +168,7 @@ const Pricing = () => {
                   className="w-full"
                   variant="default"
                   size="lg"
-                  onClick={() => handleAsaasCheckout(plan.planType, plan.name, plan.value)}
+                  onClick={() => handlePayment(plan.planType, plan.name, plan.value)}
                   disabled={isCurrentPlan}
                 >
                   {isCurrentPlan ? "Plano Atual" : "Pagar Agora"}
@@ -188,9 +188,9 @@ const Pricing = () => {
 
       </div>
 
-      {/* Asaas Checkout Dialog */}
+      {/* Abacate Pay Checkout Dialog (com fallbacks para Stripe/Asaas) */}
       {selectedPlan && (
-        <AsaasCheckoutDialog
+        <AbacatePayCheckoutDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           planType={selectedPlan.type}

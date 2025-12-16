@@ -35,3 +35,29 @@ export const createAsaasCheckout = async (planType: 'growth' | 'suite' | 'life_b
 
     return data;
 };
+
+export const createAbacatePayCheckout = async (
+    planType: 'growth' | 'suite' | 'life_balance',
+    billingInfo: {
+        name: string;
+        email: string;
+        cpfCnpj: string;
+        cellphone?: string;
+    },
+    paymentMethod: 'PIX' | 'CARD'
+) => {
+    const { data, error } = await supabase.functions.invoke('create-checkout-abacatepay', {
+        body: { planType, billingInfo, paymentMethod },
+    });
+
+    if (error) {
+        console.error('Abacate Pay checkout error:', error);
+        throw error;
+    }
+
+    if (!data || !data.url) {
+        throw new Error('Invalid response from Abacate Pay checkout');
+    }
+
+    return data;
+};
