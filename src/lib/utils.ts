@@ -97,3 +97,20 @@ function validateCnpj(cnpj: string): boolean {
   
   return true;
 }
+
+export function formatPhone(value: string): string {
+  // Remove tudo que não é dígito
+  const numbers = value.replace(/\D/g, '');
+  
+  // Formato: (00) 00000-0000
+  if (numbers.length <= 11) {
+    return numbers
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .replace(/(-\d{4})\d+?$/, '$1');
+  }
+  
+  return numbers.slice(0, 11)
+    .replace(/(\d{2})(\d)/, '($1) $2')
+    .replace(/(\d{5})(\d)/, '$1-$2');
+}
