@@ -24,10 +24,16 @@ verify_jwt = true
 [functions.create-checkout-asaas]
 verify_jwt = true
 
+[functions.create-checkout-abacatepay]
+verify_jwt = true
+
 [functions.webhook-stripe]
 verify_jwt = false
 
 [functions.webhook-asaas]
+verify_jwt = false
+
+[functions.webhook-abacatepay]
 verify_jwt = false
 
 [functions.generate-dora-image]
