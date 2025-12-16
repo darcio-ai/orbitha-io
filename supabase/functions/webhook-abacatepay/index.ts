@@ -46,35 +46,52 @@ serve(async (req) => {
         Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
       );
 
-      const userId = data?.billing?.externalId;
       const amount = data?.payment?.amount;
       const billingId = data?.billing?.id;
+      const customerEmail = data?.billing?.customer?.metadata?.email;
+      const productExternalId = data?.billing?.products?.[0]?.externalId;
 
-      // Validate userId format (UUID)
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!userId || !uuidRegex.test(userId)) {
-        console.error("Invalid or missing userId in externalId:", userId);
-        return new Response(JSON.stringify({ error: "Invalid user reference" }), {
+      console.log(`Customer email: ${customerEmail}, Product: ${productExternalId}`);
+
+      // Validate customer email
+      if (!customerEmail) {
+        console.error("Customer email not found in webhook payload");
+        return new Response(JSON.stringify({ error: "Customer email required" }), {
           headers: { "Content-Type": "application/json" },
           status: 400,
         });
       }
 
-      // Infer plan type from amount (in centavos)
+      // Find user by email
+      const { data: profile, error: profileFetchError } = await supabase
+        .from("profiles")
+        .select("id, firstname")
+        .eq("email", customerEmail)
+        .maybeSingle();
+
+      if (profileFetchError || !profile) {
+        console.error("User not found for email:", customerEmail, profileFetchError);
+        return new Response(JSON.stringify({ error: "User not found" }), {
+          headers: { "Content-Type": "application/json" },
+          status: 404,
+        });
+      }
+
+      const userId = profile.id;
+      console.log(`Found user: ${userId} for email: ${customerEmail}`);
+
+      // Infer plan type from product externalId or amount
       let planType = 'unknown';
-      if (amount === 6700) planType = 'life_balance';
+      if (productExternalId?.startsWith('plan-')) {
+        planType = productExternalId.replace('plan-', '').replace('_', '_');
+      } else if (amount === 6700) planType = 'life_balance';
       else if (amount === 9700) planType = 'growth';
       else if (amount === 14700) planType = 'suite';
 
       console.log(`User: ${userId}, Amount: ${amount}, Plan: ${planType}`);
 
       if (planType !== 'unknown') {
-        // Get user info for confirmation
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("email, firstname")
-          .eq("id", userId)
-          .single();
+        console.log(`Processing subscription: userId=${userId}, plan=${planType}, amount=${amount}`);
 
         // Update profile subscription
         const { error: profileError } = await supabase
@@ -93,27 +110,25 @@ serve(async (req) => {
         } else {
           console.log("Profile updated successfully");
 
-          // Try to send confirmation email
-          if (profileData?.email) {
-            try {
-              const planNames: Record<string, string> = {
-                life_balance: 'Life Balance',
-                growth: 'Growth',
-                suite: 'Suite Completa'
-              };
+          // Send confirmation email
+          try {
+            const planNames: Record<string, string> = {
+              life_balance: 'Life Balance',
+              growth: 'Growth',
+              suite: 'Suite Completa'
+            };
 
-              await supabase.functions.invoke('send-purchase-confirmation', {
-                body: {
-                  email: profileData.email,
-                  name: profileData.firstname || 'Cliente',
-                  planName: planNames[planType] || planType,
-                  amount: amount / 100
-                }
-              });
-              console.log("Confirmation email sent");
-            } catch (emailError) {
-              console.error("Error sending email:", emailError);
-            }
+            await supabase.functions.invoke('send-purchase-confirmation', {
+              body: {
+                email: customerEmail,
+                name: profile.firstname || 'Cliente',
+                planName: planNames[planType] || planType,
+                amount: amount / 100
+              }
+            });
+            console.log("Confirmation email sent to:", customerEmail);
+          } catch (emailError) {
+            console.error("Error sending email:", emailError);
           }
         }
 
