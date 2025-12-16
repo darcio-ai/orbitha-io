@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
-import { AbacatePayCheckoutDialog } from "@/components/AbacatePayCheckoutDialog";
+import { AsaasCheckoutDialog } from "@/components/AsaasCheckoutDialog";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -188,9 +188,9 @@ const Pricing = () => {
 
       </div>
 
-      {/* Abacate Pay Checkout Dialog (com fallbacks para Stripe/Asaas) */}
+      {/* Asaas Checkout Dialog (PIX + Cartão, com Stripe como fallback) */}
       {selectedPlan && (
-        <AbacatePayCheckoutDialog
+        <AsaasCheckoutDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           planType={selectedPlan.type}
