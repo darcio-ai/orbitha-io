@@ -54,8 +54,7 @@ serve(async (req) => {
     }
 
     const plan = planConfig[planType];
-    // Use www subdomain to avoid SSL certificate issues with naked domain
-    const siteUrl = Deno.env.get("SITE_URL") || "https://www.orbitha.com.br";
+    const siteUrl = Deno.env.get("SITE_URL") || "https://orbitha.io";
 
     console.log(`Creating Abacate Pay billing for user ${user.id}, plan: ${planType}, method: ${paymentMethod}`);
 
