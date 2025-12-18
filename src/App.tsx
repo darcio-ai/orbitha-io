@@ -66,14 +66,24 @@ function AppRoutes() {
       <Route path="/mentoria" element={<><Header /><Mentoria /><Footer /><WhatsAppFloat /></>} />
       <Route path="/solucoes" element={<><Header /><Solucoes /><Footer /><WhatsAppFloat /></>} />
       <Route path="/assistentes" element={<><Header /><Produtos /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/financial-assistant" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistente-financeiro" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/business-assistant" element={<><Header /><BusinessAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/travel-assistant" element={<><Header /><TravelAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/fitness-assistant" element={<><Header /><FitnessAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/sales-assistant" element={<><Header /><SalesAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/marketing-assistant" element={<><Header /><MarketingAssistant /><Footer /><WhatsAppFloat /></>} />
-      <Route path="/assistentes/support-assistant" element={<><Header /><SupportAssistant /><Footer /><WhatsAppFloat /></>} />
+      {/* New short Portuguese URLs */}
+      <Route path="/assistentes/financeiro" element={<><Header /><FinancialAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistentes/business" element={<><Header /><BusinessAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistentes/vendas" element={<><Header /><SalesAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistentes/marketing" element={<><Header /><MarketingAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistentes/suporte" element={<><Header /><SupportAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistentes/viagens" element={<><Header /><TravelAssistant /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/assistentes/fitness" element={<><Header /><FitnessAssistant /><Footer /><WhatsAppFloat /></>} />
+      
+      {/* Redirects from old URLs to new */}
+      <Route path="/assistentes/financial-assistant" element={<Navigate to="/assistentes/financeiro" replace />} />
+      <Route path="/assistente-financeiro" element={<Navigate to="/assistentes/financeiro" replace />} />
+      <Route path="/assistentes/business-assistant" element={<Navigate to="/assistentes/business" replace />} />
+      <Route path="/assistentes/travel-assistant" element={<Navigate to="/assistentes/viagens" replace />} />
+      <Route path="/assistentes/fitness-assistant" element={<Navigate to="/assistentes/fitness" replace />} />
+      <Route path="/assistentes/sales-assistant" element={<Navigate to="/assistentes/vendas" replace />} />
+      <Route path="/assistentes/marketing-assistant" element={<Navigate to="/assistentes/marketing" replace />} />
+      <Route path="/assistentes/support-assistant" element={<Navigate to="/assistentes/suporte" replace />} />
       <Route path="/demo/:assistantId" element={<DemoAssistant />} />
       <Route path="/blog" element={<><Header /><Blog /><Footer /><WhatsAppFloat /></>} />
       <Route path="/blog/:slug" element={<><Header /><BlogPost /><Footer /><WhatsAppFloat /></>} />
