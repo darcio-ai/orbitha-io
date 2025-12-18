@@ -65,7 +65,8 @@ export const createMercadoPagoCheckout = async (
 
     console.log('Mercado Pago checkout response:', data);
 
-    if (!data || !data.init_point) {
+    // Accept both regular checkout (init_point) and free activation (redirect_url)
+    if (!data || (!data.init_point && !data.free_activation)) {
         throw new Error('Invalid response from Mercado Pago checkout');
     }
 

@@ -145,6 +145,71 @@ serve(async (req) => {
       console.log(`Coupon applied: ${couponCode}, discount: R$${discountAmount.toFixed(2)}, final: R$${finalPrice.toFixed(2)}`);
     }
 
+    // If final price is 0 (100% discount), activate subscription directly without payment
+    if (finalPrice <= 0) {
+      console.log("100% discount - activating subscription directly without payment");
+
+      // Update profile with subscription info
+      const subscriptionEndDate = new Date();
+      subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
+
+      await supabaseAdmin.from("profiles").update({
+        billing_name: billingInfo.name,
+        cpf_cnpj: billingInfo.cpfCnpj,
+        subscription_status: "active",
+        subscription_plan: planType,
+        subscription_start_date: new Date().toISOString(),
+        subscription_end_date: subscriptionEndDate.toISOString(),
+        subscription_amount: 0,
+        plan: planType,
+      }).eq("id", user.id);
+
+      // Record coupon usage
+      if (couponData) {
+        await supabaseAdmin
+          .from("coupons")
+          .update({ current_uses: couponData.current_uses + 1 })
+          .eq("id", couponData.id);
+
+        await supabaseAdmin.from("coupon_usage").insert({
+          coupon_id: couponData.id,
+          user_id: user.id,
+          plan_type: planType,
+          original_amount: planConfig.price,
+          discount_amount: discountAmount,
+          final_amount: 0,
+        });
+
+        console.log("Coupon usage recorded for user:", user.id);
+      }
+
+      // Record sale
+      await supabaseAdmin.from("sales").insert({
+        user_id: user.id,
+        product_name: planConfig.name,
+        product_type: "subscription",
+        amount: 0,
+        acquisition_channel: "mercadopago",
+        payment_method: "coupon_100",
+        status: "completed",
+      });
+
+      const origin = req.headers.get("origin") || "https://orbitha.com.br";
+
+      return new Response(
+        JSON.stringify({
+          init_point: null,
+          subscription_id: `free_${user.id}_${Date.now()}`,
+          original_amount: planConfig.price,
+          discount_amount: discountAmount,
+          final_amount: 0,
+          free_activation: true,
+          redirect_url: `${origin}/pricing?status=done&plan=${planType}`,
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Get origin for back_url
     const origin = req.headers.get("origin") || "https://orbitha.com.br";
 

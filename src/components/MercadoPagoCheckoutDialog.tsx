@@ -135,10 +135,20 @@ export function MercadoPagoCheckoutDialog({
     setLoading(true);
     try {
       const appliedCoupon = couponResult?.valid ? couponCode.trim().toUpperCase() : undefined;
-      const { init_point } = await createMercadoPagoCheckout(planType, billingInfo, appliedCoupon);
+      const result = await createMercadoPagoCheckout(planType, billingInfo, appliedCoupon);
       
-      if (init_point) {
-        window.location.href = init_point;
+      // Handle 100% discount - direct activation without redirect to payment
+      if (result.free_activation && result.redirect_url) {
+        toast({
+          title: "Assinatura ativada!",
+          description: "Seu plano foi ativado com sucesso (100% de desconto).",
+        });
+        window.location.href = result.redirect_url;
+        return;
+      }
+      
+      if (result.init_point) {
+        window.location.href = result.init_point;
       } else {
         throw new Error("Falha ao gerar URL de pagamento");
       }
