@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { createMercadoPagoCheckout, createStripeCheckout } from "@/services/payment";
+import { createMercadoPagoCheckout, createStripeCheckout, validateCoupon, CouponValidationResult } from "@/services/payment";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCpfCnpj, validateCpfCnpj } from "@/lib/utils";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Tag, Check, X } from "lucide-react";
 
 interface MercadoPagoCheckoutDialogProps {
   open: boolean;
@@ -29,6 +29,11 @@ export function MercadoPagoCheckoutDialog({
   const [billingInfo, setBillingInfo] = useState({ name: "", email: "", cpfCnpj: "" });
   const [cpfCnpjError, setCpfCnpjError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
+  
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponResult, setCouponResult] = useState<CouponValidationResult | null>(null);
 
   // Pré-preencher dados quando o dialog abrir
   useEffect(() => {
@@ -54,8 +59,52 @@ export function MercadoPagoCheckoutDialog({
 
       fetchUserData();
       setShowFallback(false);
+      setCouponCode("");
+      setCouponResult(null);
     }
   }, [open]);
+
+  const handleValidateCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast({
+        title: "Digite o código do cupom",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setCouponLoading(true);
+    try {
+      const result = await validateCoupon(couponCode.trim(), planType);
+      setCouponResult(result);
+      
+      if (result.valid) {
+        toast({
+          title: "Cupom aplicado!",
+          description: `Desconto de R$ ${result.discountAmount?.toFixed(2).replace('.', ',')}`,
+        });
+      } else {
+        toast({
+          title: "Cupom inválido",
+          description: result.error || "Verifique o código digitado",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Coupon validation error:', error);
+      toast({
+        title: "Erro ao validar cupom",
+        variant: "destructive"
+      });
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode("");
+    setCouponResult(null);
+  };
 
   const validateForm = () => {
     if (!billingInfo.name || !billingInfo.email || !billingInfo.cpfCnpj) {
@@ -85,7 +134,8 @@ export function MercadoPagoCheckoutDialog({
 
     setLoading(true);
     try {
-      const { init_point } = await createMercadoPagoCheckout(planType, billingInfo);
+      const appliedCoupon = couponResult?.valid ? couponCode.trim().toUpperCase() : undefined;
+      const { init_point } = await createMercadoPagoCheckout(planType, billingInfo, appliedCoupon);
       
       if (init_point) {
         window.location.href = init_point;
@@ -123,19 +173,91 @@ export function MercadoPagoCheckoutDialog({
     }
   };
 
+  const displayPrice = couponResult?.valid ? couponResult.finalAmount : value;
+  const hasDiscount = couponResult?.valid && couponResult.discountAmount && couponResult.discountAmount > 0;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Assinar Plano</DialogTitle>
-          <DialogDescription>
-            <strong>{planName}</strong> — R$ {value.toFixed(2).replace('.', ',')}/mês
+          <DialogDescription className="space-y-1">
+            <span className="block font-semibold">{planName}</span>
+            {hasDiscount ? (
+              <span className="block">
+                <span className="line-through text-muted-foreground">R$ {value.toFixed(2).replace('.', ',')}</span>
+                {' '}
+                <span className="text-primary font-bold">R$ {displayPrice?.toFixed(2).replace('.', ',')}/mês</span>
+              </span>
+            ) : (
+              <span className="block">R$ {value.toFixed(2).replace('.', ',')}/mês</span>
+            )}
           </DialogDescription>
         </DialogHeader>
 
         {!showFallback ? (
           <>
             <div className="grid gap-4">
+              {/* Coupon Section */}
+              <div className="grid gap-2 p-3 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30">
+                <Label htmlFor="coupon" className="flex items-center gap-2 text-sm">
+                  <Tag className="h-4 w-4" />
+                  Cupom de Desconto (opcional)
+                </Label>
+                
+                {couponResult?.valid ? (
+                  <div className="flex items-center justify-between p-2 bg-primary/10 rounded-md">
+                    <div className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium">{couponResult.coupon?.code}</span>
+                      <span className="text-sm text-muted-foreground">
+                        (-{couponResult.coupon?.discountType === 'percentage' 
+                          ? `${couponResult.coupon.discountValue}%`
+                          : `R$ ${couponResult.coupon?.discountValue.toFixed(2).replace('.', ',')}`
+                        })
+                      </span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleRemoveCoupon}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      id="coupon"
+                      placeholder="Digite o código"
+                      value={couponCode}
+                      onChange={e => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponResult(null);
+                      }}
+                      className="flex-1"
+                      maxLength={30}
+                    />
+                    <Button 
+                      variant="secondary" 
+                      onClick={handleValidateCoupon}
+                      disabled={couponLoading || !couponCode.trim()}
+                    >
+                      {couponLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        "Aplicar"
+                      )}
+                    </Button>
+                  </div>
+                )}
+                
+                {couponResult && !couponResult.valid && (
+                  <p className="text-sm text-destructive">{couponResult.error}</p>
+                )}
+              </div>
+
               <div className="grid gap-2">
                 <Label htmlFor="name">Nome Completo *</Label>
                 <Input
@@ -191,7 +313,9 @@ export function MercadoPagoCheckoutDialog({
                     Processando...
                   </>
                 ) : (
-                  "Continuar para Pagamento"
+                  hasDiscount 
+                    ? `Pagar R$ ${displayPrice?.toFixed(2).replace('.', ',')}/mês`
+                    : "Continuar para Pagamento"
                 )}
               </Button>
             </DialogFooter>
