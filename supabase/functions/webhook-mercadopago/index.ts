@@ -14,7 +14,28 @@ const PLAN_NAMES: Record<string, string> = {
   suite: 'Suite Completa'
 };
 
-// Mapeamento de preço para plano
+// Extrair plano do back_url (mais confiável que preço quando há cupom)
+function getPlanTypeFromBackUrl(backUrl: string): string {
+  try {
+    const url = new URL(backUrl);
+    const plan = url.searchParams.get('plan');
+    if (plan && ['life_balance', 'growth', 'suite'].includes(plan)) {
+      return plan;
+    }
+  } catch {
+    // Se falhar, tenta extrair com regex
+    const match = backUrl.match(/plan=([^&]+)/);
+    if (match) {
+      const plan = match[1];
+      if (['life_balance', 'growth', 'suite'].includes(plan)) {
+        return plan;
+      }
+    }
+  }
+  return 'unknown';
+}
+
+// Fallback: Mapeamento de preço para plano (valores originais sem desconto)
 function getPlanTypeFromAmount(amount: number): string {
   if (amount === 67.00) return 'life_balance';
   if (amount === 97.00) return 'growth';
@@ -160,7 +181,13 @@ serve(async (req) => {
       const userId = preapproval.external_reference;
       const status = preapproval.status;
       const amount = preapproval.auto_recurring?.transaction_amount;
-      const planType = getPlanTypeFromAmount(amount);
+      const backUrl = preapproval.back_url || '';
+      
+      // Extrair plano primeiro do back_url (mais confiável com cupons), depois fallback para valor
+      let planType = getPlanTypeFromBackUrl(backUrl);
+      if (planType === 'unknown') {
+        planType = getPlanTypeFromAmount(amount);
+      }
 
       // Validar userId
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
