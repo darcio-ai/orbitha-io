@@ -22,7 +22,7 @@ const Produtos = () => {
       image: agenteFinanceiro,
       description:
         "Transforme sua relação com o dinheiro: organize finanças, invista com inteligência e conquiste seus objetivos financeiros.",
-      link: "/assistentes/financial-assistant",
+      link: "/assistentes/financeiro",
       demoId: "financeiro",
     },
     {
@@ -30,7 +30,7 @@ const Produtos = () => {
       image: agenteBusiness,
       description:
         "IA para MEI e pequenos negócios: PF x PJ, fluxo de caixa, precificação, margem e checklists de obrigações — com plano de ação claro.",
-      link: "/assistentes/business-assistant",
+      link: "/assistentes/business",
       demoId: "business",
     },
     {
@@ -38,7 +38,7 @@ const Produtos = () => {
       image: agenteVendas,
       description:
         "Venda mais, venda melhor: domine metodologias, CRMs, KPIs e estratégias que transformam vendedores comuns em top performers.",
-      link: "/assistentes/sales-assistant",
+      link: "/assistentes/vendas",
       demoId: "vendas",
     },
     {
@@ -46,7 +46,7 @@ const Produtos = () => {
       image: agenteMarketing,
       description:
         "Seu estrategista de marketing 24/7 para MEI/PJ: entende seu negócio, organiza ICP e funil, e entrega uma rotina simples com calendário de conteúdo, anúncios e copies sob medida para atrair e converter mais clientes.",
-      link: "/assistentes/marketing-assistant",
+      link: "/assistentes/marketing",
       demoId: "marketing",
     },
     {
@@ -54,7 +54,7 @@ const Produtos = () => {
       image: agenteSuporte,
       description:
         "Atendimento excepcional: processos, métricas e automação para encantar clientes e otimizar seu suporte.",
-      link: "/assistentes/support-assistant",
+      link: "/assistentes/suporte",
       demoId: "suporte",
     },
     {
@@ -62,7 +62,7 @@ const Produtos = () => {
       image: agenteViagens,
       description:
         "Planeje viagens incríveis com um especialista que conhece destinos, roteiros, dicas e transforma sonhos em itinerários reais.",
-      link: "/assistentes/travel-assistant",
+      link: "/assistentes/viagens",
       demoId: "viagens",
     },
     {
@@ -70,7 +70,7 @@ const Produtos = () => {
       image: agenteFitness,
       description:
         "Alcance seus objetivos fitness com um guia completo que domina treinos, nutrição, recuperação e as últimas tendências.",
-      link: "/assistentes/fitness-assistant",
+      link: "/assistentes/fitness",
       demoId: "fitness",
     },
   ];
