@@ -6,22 +6,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Configuração dos planos (IDs serão atualizados após criar no Mercado Pago)
-const PLAN_CONFIG: Record<string, { name: string; price: number; preapprovalPlanId?: string }> = {
+// Configuração dos planos
+const PLAN_CONFIG: Record<string, { name: string; price: number }> = {
   life_balance: {
     name: "Orbitha Life Balance Pack",
     price: 67.00,
-    preapprovalPlanId: Deno.env.get("MP_PLAN_LIFE_BALANCE") || "",
   },
   growth: {
     name: "Orbitha Growth Pack",
     price: 97.00,
-    preapprovalPlanId: Deno.env.get("MP_PLAN_GROWTH") || "",
   },
   suite: {
     name: "Orbitha Suite Completa",
     price: 147.00,
-    preapprovalPlanId: Deno.env.get("MP_PLAN_SUITE") || "",
   },
 };
 
@@ -66,8 +63,8 @@ serve(async (req) => {
       );
     }
 
-    const { planType, billingInfo } = await req.json();
-    console.log("Creating checkout for plan:", planType, "user:", user.id);
+    const { planType, billingInfo, couponCode } = await req.json();
+    console.log("Creating checkout for plan:", planType, "user:", user.id, "coupon:", couponCode || "none");
 
     const planConfig = PLAN_CONFIG[planType];
     if (!planConfig) {
@@ -77,18 +74,91 @@ serve(async (req) => {
       );
     }
 
+    // Use service role for admin operations
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    let finalPrice = planConfig.price;
+    let discountAmount = 0;
+    let couponData: any = null;
+
+    // Validate and apply coupon if provided
+    if (couponCode) {
+      const { data: coupon, error: couponError } = await supabaseAdmin
+        .from("coupons")
+        .select("*")
+        .eq("code", couponCode.toUpperCase().trim())
+        .single();
+
+      if (couponError || !coupon) {
+        return new Response(
+          JSON.stringify({ error: "Cupom inválido" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Validate coupon
+      const now = new Date();
+      const validFrom = new Date(coupon.valid_from);
+      const validUntil = new Date(coupon.valid_until);
+
+      if (!coupon.active) {
+        return new Response(
+          JSON.stringify({ error: "Cupom inativo" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (now < validFrom || now > validUntil) {
+        return new Response(
+          JSON.stringify({ error: "Cupom fora da validade" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (coupon.max_uses !== null && coupon.current_uses >= coupon.max_uses) {
+        return new Response(
+          JSON.stringify({ error: "Cupom esgotado" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (coupon.applicable_plans && coupon.applicable_plans.length > 0 && !coupon.applicable_plans.includes(planType)) {
+        return new Response(
+          JSON.stringify({ error: "Cupom não aplicável a este plano" }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Calculate discount
+      if (coupon.discount_type === "percentage") {
+        discountAmount = planConfig.price * (coupon.discount_value / 100);
+      } else {
+        discountAmount = Math.min(coupon.discount_value, planConfig.price);
+      }
+
+      finalPrice = Math.max(0, planConfig.price - discountAmount);
+      couponData = coupon;
+
+      console.log(`Coupon applied: ${couponCode}, discount: R$${discountAmount.toFixed(2)}, final: R$${finalPrice.toFixed(2)}`);
+    }
+
     // Get origin for back_url
     const origin = req.headers.get("origin") || "https://orbitha.com.br";
 
     // Criar assinatura recorrente via Preapproval API
     const preapprovalData = {
-      reason: planConfig.name,
+      reason: couponData 
+        ? `${planConfig.name} (cupom: ${couponCode})` 
+        : planConfig.name,
       external_reference: user.id,
       payer_email: billingInfo.email,
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
-        transaction_amount: planConfig.price,
+        transaction_amount: finalPrice,
         currency_id: "BRL",
       },
       back_url: `${origin}/pricing?status=done&plan=${planType}`,
@@ -118,20 +188,39 @@ serve(async (req) => {
     }
 
     // Atualizar perfil com billing info
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-
     await supabaseAdmin.from("profiles").update({
       billing_name: billingInfo.name,
       cpf_cnpj: billingInfo.cpfCnpj,
     }).eq("id", user.id);
 
+    // Record coupon usage if used
+    if (couponData) {
+      // Increment coupon usage
+      await supabaseAdmin
+        .from("coupons")
+        .update({ current_uses: couponData.current_uses + 1 })
+        .eq("id", couponData.id);
+
+      // Record usage history
+      await supabaseAdmin.from("coupon_usage").insert({
+        coupon_id: couponData.id,
+        user_id: user.id,
+        plan_type: planType,
+        original_amount: planConfig.price,
+        discount_amount: discountAmount,
+        final_amount: finalPrice,
+      });
+
+      console.log("Coupon usage recorded for user:", user.id);
+    }
+
     return new Response(
       JSON.stringify({
         init_point: result.init_point,
         subscription_id: result.id,
+        original_amount: planConfig.price,
+        discount_amount: discountAmount,
+        final_amount: finalPrice,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

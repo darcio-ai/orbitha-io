@@ -3,6 +3,9 @@ project_id = "ojtriykgfquhgywqipxg"
 [functions.create-checkout-mercadopago]
 verify_jwt = true
 
+[functions.validate-coupon]
+verify_jwt = true
+
 [functions.webhook-mercadopago]
 verify_jwt = false
 
