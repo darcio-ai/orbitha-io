@@ -4,12 +4,19 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import agenteFitness from "@/assets/agente_fitness.png";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const FitnessAssistant = () => {
   const navigate = useNavigate();
 
-  // ✅ Ajuste a rota abaixo para a rota real do chat/onboarding do seu assistente no seu app
-  const START_ASSISTANT_ROUTE = "/assistentes/fitness-assistant/start";
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/fitness')}`);
+    } else {
+      navigate('/demo/fitness');
+    }
+  };
 
   const howItWorks = [
     {
@@ -84,11 +91,11 @@ const FitnessAssistant = () => {
                   cabe na sua vida.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Button size="lg" className="text-lg" onClick={() => navigate(START_ASSISTANT_ROUTE)}>
-                    Começar minha análise agora (grátis)
+                  <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                    Testar demo rápida
                   </Button>
-                  <Button variant="ghost" size="lg" className="text-lg" onClick={() => navigate("/pricing")}>
-                    Ver planos Premium
+                  <Button variant="outline" size="lg" className="text-lg" onClick={() => navigate("/pricing?focus=suite")}>
+                    Ver planos
                   </Button>
                 </div>
 
@@ -204,8 +211,8 @@ const FitnessAssistant = () => {
               <p className="text-lg text-muted-foreground mb-6">
                 Diagnóstico rápido + treino personalizado + hábitos que sustentam resultados.
               </p>
-              <Button size="lg" className="text-lg" onClick={() => navigate(START_ASSISTANT_ROUTE)}>
-                Começar agora (grátis)
+              <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                Testar demo rápida
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
                 Conteúdo educativo • Ajustável à sua rotina • Sem promessas irreais

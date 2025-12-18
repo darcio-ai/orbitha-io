@@ -8,13 +8,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import agenteMarketing from "@/assets/agente_marketing.png";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const MarketingAssistant = () => {
   const navigate = useNavigate();
 
-  const scrollToPremium = () => {
-    const premiumSection = document.getElementById("premium-section");
-    premiumSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/marketing')}`);
+    } else {
+      navigate('/demo/marketing');
+    }
   };
 
   const steps = [
@@ -168,17 +173,17 @@ const MarketingAssistant = () => {
                   <Button
                     size="lg"
                     className="text-lg"
-                    onClick={() => navigate("/pricing")}
+                    onClick={handleStartDemo}
                   >
-                    Começar minha análise agora (grátis)
+                    Testar demo rápida
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
                     className="text-lg"
-                    onClick={scrollToPremium}
+                    onClick={() => navigate('/pricing?focus=growth')}
                   >
-                    Ver Premium
+                    Ver planos
                   </Button>
                 </div>
 
@@ -366,9 +371,9 @@ const MarketingAssistant = () => {
               <Button
                 size="lg"
                 className="text-lg"
-                onClick={() => navigate("/pricing")}
+                onClick={handleStartDemo}
               >
-                Começar minha análise agora (grátis)
+                Testar demo rápida
               </Button>
             </div>
           </div>

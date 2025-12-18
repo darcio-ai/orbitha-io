@@ -23,13 +23,18 @@ import {
 } from "@/components/ui/accordion";
 import agenteSuporte from "@/assets/agente_suporte.png";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const SupportAssistant = () => {
   const navigate = useNavigate();
 
-  const scrollToPremium = () => {
-    const premiumSection = document.getElementById("premium-section");
-    premiumSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/suporte')}`);
+    } else {
+      navigate('/demo/suporte');
+    }
   };
 
   const steps = [
@@ -183,17 +188,17 @@ const SupportAssistant = () => {
                   <Button
                     size="lg"
                     className="text-lg"
-                    onClick={() => navigate("/pricing")}
+                    onClick={handleStartDemo}
                   >
-                    Começar minha análise agora (grátis)
+                    Testar demo rápida
                   </Button>
                   <Button
                     size="lg"
                     variant="outline"
                     className="text-lg"
-                    onClick={scrollToPremium}
+                    onClick={() => navigate('/pricing?focus=growth')}
                   >
-                    Ver Premium
+                    Ver planos
                   </Button>
                 </div>
 
@@ -379,9 +384,9 @@ const SupportAssistant = () => {
               <Button
                 size="lg"
                 className="text-lg"
-                onClick={() => navigate("/pricing")}
+                onClick={handleStartDemo}
               >
-                Começar minha análise agora (grátis)
+                Testar demo rápida
               </Button>
             </div>
           </div>

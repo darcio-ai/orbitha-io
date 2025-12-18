@@ -1,4 +1,4 @@
-import { Check, TrendingUp, Target, MessageSquare, Timer, Layers, Shield } from "lucide-react";
+import { Check, TrendingUp, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -7,8 +7,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import agenteVendas from "@/assets/agente_vendas.png";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const SalesAssistant = () => {
+  const navigate = useNavigate();
+
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/vendas')}`);
+    } else {
+      navigate('/demo/vendas');
+    }
+  };
   const steps = [
     {
       icon: "1️⃣",
@@ -120,11 +132,11 @@ const SalesAssistant = () => {
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                    <Button size="lg" className="text-lg">
-                      Começar minha análise agora (grátis)
+                    <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                      Testar demo rápida
                     </Button>
-                    <Button size="lg" variant="ghost" className="text-lg sm:text-lg text-sm">
-                      Ver Premium
+                    <Button size="lg" variant="outline" className="text-lg sm:text-lg text-sm" onClick={() => navigate('/pricing?focus=growth')}>
+                      Ver planos
                     </Button>
                   </div>
 
@@ -254,8 +266,8 @@ const SalesAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Diagnóstico rápido + plano prático + scripts prontos.
               </p>
-              <Button size="lg" className="text-lg">
-                Começar agora (grátis)
+              <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                Testar demo rápida
               </Button>
             </div>
           </div>
