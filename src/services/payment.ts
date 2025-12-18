@@ -1,5 +1,36 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export const createMercadoPagoCheckout = async (
+    planType: 'growth' | 'suite' | 'life_balance',
+    billingInfo: {
+        name: string;
+        email: string;
+        cpfCnpj: string;
+    }
+) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("User not authenticated");
+
+    console.log('Calling Mercado Pago checkout with:', { planType, userId: user.id });
+
+    const { data, error } = await supabase.functions.invoke('create-checkout-mercadopago', {
+        body: { planType, billingInfo },
+    });
+
+    if (error) {
+        console.error('Mercado Pago checkout error:', error);
+        throw error;
+    }
+
+    console.log('Mercado Pago checkout response:', data);
+
+    if (!data || !data.init_point) {
+        throw new Error('Invalid response from Mercado Pago checkout');
+    }
+
+    return data;
+};
+
 export const createStripeCheckout = async (planType: 'growth' | 'suite' | 'life_balance') => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("User not authenticated");

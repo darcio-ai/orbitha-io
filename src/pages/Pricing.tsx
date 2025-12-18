@@ -7,7 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
-import { AsaasCheckoutDialog } from "@/components/AsaasCheckoutDialog";
+import { MercadoPagoCheckoutDialog } from "@/components/MercadoPagoCheckoutDialog";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -188,9 +188,9 @@ const Pricing = () => {
 
       </div>
 
-      {/* Asaas Checkout Dialog (PIX + Cartão, com Stripe como fallback) */}
+      {/* Mercado Pago Checkout Dialog (com Stripe como fallback) */}
       {selectedPlan && (
-        <AsaasCheckoutDialog
+        <MercadoPagoCheckoutDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           planType={selectedPlan.type}
