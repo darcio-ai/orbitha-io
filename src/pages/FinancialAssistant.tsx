@@ -4,9 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const FinancialAssistant = () => {
   const navigate = useNavigate();
+
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/financeiro')}`);
+    } else {
+      navigate('/demo/financeiro');
+    }
+  };
 
   return (
     <div className="min-h-screen pt-20 pb-16">
@@ -21,19 +31,18 @@ const FinancialAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Análise completa em 60 segundos. Diagnóstico financeiro + classificação automática + roadmap prático para seus objetivos.
               </p>
-              <div className="space-y-4">
-                <Button size="lg" className="text-lg px-8 py-6 w-full md:w-auto" onClick={() => navigate('/chat/financial-assistant')}>
-                  🚀 Começar minha análise agora (grátis)
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button size="lg" className="text-lg px-8 py-6 w-full md:w-auto" onClick={handleStartDemo}>
+                  Testar demo rápida
                 </Button>
-                <div>
-                  <Button 
-                    variant="link" 
-                    className="text-muted-foreground hover:text-primary"
-                    onClick={() => navigate('/pricing')}
-                  >
-                    Ver planos Premium →
-                  </Button>
-                </div>
+                <Button 
+                  size="lg"
+                  variant="outline" 
+                  className="text-lg w-full md:w-auto"
+                  onClick={() => navigate('/pricing?focus=suite')}
+                >
+                  Ver planos
+                </Button>
               </div>
             </div>
             <div className="relative">

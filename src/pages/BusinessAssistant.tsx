@@ -7,8 +7,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import agenteBusiness from "@/assets/agente_business.png";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const BusinessAssistant = () => {
+  const navigate = useNavigate();
+
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/business')}`);
+    } else {
+      navigate('/demo/business');
+    }
+  };
   const steps = [
     {
       icon: "1️⃣",
@@ -101,11 +113,11 @@ const BusinessAssistant = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 items-start">
-                  <Button size="lg" className="text-lg w-full sm:w-auto">
-                    Começar minha análise agora (grátis)
+                  <Button size="lg" className="text-lg w-full sm:w-auto" onClick={handleStartDemo}>
+                    Testar demo rápida
                   </Button>
-                  <Button size="lg" variant="ghost" className="sm:text-lg text-sm w-full sm:w-auto">
-                    Ver Premium
+                  <Button size="lg" variant="outline" className="sm:text-lg text-sm w-full sm:w-auto" onClick={() => navigate('/pricing?focus=suite')}>
+                    Ver planos
                   </Button>
                 </div>
 
@@ -274,8 +286,8 @@ const BusinessAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Diagnóstico rápido + plano prático + templates prontos.
               </p>
-              <Button size="lg" className="text-lg">
-                Começar agora (grátis)
+              <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                Testar demo rápida
               </Button>
             </div>
           </div>

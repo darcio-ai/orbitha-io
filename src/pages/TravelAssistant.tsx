@@ -4,9 +4,19 @@ import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useNavigate } from "react-router-dom";
 import agenteViagens from "@/assets/agente_viagens.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const TravelAssistant = () => {
   const navigate = useNavigate();
+
+  const handleStartDemo = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate(`/login?redirectTo=${encodeURIComponent('/demo/viagens')}`);
+    } else {
+      navigate('/demo/viagens');
+    }
+  };
   const howItWorks = [
     {
       icon: MapPin,
@@ -99,11 +109,11 @@ const TravelAssistant = () => {
                   Bora tirar sua viagem do papel? Eu monto roteiro, organizo custos e simplifico a logística pra você só curtir.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button size="lg" className="text-lg" onClick={() => window.location.href = '/chat/travel-assistant'}>
-                    Montar meu roteiro agora (grátis)
+                  <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                    Testar demo rápida
                   </Button>
-                  <Button size="lg" variant="ghost" className="text-lg" onClick={() => navigate('/pricing')}>
-                    Ver planos Premium
+                  <Button size="lg" variant="outline" className="text-lg" onClick={() => navigate('/pricing?focus=suite')}>
+                    Ver planos
                   </Button>
                 </div>
               </div>
@@ -200,8 +210,8 @@ const TravelAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Me diga destino e período. Eu monto um roteiro do seu jeito.
               </p>
-              <Button size="lg" className="text-lg" onClick={() => window.location.href = '/chat/travel-assistant'}>
-                Planejar minha viagem (grátis)
+              <Button size="lg" className="text-lg" onClick={handleStartDemo}>
+                Testar demo rápida
               </Button>
             </div>
 
