@@ -43,6 +43,7 @@ import AdminGenerateDora from "./pages/AdminGenerateDora";
 import DashboardAppointments from "./pages/DashboardAppointments";
 import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardAIUsage from "./pages/DashboardAIUsage";
+import DashboardCoupons from "./pages/DashboardCoupons";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -110,6 +111,7 @@ function AppRoutes() {
         <Route path="users" element={<DashboardUsers />} />
         <Route path="users/:userId/agents" element={<ManageUserAgents />} />
         <Route path="agents" element={<DashboardAgents />} />
+        <Route path="coupons" element={<DashboardCoupons />} />
         <Route path="agents-for-user" element={<DashboardAgentsForUser />} />
         <Route path="profile" element={<Profile />} />
         <Route path="appointments" element={<DashboardAppointments />} />
