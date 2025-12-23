@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import { Users, Gift, Star, MessageSquare, Search, RefreshCw, Calendar, Sparkles } from "lucide-react";
+import { Users, Gift, Star, MessageSquare, Search, RefreshCw, Calendar, Sparkles, Package, User } from "lucide-react";
 import { format, isPast, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -45,17 +45,36 @@ interface CouponStats {
   max_uses: number | null;
 }
 
+// Pacotes disponíveis
+const PACKAGES = ["life_balance_pack", "growth_pack", "orbitha_suite"];
+
 const assistantOptions = [
-  { value: "all", label: "Todos" },
-  { value: "business", label: "Business" },
-  { value: "financeiro", label: "Financeiro" },
-  { value: "vendas", label: "Vendas" },
-  { value: "marketing", label: "Marketing" },
-  { value: "suporte", label: "Suporte" },
-  { value: "viagens", label: "Viagens" },
-  { value: "fitness", label: "Fitness" },
-  { value: "pacote_completo", label: "Pacote Completo" },
+  { value: "all", label: "Todos", icon: "🔍", isPackage: false },
+  // Individuais (Opção 1)
+  { value: "business", label: "Business", icon: "💼", isPackage: false },
+  { value: "financeiro", label: "Financeiro", icon: "💰", isPackage: false },
+  { value: "vendas", label: "Vendas", icon: "🎯", isPackage: false },
+  { value: "marketing", label: "Marketing", icon: "📣", isPackage: false },
+  { value: "suporte", label: "Suporte", icon: "🎧", isPackage: false },
+  { value: "viagens", label: "Viagens", icon: "✈️", isPackage: false },
+  { value: "fitness", label: "Fitness", icon: "💪", isPackage: false },
+  // Pacotes (Opção 2)
+  { value: "life_balance_pack", label: "📦 Life Balance Pack", icon: "📦", isPackage: true },
+  { value: "growth_pack", label: "📦 Growth Pack", icon: "📦", isPackage: true },
+  { value: "orbitha_suite", label: "📦 Orbitha Suite", icon: "📦", isPackage: true },
 ];
+
+const isPackageChoice = (choice: string | null): boolean => {
+  if (!choice) return false;
+  return PACKAGES.includes(choice.toLowerCase());
+};
+
+const getAssistantDisplay = (choice: string | null) => {
+  if (!choice) return { label: "Não informado", icon: "❓", isPackage: false };
+  const option = assistantOptions.find(opt => opt.value.toLowerCase() === choice.toLowerCase());
+  if (option) return option;
+  return { label: choice, icon: isPackageChoice(choice) ? "📦" : "🔹", isPackage: isPackageChoice(choice) };
+};
 
 const DashboardBetaUsers = () => {
   const [betaUsers, setBetaUsers] = useState<BetaUser[]>([]);
@@ -180,6 +199,13 @@ const DashboardBetaUsers = () => {
   const totalSlots = couponStats?.max_uses || 50;
   const progressPercent = (usedSlots / totalSlots) * 100;
 
+  // Contagem separada: Individuais (40 vagas) vs Pacotes (10 vagas)
+  const individualUsers = betaUsers.filter(u => !isPackageChoice(u.beta_assistant_choice));
+  const packageUsers = betaUsers.filter(u => isPackageChoice(u.beta_assistant_choice));
+  
+  const INDIVIDUAL_SLOTS = 40;
+  const PACKAGE_SLOTS = 10;
+
   // Stats calculations
   const activeUsers = betaUsers.filter(u => 
     u.subscription_status !== "active" && 
@@ -212,17 +238,48 @@ const DashboardBetaUsers = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          {/* Card Opção 1 - Individuais */}
+          <Card className="border-blue-500/30 bg-blue-500/5">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">🔹 Opção 1 - Individual</CardTitle>
+              <User className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{individualUsers.length}/{INDIVIDUAL_SLOTS}</div>
+              <Progress value={(individualUsers.length / INDIVIDUAL_SLOTS) * 100} className="mt-2" />
+              <p className="text-xs text-muted-foreground mt-1">
+                {INDIVIDUAL_SLOTS - individualUsers.length} vagas restantes
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Card Opção 2 - Pacotes */}
+          <Card className="border-purple-500/30 bg-purple-500/5">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">📦 Opção 2 - Pacotes</CardTitle>
+              <Package className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{packageUsers.length}/{PACKAGE_SLOTS}</div>
+              <Progress value={(packageUsers.length / PACKAGE_SLOTS) * 100} className="mt-2" />
+              <p className="text-xs text-muted-foreground mt-1">
+                {PACKAGE_SLOTS - packageUsers.length} vagas restantes
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Total Vagas */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Vagas Usadas</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Geral</CardTitle>
               <Gift className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{usedSlots}/{totalSlots}</div>
-              <Progress value={progressPercent} className="mt-2" />
+              <div className="text-2xl font-bold">{betaUsers.length}/50</div>
+              <Progress value={(betaUsers.length / 50) * 100} className="mt-2" />
               <p className="text-xs text-muted-foreground mt-1">
-                {totalSlots - usedSlots} vagas restantes
+                {50 - betaUsers.length} vagas totais restantes
               </p>
             </CardContent>
           </Card>
@@ -328,9 +385,19 @@ const DashboardBetaUsers = () => {
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="capitalize">
-                          {user.beta_assistant_choice || "Não informado"}
-                        </Badge>
+                        {(() => {
+                          const display = getAssistantDisplay(user.beta_assistant_choice);
+                          return (
+                            <Badge 
+                              variant="outline" 
+                              className={`capitalize ${display.isPackage 
+                                ? "border-purple-500/50 bg-purple-500/10 text-purple-700" 
+                                : "border-blue-500/50 bg-blue-500/10 text-blue-700"}`}
+                            >
+                              {display.icon} {display.label}
+                            </Badge>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell>
                         {format(new Date(user.created_at), "dd/MM/yyyy", { locale: ptBR })}
