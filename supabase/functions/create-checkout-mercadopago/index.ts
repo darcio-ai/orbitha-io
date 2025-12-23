@@ -90,8 +90,19 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       console.error("Auth error:", authError);
+      
+      // Check if it's a session expired error
+      const isSessionExpired = authError?.message?.includes("User from sub claim in JWT does not exist") ||
+                               authError?.message?.includes("invalid_token") ||
+                               authError?.message?.includes("JWT expired");
+      
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ 
+          error: isSessionExpired 
+            ? "Sessão expirada. Por favor, faça login novamente." 
+            : "Unauthorized",
+          code: isSessionExpired ? "session_expired" : "unauthorized"
+        }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
