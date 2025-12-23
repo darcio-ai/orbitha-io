@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.sync-calendar]
 verify_jwt = false
+
+[functions.get-openai-balance]
+verify_jwt = true

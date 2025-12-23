@@ -4,10 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format, subDays, startOfDay, endOfDay } from "date-fns";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { format, subDays, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, Legend } from "recharts";
-import { Activity, DollarSign, Zap, Clock, TrendingUp, Users } from "lucide-react";
+import { Activity, DollarSign, Zap, Clock, TrendingUp, Users, Wallet, AlertCircle, Settings } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface UsageLog {
   id: string;
@@ -39,19 +43,90 @@ interface ModelUsage {
   requests: number;
 }
 
+interface OpenAIBalance {
+  hasApiKey: boolean;
+  hasBillingAccess: boolean;
+  currentMonthCost?: number;
+  periodStart?: string;
+  periodEnd?: string;
+  message?: string;
+  error?: string;
+}
+
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 const USD_TO_BRL = 5.5; // Approximate exchange rate
+const CREDIT_LIMIT_KEY = 'openai_credit_limit';
 
 const DashboardAIUsage = () => {
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<UsageLog[]>([]);
   const [period, setPeriod] = useState("7");
   const [functionFilter, setFunctionFilter] = useState("all");
+  const [openaiBalance, setOpenaiBalance] = useState<OpenAIBalance | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(true);
+  const [creditLimit, setCreditLimit] = useState<number>(() => {
+    const saved = localStorage.getItem(CREDIT_LIMIT_KEY);
+    return saved ? parseFloat(saved) : 100;
+  });
+  const [editingLimit, setEditingLimit] = useState(false);
+  const [tempLimit, setTempLimit] = useState(creditLimit.toString());
 
   useEffect(() => {
     fetchLogs();
+    fetchOpenAIBalance();
   }, [period, functionFilter]);
+
+  const fetchOpenAIBalance = async () => {
+    setLoadingBalance(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log('No session for OpenAI balance fetch');
+        setLoadingBalance(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-openai-balance`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log('OpenAI balance response:', data);
+      setOpenaiBalance(data);
+    } catch (error) {
+      console.error('Error fetching OpenAI balance:', error);
+      setOpenaiBalance({ hasApiKey: false, hasBillingAccess: false, error: 'Failed to fetch' });
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
+
+  const saveCreditLimit = () => {
+    const newLimit = parseFloat(tempLimit);
+    if (isNaN(newLimit) || newLimit <= 0) {
+      toast({
+        title: "Valor inválido",
+        description: "Por favor, insira um valor maior que zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setCreditLimit(newLimit);
+    localStorage.setItem(CREDIT_LIMIT_KEY, newLimit.toString());
+    setEditingLimit(false);
+    toast({
+      title: "Limite atualizado",
+      description: `Novo limite de créditos: $${newLimit.toFixed(2)}`,
+    });
+  };
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -281,7 +356,118 @@ const DashboardAIUsage = () => {
         </Card>
       </div>
 
-      {/* Charts Row */}
+      {/* OpenAI Balance Card */}
+      <Card className="border-primary/20 bg-gradient-to-br from-card to-primary/5">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Wallet className="h-5 w-5 text-primary" />
+            Saldo OpenAI
+          </CardTitle>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => {
+              setTempLimit(creditLimit.toString());
+              setEditingLimit(!editingLimit);
+            }}
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {loadingBalance ? (
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-2 w-full" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Credit Limit Editor */}
+              {editingLimit && (
+                <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                  <span className="text-sm text-muted-foreground">Limite:</span>
+                  <span className="text-muted-foreground">$</span>
+                  <Input
+                    type="number"
+                    value={tempLimit}
+                    onChange={(e) => setTempLimit(e.target.value)}
+                    className="w-24 h-8"
+                    placeholder="100"
+                  />
+                  <Button size="sm" onClick={saveCreditLimit}>
+                    Salvar
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setEditingLimit(false)}>
+                    Cancelar
+                  </Button>
+                </div>
+              )}
+
+              {/* Balance Display */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Current Month Usage */}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Uso Estimado (Mês)</p>
+                  <p className="text-2xl font-bold">${totalCostUSD.toFixed(4)}</p>
+                  <p className="text-xs text-muted-foreground">≈ R$ {totalCostBRL.toFixed(2)}</p>
+                </div>
+
+                {/* Configured Limit */}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Limite Configurado</p>
+                  <p className="text-2xl font-bold">${creditLimit.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground">≈ R$ {(creditLimit * USD_TO_BRL).toFixed(2)}</p>
+                </div>
+
+                {/* Estimated Remaining */}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Saldo Restante</p>
+                  <p className={`text-2xl font-bold ${(creditLimit - totalCostUSD) < (creditLimit * 0.2) ? 'text-destructive' : 'text-green-500'}`}>
+                    ${Math.max(0, creditLimit - totalCostUSD).toFixed(4)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    ≈ R$ {Math.max(0, (creditLimit - totalCostUSD) * USD_TO_BRL).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Usage Progress Bar */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Utilização</span>
+                  <span className={`font-medium ${(totalCostUSD / creditLimit) * 100 > 80 ? 'text-destructive' : ''}`}>
+                    {Math.min(100, (totalCostUSD / creditLimit) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <Progress 
+                  value={Math.min(100, (totalCostUSD / creditLimit) * 100)} 
+                  className="h-2"
+                />
+              </div>
+
+              {/* OpenAI API Status */}
+              {openaiBalance && (
+                <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+                  <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div className="text-xs text-muted-foreground">
+                    {!openaiBalance.hasApiKey && (
+                      <span>API key não configurada. Os custos são estimados com base nos logs locais.</span>
+                    )}
+                    {openaiBalance.hasApiKey && !openaiBalance.hasBillingAccess && (
+                      <span>A chave API atual não tem permissão de billing. Os custos são estimados com base nos logs locais. Para dados em tempo real, use uma Admin API Key.</span>
+                    )}
+                    {openaiBalance.hasApiKey && openaiBalance.hasBillingAccess && (
+                      <span>Dados de billing da OpenAI disponíveis. Período: {openaiBalance.periodStart} até {openaiBalance.periodEnd}</span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Usage Over Time */}
         <Card>
