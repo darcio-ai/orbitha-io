@@ -153,7 +153,11 @@ serve(async (req) => {
       const subscriptionEndDate = new Date();
       subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + 1);
 
-      await supabaseAdmin.from("profiles").update({
+      // Check if this is a beta coupon (BETANATAL)
+      const isBetaCoupon = couponCode && couponCode.toUpperCase().includes("BETANATAL") && !couponCode.toUpperCase().includes("BETANATAL50");
+      const betaExpiresAt = isBetaCoupon ? new Date("2025-01-15T23:59:59-03:00").toISOString() : null;
+
+      const profileUpdate: Record<string, any> = {
         billing_name: billingInfo.name,
         cpf_cnpj: billingInfo.cpfCnpj,
         subscription_status: "active",
@@ -162,7 +166,18 @@ serve(async (req) => {
         subscription_end_date: subscriptionEndDate.toISOString(),
         subscription_amount: 0,
         plan: planType,
-      }).eq("id", user.id);
+      };
+
+      // Add beta user fields if using BETANATAL coupon
+      if (isBetaCoupon) {
+        profileUpdate.is_beta_user = true;
+        profileUpdate.beta_source = couponCode.toUpperCase();
+        profileUpdate.beta_assistant_choice = planType; // Store which plan/assistant they chose
+        profileUpdate.beta_expires_at = betaExpiresAt;
+        console.log("Beta user detected - marking profile with beta fields");
+      }
+
+      await supabaseAdmin.from("profiles").update(profileUpdate).eq("id", user.id);
 
       // Record coupon usage
       if (couponData) {
@@ -205,6 +220,7 @@ serve(async (req) => {
           final_amount: 0,
           free_activation: true,
           redirect_url: `${origin}/pricing?status=done&plan=${planType}`,
+          is_beta_user: isBetaCoupon,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
