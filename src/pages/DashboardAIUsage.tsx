@@ -47,16 +47,22 @@ interface OpenAIBalance {
   hasApiKey: boolean;
   hasBillingAccess: boolean;
   currentMonthCost?: number;
+  costsByModel?: Record<string, number>;
+  costsByProject?: Record<string, number>;
   periodStart?: string;
   periodEnd?: string;
   message?: string;
   error?: string;
+  source?: string;
+  pagesProcessed?: number;
+  bucketsProcessed?: number;
 }
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
 const USD_TO_BRL = 5.5; // Approximate exchange rate
 const CREDIT_LIMIT_KEY = 'openai_credit_limit';
+const INITIAL_CREDIT_KEY = 'openai_initial_credit';
 
 const DashboardAIUsage = () => {
   const [loading, setLoading] = useState(true);
@@ -69,8 +75,14 @@ const DashboardAIUsage = () => {
     const saved = localStorage.getItem(CREDIT_LIMIT_KEY);
     return saved ? parseFloat(saved) : 100;
   });
+  const [initialCredit, setInitialCredit] = useState<number>(() => {
+    const saved = localStorage.getItem(INITIAL_CREDIT_KEY);
+    return saved ? parseFloat(saved) : 0;
+  });
   const [editingLimit, setEditingLimit] = useState(false);
+  const [editingInitialCredit, setEditingInitialCredit] = useState(false);
   const [tempLimit, setTempLimit] = useState(creditLimit.toString());
+  const [tempInitialCredit, setTempInitialCredit] = useState(initialCredit.toString());
 
   useEffect(() => {
     fetchLogs();
@@ -128,6 +140,26 @@ const DashboardAIUsage = () => {
     });
   };
 
+  const saveInitialCredit = () => {
+    const newCredit = parseFloat(tempInitialCredit);
+    if (isNaN(newCredit) || newCredit < 0) {
+      toast({
+        title: "Valor inválido",
+        description: "Por favor, insira um valor válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setInitialCredit(newCredit);
+    localStorage.setItem(INITIAL_CREDIT_KEY, newCredit.toString());
+    setEditingInitialCredit(false);
+    toast({
+      title: "Crédito inicial atualizado",
+      description: `Novo crédito inicial: $${newCredit.toFixed(2)}`,
+    });
+  };
+
+
   const fetchLogs = async () => {
     setLoading(true);
     try {
@@ -169,6 +201,15 @@ const DashboardAIUsage = () => {
   const avgDuration = logs.length > 0 
     ? Math.round(logs.reduce((sum, log) => sum + (log.duration_ms || 0), 0) / logs.length)
     : 0;
+
+  // Calculate real cost from OpenAI API or use estimated
+  const realOpenAICost = openaiBalance?.hasBillingAccess ? (openaiBalance.currentMonthCost || 0) : null;
+  const displayCost = realOpenAICost !== null ? realOpenAICost : totalCostUSD;
+  const isRealCost = realOpenAICost !== null;
+  
+  // Calculate estimated balance
+  const estimatedBalance = initialCredit > 0 ? Math.max(0, initialCredit - displayCost) : null;
+  const usagePercentage = initialCredit > 0 ? Math.min(100, (displayCost / initialCredit) * 100) : (totalCostUSD / creditLimit) * 100;
 
   // Calculate daily usage
   const dailyUsage: DailyUsage[] = [];
@@ -368,7 +409,9 @@ const DashboardAIUsage = () => {
             size="icon" 
             onClick={() => {
               setTempLimit(creditLimit.toString());
+              setTempInitialCredit(initialCredit.toString());
               setEditingLimit(!editingLimit);
+              setEditingInitialCredit(false);
             }}
           >
             <Settings className="h-4 w-4" />
@@ -383,82 +426,167 @@ const DashboardAIUsage = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Credit Limit Editor */}
+              {/* Settings Editor */}
               {editingLimit && (
-                <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                  <span className="text-sm text-muted-foreground">Limite:</span>
-                  <span className="text-muted-foreground">$</span>
-                  <Input
-                    type="number"
-                    value={tempLimit}
-                    onChange={(e) => setTempLimit(e.target.value)}
-                    className="w-24 h-8"
-                    placeholder="100"
-                  />
-                  <Button size="sm" onClick={saveCreditLimit}>
-                    Salvar
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditingLimit(false)}>
-                    Cancelar
-                  </Button>
+                <div className="space-y-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm text-muted-foreground">Crédito Inicial:</span>
+                    <span className="text-muted-foreground">$</span>
+                    <Input
+                      type="number"
+                      value={tempInitialCredit}
+                      onChange={(e) => setTempInitialCredit(e.target.value)}
+                      className="w-24 h-8"
+                      placeholder="10.00"
+                    />
+                    <Button size="sm" onClick={saveInitialCredit}>
+                      Salvar
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Informe o crédito que você tem disponível na sua conta OpenAI. Isso será usado para calcular o saldo estimado.
+                  </p>
+                  <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-border">
+                    <span className="text-sm text-muted-foreground">Limite de Alerta:</span>
+                    <span className="text-muted-foreground">$</span>
+                    <Input
+                      type="number"
+                      value={tempLimit}
+                      onChange={(e) => setTempLimit(e.target.value)}
+                      className="w-24 h-8"
+                      placeholder="100"
+                    />
+                    <Button size="sm" onClick={saveCreditLimit}>
+                      Salvar
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditingLimit(false)}>
+                      Fechar
+                    </Button>
+                  </div>
                 </div>
               )}
 
               {/* Balance Display */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Current Month Usage */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Initial Credit */}
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Uso Estimado (Mês)</p>
-                  <p className="text-2xl font-bold">${totalCostUSD.toFixed(4)}</p>
-                  <p className="text-xs text-muted-foreground">≈ R$ {totalCostBRL.toFixed(2)}</p>
-                </div>
-
-                {/* Configured Limit */}
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Limite Configurado</p>
-                  <p className="text-2xl font-bold">${creditLimit.toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground">≈ R$ {(creditLimit * USD_TO_BRL).toFixed(2)}</p>
-                </div>
-
-                {/* Estimated Remaining */}
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Saldo Restante</p>
-                  <p className={`text-2xl font-bold ${(creditLimit - totalCostUSD) < (creditLimit * 0.2) ? 'text-destructive' : 'text-green-500'}`}>
-                    ${Math.max(0, creditLimit - totalCostUSD).toFixed(4)}
+                  <p className="text-sm text-muted-foreground">Crédito Inicial</p>
+                  <p className="text-2xl font-bold">
+                    {initialCredit > 0 ? `$${initialCredit.toFixed(2)}` : '—'}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    ≈ R$ {Math.max(0, (creditLimit - totalCostUSD) * USD_TO_BRL).toFixed(2)}
+                    {initialCredit > 0 ? `≈ R$ ${(initialCredit * USD_TO_BRL).toFixed(2)}` : 'Configure acima'}
                   </p>
+                </div>
+
+                {/* Current Month Usage */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1">
+                    <p className="text-sm text-muted-foreground">Gasto este Mês</p>
+                    {isRealCost && (
+                      <Badge variant="outline" className="text-[10px] h-4 px-1 bg-green-500/10 text-green-600 border-green-500/30">
+                        Real
+                      </Badge>
+                    )}
+                    {!isRealCost && (
+                      <Badge variant="outline" className="text-[10px] h-4 px-1">
+                        Estimado
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-2xl font-bold text-orange-500">
+                    ${displayCost.toFixed(4)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">≈ R$ {(displayCost * USD_TO_BRL).toFixed(2)}</p>
+                </div>
+
+                {/* Estimated Balance */}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Saldo Estimado</p>
+                  <p className={`text-2xl font-bold ${
+                    estimatedBalance !== null 
+                      ? (estimatedBalance < initialCredit * 0.2 ? 'text-destructive' : 'text-green-500')
+                      : 'text-muted-foreground'
+                  }`}>
+                    {estimatedBalance !== null ? `$${estimatedBalance.toFixed(2)}` : '—'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {estimatedBalance !== null 
+                      ? `≈ R$ ${(estimatedBalance * USD_TO_BRL).toFixed(2)}` 
+                      : 'Configure crédito inicial'}
+                  </p>
+                </div>
+
+                {/* Alert Limit */}
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground">Limite de Alerta</p>
+                  <p className="text-2xl font-bold">${creditLimit.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground">≈ R$ {(creditLimit * USD_TO_BRL).toFixed(2)}</p>
                 </div>
               </div>
 
               {/* Usage Progress Bar */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Utilização</span>
-                  <span className={`font-medium ${(totalCostUSD / creditLimit) * 100 > 80 ? 'text-destructive' : ''}`}>
-                    {Math.min(100, (totalCostUSD / creditLimit) * 100).toFixed(1)}%
-                  </span>
+              {initialCredit > 0 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Consumo do Crédito</span>
+                    <span className={`font-medium ${usagePercentage > 80 ? 'text-destructive' : usagePercentage > 50 ? 'text-orange-500' : 'text-green-500'}`}>
+                      {usagePercentage.toFixed(1)}% usado
+                    </span>
+                  </div>
+                  <Progress 
+                    value={usagePercentage} 
+                    className={`h-3 ${usagePercentage > 80 ? '[&>div]:bg-destructive' : usagePercentage > 50 ? '[&>div]:bg-orange-500' : '[&>div]:bg-green-500'}`}
+                  />
+                  {usagePercentage > 80 && (
+                    <div className="flex items-center gap-2 text-destructive text-sm">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>Atenção: Mais de 80% do crédito já foi consumido!</span>
+                    </div>
+                  )}
                 </div>
-                <Progress 
-                  value={Math.min(100, (totalCostUSD / creditLimit) * 100)} 
-                  className="h-2"
-                />
-              </div>
+              )}
+
+              {/* Fallback progress for alert limit */}
+              {initialCredit === 0 && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Uso vs Limite de Alerta</span>
+                    <span className={`font-medium ${(totalCostUSD / creditLimit) * 100 > 80 ? 'text-destructive' : ''}`}>
+                      {Math.min(100, (totalCostUSD / creditLimit) * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={Math.min(100, (totalCostUSD / creditLimit) * 100)} 
+                    className="h-2"
+                  />
+                </div>
+              )}
 
               {/* OpenAI API Status */}
               {openaiBalance && (
-                <div className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
-                  <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5" />
-                  <div className="text-xs text-muted-foreground">
+                <div className={`flex items-start gap-2 p-3 rounded-lg ${
+                  openaiBalance.hasBillingAccess ? 'bg-green-500/10 border border-green-500/20' : 'bg-muted/50'
+                }`}>
+                  <AlertCircle className={`h-4 w-4 mt-0.5 ${openaiBalance.hasBillingAccess ? 'text-green-600' : 'text-muted-foreground'}`} />
+                  <div className="text-xs">
                     {!openaiBalance.hasApiKey && (
-                      <span>API key não configurada. Os custos são estimados com base nos logs locais.</span>
+                      <span className="text-muted-foreground">API key não configurada. Os custos são estimados com base nos logs locais.</span>
                     )}
                     {openaiBalance.hasApiKey && !openaiBalance.hasBillingAccess && (
-                      <span>A chave API atual não tem permissão de billing. Os custos são estimados com base nos logs locais. Para dados em tempo real, use uma Admin API Key.</span>
+                      <div className="text-muted-foreground">
+                        <p>A chave API atual não tem permissão de billing. Os custos são estimados com base nos logs locais.</p>
+                        {openaiBalance.message && <p className="mt-1 text-orange-500">{openaiBalance.message}</p>}
+                      </div>
                     )}
                     {openaiBalance.hasApiKey && openaiBalance.hasBillingAccess && (
-                      <span>Dados de billing da OpenAI disponíveis. Período: {openaiBalance.periodStart} até {openaiBalance.periodEnd}</span>
+                      <div className="text-green-600">
+                        <p className="font-medium">✓ Dados reais da API OpenAI</p>
+                        <p className="text-muted-foreground mt-1">
+                          Período: {openaiBalance.periodStart ? new Date(openaiBalance.periodStart).toLocaleDateString('pt-BR') : '—'} até {openaiBalance.periodEnd ? new Date(openaiBalance.periodEnd).toLocaleDateString('pt-BR') : '—'}
+                          {openaiBalance.pagesProcessed && ` • ${openaiBalance.pagesProcessed} páginas processadas`}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
