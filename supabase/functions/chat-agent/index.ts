@@ -167,6 +167,12 @@ Deno.serve(async (req) => {
     const userName = `${profile.firstname} ${profile.lastname}`.trim();
     console.log('User plan:', userPlan, 'Name:', userName);
 
+    // Update last_seen_at for tracking user activity
+    await supabase
+      .from('profiles')
+      .update({ last_seen_at: new Date().toISOString() })
+      .eq('id', userId);
+
     // Save user message
     const { error: saveError } = await supabase
       .from('agent_messages')
