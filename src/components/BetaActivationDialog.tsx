@@ -61,30 +61,43 @@ export const BetaActivationDialog = ({
         return;
       }
 
+      // Validate session with getUser() to ensure token is valid
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error("Invalid session detected:", userError);
+        // Session is invalid/expired - force logout
+        await supabase.auth.signOut();
+        setIsAuthenticated(false);
+        setCheckingAuth(false);
+        return;
+      }
+
       setIsAuthenticated(true);
 
       // Prefill with profile data
       const { data: profile } = await supabase
         .from("profiles")
         .select("firstname, lastname, email, whatsapp, cpf_cnpj")
-        .eq("id", session.user.id)
+        .eq("id", user.id)
         .single();
 
       if (profile) {
         setFormData({
           name: `${profile.firstname || ""} ${profile.lastname || ""}`.trim(),
-          email: profile.email || session.user.email || "",
+          email: profile.email || user.email || "",
           whatsapp: profile.whatsapp || "",
           cpfCnpj: profile.cpf_cnpj || "",
         });
       } else {
         setFormData(prev => ({
           ...prev,
-          email: session.user.email || "",
+          email: user.email || "",
         }));
       }
     } catch (error) {
       console.error("Error checking auth:", error);
+      setIsAuthenticated(false);
     } finally {
       setCheckingAuth(false);
     }
@@ -92,7 +105,8 @@ export const BetaActivationDialog = ({
 
   const handleLogin = () => {
     onOpenChange(false);
-    navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname)}?openBeta=true`);
+    const currentPath = window.location.pathname;
+    navigate(`/login?redirectTo=${encodeURIComponent(currentPath + "?openBeta=true")}`);
   };
 
   const formatWhatsApp = (value: string) => {
@@ -166,30 +180,51 @@ export const BetaActivationDialog = ({
     } catch (error: any) {
       console.error("Beta activation error:", error);
       
+      // Try to extract real error message from response
+      let errorMessage = "";
+      let errorCode = "";
+      
+      // Check if error has context with response body
+      if (error.context?.body) {
+        try {
+          const bodyText = await error.context.body.text?.() || error.context.body;
+          const parsed = typeof bodyText === 'string' ? JSON.parse(bodyText) : bodyText;
+          errorMessage = parsed.error || parsed.message || "";
+          errorCode = parsed.code || "";
+        } catch {
+          errorMessage = error.message || "";
+        }
+      } else {
+        errorMessage = error.message || "";
+      }
+      
       // Check if it's a session expired error
-      const errorMessage = error.message || "";
-      const isSessionExpired = errorMessage.includes("Sessão expirada") || 
+      const isSessionExpired = errorCode === "session_expired" ||
+                               errorMessage.includes("Sessão expirada") || 
                                errorMessage.includes("session_expired") ||
                                errorMessage.includes("JWT") ||
-                               errorMessage.includes("User from sub claim");
+                               errorMessage.includes("User from sub claim") ||
+                               errorMessage.includes("user_not_found");
       
       if (isSessionExpired) {
         toast({
           title: "Sessão expirada",
-          description: "Sua sessão expirou. Você será redirecionado para fazer login novamente.",
+          description: "Sua sessão expirou. Faça login novamente para continuar.",
           variant: "destructive",
         });
         
         // Force logout and redirect to login
         await supabase.auth.signOut();
         onOpenChange(false);
-        navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname)}?openBeta=true`);
+        const currentPath = window.location.pathname;
+        navigate(`/login?redirectTo=${encodeURIComponent(currentPath + "?openBeta=true")}`);
         return;
       }
       
+      // Show the actual error message from backend
       toast({
         title: "Erro na ativação",
-        description: error.message || "Não foi possível ativar o beta. Tente novamente.",
+        description: errorMessage || "Não foi possível ativar o beta. Tente novamente.",
         variant: "destructive",
       });
     } finally {
