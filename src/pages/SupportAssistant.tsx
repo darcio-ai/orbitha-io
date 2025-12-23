@@ -24,6 +24,7 @@ import {
 import agenteSuporte from "@/assets/agente_suporte.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const SupportAssistant = () => {
   const navigate = useNavigate();
@@ -184,7 +185,7 @@ const SupportAssistant = () => {
                   respostas rápidas, padronizadas e humanas para escalar o suporte sem perder qualidade.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
                   <Button
                     size="lg"
                     className="text-lg"
@@ -200,6 +201,12 @@ const SupportAssistant = () => {
                   >
                     Ver planos
                   </Button>
+                  <BetaActivationButton
+                    assistantId="suporte"
+                    assistantName="Suporte"
+                    planType="growth"
+                    couponCode="BETANATAL-SUP"
+                  />
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-4">

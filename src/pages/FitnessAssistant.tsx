@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import agenteFitness from "@/assets/agente_fitness.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const FitnessAssistant = () => {
   const navigate = useNavigate();
@@ -90,13 +91,19 @@ const FitnessAssistant = () => {
                   Seu coach de IA para treinos personalizados, nutrição educativa e hábitos saudáveis — do jeito que
                   cabe na sua vida.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
                   <Button size="lg" className="text-lg" onClick={handleStartDemo}>
                     Testar demo rápida
                   </Button>
                   <Button variant="outline" size="lg" className="text-lg" onClick={() => navigate("/pricing?focus=suite")}>
                     Ver planos
                   </Button>
+                  <BetaActivationButton
+                    assistantId="fitness"
+                    assistantName="Fitness"
+                    planType="life_balance"
+                    couponCode="BETANATAL-FIT"
+                  />
                 </div>
 
                 <p className="mt-4 text-sm text-muted-foreground">

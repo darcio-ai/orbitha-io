@@ -41,8 +41,13 @@ interface BetaFeedback {
 
 interface CouponStats {
   code: string;
+  description: string | null;
   current_uses: number;
   max_uses: number | null;
+}
+
+interface CouponStatsMap {
+  [key: string]: CouponStats;
 }
 
 // Pacotes disponíveis
@@ -76,10 +81,24 @@ const getAssistantDisplay = (choice: string | null) => {
   return { label: choice, icon: isPackageChoice(choice) ? "📦" : "🔹", isPackage: isPackageChoice(choice) };
 };
 
+// Mapeamento de cupons para assistentes
+const COUPON_ASSISTANT_MAP: { [key: string]: { name: string; icon: string; isPackage: boolean } } = {
+  'BETANATAL-FIN': { name: 'Financeiro', icon: '💰', isPackage: false },
+  'BETANATAL-BUS': { name: 'Business', icon: '💼', isPackage: false },
+  'BETANATAL-VEN': { name: 'Vendas', icon: '🎯', isPackage: false },
+  'BETANATAL-MKT': { name: 'Marketing', icon: '📣', isPackage: false },
+  'BETANATAL-SUP': { name: 'Suporte', icon: '🎧', isPackage: false },
+  'BETANATAL-VIA': { name: 'Viagens', icon: '✈️', isPackage: false },
+  'BETANATAL-FIT': { name: 'Fitness', icon: '💪', isPackage: false },
+  'BETANATAL-LB': { name: 'Life Balance Pack', icon: '📦', isPackage: true },
+  'BETANATAL-GR': { name: 'Growth Pack', icon: '📦', isPackage: true },
+  'BETANATAL-SU': { name: 'Orbitha Suite', icon: '📦', isPackage: true },
+};
+
 const DashboardBetaUsers = () => {
   const [betaUsers, setBetaUsers] = useState<BetaUser[]>([]);
   const [feedbacks, setFeedbacks] = useState<BetaFeedback[]>([]);
-  const [couponStats, setCouponStats] = useState<CouponStats | null>(null);
+  const [couponStats, setCouponStats] = useState<CouponStatsMap>({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [assistantFilter, setAssistantFilter] = useState("all");
@@ -131,15 +150,18 @@ const DashboardBetaUsers = () => {
         setFeedbacks([]);
       }
 
-      // Fetch coupon stats
+      // Fetch all BETANATAL-* coupon stats
       const { data: couponData, error: couponError } = await supabase
         .from("coupons")
-        .select("code, current_uses, max_uses")
-        .eq("code", "BETANATAL")
-        .single();
+        .select("code, description, current_uses, max_uses")
+        .like("code", "BETANATAL%");
 
       if (!couponError && couponData) {
-        setCouponStats(couponData);
+        const statsMap: CouponStatsMap = {};
+        couponData.forEach((coupon) => {
+          statsMap[coupon.code] = coupon;
+        });
+        setCouponStats(statsMap);
       }
 
     } catch (error: any) {
@@ -195,16 +217,20 @@ const DashboardBetaUsers = () => {
     );
   };
 
-  const usedSlots = couponStats?.current_uses || 0;
-  const totalSlots = couponStats?.max_uses || 50;
-  const progressPercent = (usedSlots / totalSlots) * 100;
+  // Calculate totals from coupon stats
+  const individualCoupons = Object.entries(couponStats).filter(([code]) => 
+    code.startsWith('BETANATAL-') && !['BETANATAL-LB', 'BETANATAL-GR', 'BETANATAL-SU'].includes(code)
+  );
+  const packageCoupons = Object.entries(couponStats).filter(([code]) => 
+    ['BETANATAL-LB', 'BETANATAL-GR', 'BETANATAL-SU'].includes(code)
+  );
 
-  // Contagem separada: Individuais (40 vagas) vs Pacotes (10 vagas)
-  const individualUsers = betaUsers.filter(u => !isPackageChoice(u.beta_assistant_choice));
-  const packageUsers = betaUsers.filter(u => isPackageChoice(u.beta_assistant_choice));
-  
-  const INDIVIDUAL_SLOTS = 40;
-  const PACKAGE_SLOTS = 10;
+  const totalIndividualUsed = individualCoupons.reduce((acc, [, c]) => acc + c.current_uses, 0);
+  const totalIndividualMax = individualCoupons.reduce((acc, [, c]) => acc + (c.max_uses || 0), 0);
+  const totalPackageUsed = packageCoupons.reduce((acc, [, c]) => acc + c.current_uses, 0);
+  const totalPackageMax = packageCoupons.reduce((acc, [, c]) => acc + (c.max_uses || 0), 0);
+  const totalUsed = totalIndividualUsed + totalPackageUsed;
+  const totalMax = totalIndividualMax + totalPackageMax;
 
   // Stats calculations
   const activeUsers = betaUsers.filter(u => 
@@ -237,49 +263,49 @@ const DashboardBetaUsers = () => {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-          {/* Card Opção 1 - Individuais */}
+        {/* Stats Cards - Row 1: Totals */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card Individuais */}
           <Card className="border-blue-500/30 bg-blue-500/5">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">🔹 Opção 1 - Individual</CardTitle>
+              <CardTitle className="text-sm font-medium">🔹 Individuais (7 assistentes)</CardTitle>
               <User className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{individualUsers.length}/{INDIVIDUAL_SLOTS}</div>
-              <Progress value={(individualUsers.length / INDIVIDUAL_SLOTS) * 100} className="mt-2" />
+              <div className="text-2xl font-bold text-blue-600">{totalIndividualUsed}/{totalIndividualMax}</div>
+              <Progress value={totalIndividualMax > 0 ? (totalIndividualUsed / totalIndividualMax) * 100 : 0} className="mt-2" />
               <p className="text-xs text-muted-foreground mt-1">
-                {INDIVIDUAL_SLOTS - individualUsers.length} vagas restantes
+                {totalIndividualMax - totalIndividualUsed} vagas restantes
               </p>
             </CardContent>
           </Card>
 
-          {/* Card Opção 2 - Pacotes */}
+          {/* Card Pacotes */}
           <Card className="border-purple-500/30 bg-purple-500/5">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">📦 Opção 2 - Pacotes</CardTitle>
+              <CardTitle className="text-sm font-medium">📦 Pacotes (3 tipos)</CardTitle>
               <Package className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{packageUsers.length}/{PACKAGE_SLOTS}</div>
-              <Progress value={(packageUsers.length / PACKAGE_SLOTS) * 100} className="mt-2" />
+              <div className="text-2xl font-bold text-purple-600">{totalPackageUsed}/{totalPackageMax}</div>
+              <Progress value={totalPackageMax > 0 ? (totalPackageUsed / totalPackageMax) * 100 : 0} className="mt-2" />
               <p className="text-xs text-muted-foreground mt-1">
-                {PACKAGE_SLOTS - packageUsers.length} vagas restantes
+                {totalPackageMax - totalPackageUsed} vagas restantes
               </p>
             </CardContent>
           </Card>
 
-          {/* Total Vagas */}
+          {/* Total Geral */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Total Geral</CardTitle>
               <Gift className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{betaUsers.length}/50</div>
-              <Progress value={(betaUsers.length / 50) * 100} className="mt-2" />
+              <div className="text-2xl font-bold">{totalUsed}/{totalMax}</div>
+              <Progress value={totalMax > 0 ? (totalUsed / totalMax) * 100 : 0} className="mt-2" />
               <p className="text-xs text-muted-foreground mt-1">
-                {50 - betaUsers.length} vagas totais restantes
+                {totalMax - totalUsed} vagas totais restantes
               </p>
             </CardContent>
           </Card>
@@ -296,7 +322,39 @@ const DashboardBetaUsers = () => {
               </p>
             </CardContent>
           </Card>
+        </div>
 
+        {/* Stats Cards - Row 2: Per Coupon Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {Object.entries(couponStats).map(([code, stats]) => {
+            const info = COUPON_ASSISTANT_MAP[code] || { name: code.replace('BETANATAL-', ''), icon: '🔹', isPackage: false };
+            const used = stats.current_uses;
+            const max = stats.max_uses || 0;
+            const remaining = max - used;
+            
+            return (
+              <Card 
+                key={code} 
+                className={`${info.isPackage ? 'border-purple-500/30 bg-purple-500/5' : 'border-border'}`}
+              >
+                <CardContent className="pt-4 pb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">{info.icon}</span>
+                    <span className="text-sm font-medium truncate">{info.name}</span>
+                  </div>
+                  <div className="text-xl font-bold">{used}/{max}</div>
+                  <Progress value={max > 0 ? (used / max) * 100 : 0} className="mt-1 h-1.5" />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {remaining > 0 ? `${remaining} restantes` : 'Esgotado'}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Row 3: Feedback Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Avaliação Média</CardTitle>

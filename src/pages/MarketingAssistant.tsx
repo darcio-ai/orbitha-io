@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import agenteMarketing from "@/assets/agente_marketing.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const MarketingAssistant = () => {
   const navigate = useNavigate();
@@ -169,7 +170,7 @@ const MarketingAssistant = () => {
                   Seu estrategista 24/7 para ICP, funil simples, conteúdo e anúncios prontos que atraem e convertem clientes com consistência.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
                   <Button
                     size="lg"
                     className="text-lg"
@@ -185,6 +186,12 @@ const MarketingAssistant = () => {
                   >
                     Ver planos
                   </Button>
+                  <BetaActivationButton
+                    assistantId="marketing"
+                    assistantName="Marketing"
+                    planType="growth"
+                    couponCode="BETANATAL-MKT"
+                  />
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-4">

@@ -9,6 +9,7 @@ import {
 import agenteBusiness from "@/assets/agente_business.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const BusinessAssistant = () => {
   const navigate = useNavigate();
@@ -112,13 +113,19 @@ const BusinessAssistant = () => {
                   precificação, rotinas e checklists — com plano claro e execução simples.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-3 items-start">
+                <div className="flex flex-col sm:flex-row gap-3 items-start flex-wrap">
                   <Button size="lg" className="text-lg w-full sm:w-auto" onClick={handleStartDemo}>
                     Testar demo rápida
                   </Button>
                   <Button size="lg" variant="outline" className="sm:text-lg text-sm w-full sm:w-auto" onClick={() => navigate('/pricing?focus=suite')}>
                     Ver planos
                   </Button>
+                  <BetaActivationButton
+                    assistantId="business"
+                    assistantName="Business"
+                    planType="suite"
+                    couponCode="BETANATAL-BUS"
+                  />
                 </div>
 
                 <p className="text-sm text-muted-foreground mt-4">
