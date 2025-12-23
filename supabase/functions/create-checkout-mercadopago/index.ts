@@ -6,6 +6,39 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Mapeamento de cupons BETANATAL para IDs dos assistentes
+const COUPON_AGENTS: Record<string, string[]> = {
+  // Cupons individuais
+  "BETANATAL-FIN": ["5fe72ccc-0242-4c94-b701-58bcb64cfa62"], // Financeiro
+  "BETANATAL-FIT": ["cccab8ba-050f-4b53-bfcc-b4534b091586"], // Fitness
+  "BETANATAL-BUS": ["06f8ba41-9b11-42fa-a905-aee1d54d5486"], // Business
+  "BETANATAL-VEN": ["d0a28e29-24da-4466-97d5-4b97e0c8d52a"], // Vendas
+  "BETANATAL-MKT": ["42b97f52-6c03-41c3-ac9c-673b7d5f9d1b"], // Marketing
+  "BETANATAL-SUP": ["59c982cc-5eaa-4264-bbf1-04a467256a08"], // Suporte
+  "BETANATAL-VIA": ["fc853360-586d-4e21-b723-2ab3dcff9b33"], // Viagens
+  
+  // Cupons combo
+  "BETANATAL-LB": [ // Life Balance: Financeiro + Fitness + Viagens
+    "5fe72ccc-0242-4c94-b701-58bcb64cfa62",
+    "cccab8ba-050f-4b53-bfcc-b4534b091586",
+    "fc853360-586d-4e21-b723-2ab3dcff9b33",
+  ],
+  "BETANATAL-GR": [ // Growth: Vendas + Marketing + Suporte
+    "d0a28e29-24da-4466-97d5-4b97e0c8d52a",
+    "42b97f52-6c03-41c3-ac9c-673b7d5f9d1b",
+    "59c982cc-5eaa-4264-bbf1-04a467256a08",
+  ],
+  "BETANATAL-SU": [ // Suite: Todos os 7
+    "06f8ba41-9b11-42fa-a905-aee1d54d5486",
+    "5fe72ccc-0242-4c94-b701-58bcb64cfa62",
+    "cccab8ba-050f-4b53-bfcc-b4534b091586",
+    "fc853360-586d-4e21-b723-2ab3dcff9b33",
+    "d0a28e29-24da-4466-97d5-4b97e0c8d52a",
+    "42b97f52-6c03-41c3-ac9c-673b7d5f9d1b",
+    "59c982cc-5eaa-4264-bbf1-04a467256a08",
+  ],
+};
+
 // Configuração dos planos
 const PLAN_CONFIG: Record<string, { name: string; price: number }> = {
   life_balance: {
@@ -196,6 +229,33 @@ serve(async (req) => {
         });
 
         console.log("Coupon usage recorded for user:", user.id);
+      }
+
+      // Assign agents based on coupon code
+      if (isBetaCoupon && couponCode) {
+        const upperCouponCode = couponCode.toUpperCase().trim();
+        const agentIds = COUPON_AGENTS[upperCouponCode] || [];
+        
+        if (agentIds.length > 0) {
+          console.log(`Assigning ${agentIds.length} agents for coupon ${upperCouponCode}`);
+          
+          for (const agentId of agentIds) {
+            const { error: insertError } = await supabaseAdmin
+              .from("agents_users")
+              .upsert(
+                { user_id: user.id, agent_id: agentId },
+                { onConflict: "user_id,agent_id" }
+              );
+            
+            if (insertError) {
+              console.error(`Error assigning agent ${agentId}:`, insertError);
+            } else {
+              console.log(`Agent ${agentId} assigned to user ${user.id}`);
+            }
+          }
+        } else {
+          console.log(`No agents mapped for coupon ${upperCouponCode}`);
+        }
       }
 
       // Record sale
