@@ -43,6 +43,23 @@ const Login = () => {
         if (session) {
           await syncUserProfile(session.user);
           
+          // Check if profile is complete
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("whatsapp, cpf_cnpj")
+            .eq("id", session.user.id)
+            .single();
+
+          const isProfileIncomplete = !profile?.whatsapp || !profile?.cpf_cnpj;
+
+          if (isProfileIncomplete) {
+            navigate("/complete-profile", { 
+              replace: true, 
+              state: { from: redirectTo !== '/dashboard' ? redirectTo : '/assistentes' } 
+            });
+            return;
+          }
+          
           // Get user role to redirect to appropriate page
           const { data: rolesData } = await supabase
             .from("user_roles")
@@ -85,7 +102,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}${redirectTo}`,
+          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
         },
       });
       if (error) throw error;
@@ -181,23 +198,44 @@ const Login = () => {
 
         await syncUserProfile(data.session.user);
 
-      // Get user role to redirect to appropriate page
-      const { data: rolesData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id);
+        // Check if profile is complete (has whatsapp and cpf_cnpj)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("whatsapp, cpf_cnpj")
+          .eq("id", data.user.id)
+          .single();
 
-      const isAdmin = rolesData?.some(r => r.role === 'admin');
-      const defaultPath = isAdmin ? '/dashboard/panel' : '/assistentes';
-      
-      // Se redirectTo não é /dashboard, usa redirectTo, senão usa defaultPath
-      const finalPath = (redirectTo && redirectTo !== '/dashboard') ? redirectTo : defaultPath;
-      
-      toast({
-        title: "Login realizado com sucesso!",
-        description: "Redirecionando...",
-      });
-      navigate(finalPath, { replace: true });
+        const isProfileIncomplete = !profile?.whatsapp || !profile?.cpf_cnpj;
+
+        if (isProfileIncomplete) {
+          toast({
+            title: "Complete seu perfil",
+            description: "Precisamos de alguns dados para continuar.",
+          });
+          navigate("/complete-profile", { 
+            replace: true, 
+            state: { from: redirectTo !== '/dashboard' ? redirectTo : '/assistentes' } 
+          });
+          return;
+        }
+
+        // Get user role to redirect to appropriate page
+        const { data: rolesData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id);
+
+        const isAdmin = rolesData?.some(r => r.role === 'admin');
+        const defaultPath = isAdmin ? '/dashboard/panel' : '/assistentes';
+        
+        // Se redirectTo não é /dashboard, usa redirectTo, senão usa defaultPath
+        const finalPath = (redirectTo && redirectTo !== '/dashboard') ? redirectTo : defaultPath;
+        
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando...",
+        });
+        navigate(finalPath, { replace: true });
       }
     } catch (error: any) {
       toast({

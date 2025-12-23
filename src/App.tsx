@@ -24,6 +24,7 @@ import SupportAssistant from "./pages/SupportAssistant";
 import DemoAssistant from "./pages/DemoAssistant";
 import BlogPost from "./pages/BlogPost";
 import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import Pricing from "./pages/Pricing";
 import SignupFree from "./pages/SignupFree";
@@ -45,6 +46,7 @@ import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardAIUsage from "./pages/DashboardAIUsage";
 import DashboardCoupons from "./pages/DashboardCoupons";
 import DashboardBetaUsers from "./pages/DashboardBetaUsers";
+import CompleteProfile from "./pages/CompleteProfile";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -99,8 +101,10 @@ function AppRoutes() {
       
       {/* Auth routes without Header/Footer */}
       <Route path="/login" element={<Login />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro-gratuito" element={<SignupFree />} />
+      <Route path="/complete-profile" element={<CompleteProfile />} />
       <Route path="/tools/generate-dora" element={<AdminGenerateDora />} />
       
       {/* Dashboard routes with sidebar */}

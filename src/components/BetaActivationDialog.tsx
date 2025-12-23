@@ -165,6 +165,28 @@ export const BetaActivationDialog = ({
       }
     } catch (error: any) {
       console.error("Beta activation error:", error);
+      
+      // Check if it's a session expired error
+      const errorMessage = error.message || "";
+      const isSessionExpired = errorMessage.includes("Sessão expirada") || 
+                               errorMessage.includes("session_expired") ||
+                               errorMessage.includes("JWT") ||
+                               errorMessage.includes("User from sub claim");
+      
+      if (isSessionExpired) {
+        toast({
+          title: "Sessão expirada",
+          description: "Sua sessão expirou. Você será redirecionado para fazer login novamente.",
+          variant: "destructive",
+        });
+        
+        // Force logout and redirect to login
+        await supabase.auth.signOut();
+        onOpenChange(false);
+        navigate(`/login?redirectTo=${encodeURIComponent(window.location.pathname)}?openBeta=true`);
+        return;
+      }
+      
       toast({
         title: "Erro na ativação",
         description: error.message || "Não foi possível ativar o beta. Tente novamente.",
