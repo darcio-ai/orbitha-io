@@ -6,6 +6,30 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Global limits by category
+const GLOBAL_LIMITS = {
+  assistente: 40,
+  combo: 10,
+};
+
+// Coupons by category
+const CATEGORY_COUPONS: Record<string, string[]> = {
+  combo: ['BETANATAL-LB', 'BETANATAL-GR', 'BETANATAL-SU'],
+  assistente: ['BETANATAL-FIN', 'BETANATAL-BUS', 'BETANATAL-VEN', 
+               'BETANATAL-MKT', 'BETANATAL-SUP', 'BETANATAL-VIA', 'BETANATAL-FIT'],
+};
+
+// Get coupon category
+const getCouponCategory = (code: string): 'assistente' | 'combo' | null => {
+  if (CATEGORY_COUPONS.combo.includes(code)) {
+    return 'combo';
+  }
+  if (CATEGORY_COUPONS.assistente.includes(code)) {
+    return 'assistente';
+  }
+  return null;
+};
+
 interface ValidateCouponRequest {
   code: string;
   planType: string;
@@ -101,12 +125,43 @@ serve(async (req) => {
       );
     }
 
-    // Check max uses
+    // Check max uses (individual coupon limit)
     if (coupon.max_uses !== null && coupon.current_uses >= coupon.max_uses) {
       return new Response(
         JSON.stringify({ error: "Cupom esgotado", valid: false }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Check global category limit for BETANATAL coupons
+    const category = getCouponCategory(coupon.code);
+    if (category) {
+      const categoryCouponCodes = CATEGORY_COUPONS[category];
+      const globalLimit = GLOBAL_LIMITS[category];
+
+      // Fetch all coupons in this category and sum current_uses
+      const { data: categoryCoupons, error: categoryError } = await supabaseAdmin
+        .from("coupons")
+        .select("current_uses")
+        .in("code", categoryCouponCodes);
+
+      if (categoryError) {
+        console.error("Error fetching category coupons:", categoryError);
+      } else {
+        const totalCategoryUses = categoryCoupons?.reduce((sum, c) => sum + (c.current_uses || 0), 0) || 0;
+        console.log(`Category ${category}: ${totalCategoryUses}/${globalLimit} uses`);
+
+        if (totalCategoryUses >= globalLimit) {
+          const categoryLabel = category === 'combo' ? 'combos' : 'assistentes individuais';
+          return new Response(
+            JSON.stringify({ 
+              error: `Vagas beta para ${categoryLabel} esgotadas (${globalLimit}/${globalLimit})`, 
+              valid: false 
+            }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
     }
 
     // Check applicable plans
