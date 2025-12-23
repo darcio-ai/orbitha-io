@@ -154,7 +154,11 @@ export const BetaActivationDialog = ({
           description: `Seu acesso ao ${assistantName} está liberado até 15/01/2025.`,
         });
         onOpenChange(false);
-        navigate(`/chat/${assistantId}`);
+        
+        // Redirect to dashboard for combos, or specific chat for individual assistants
+        const isCombo = ['life_balance', 'growth', 'suite'].includes(planType);
+        const redirectUrl = isCombo ? '/dashboard/agents' : `/chat/${assistantId}`;
+        navigate(redirectUrl);
       } else if (data.init_point) {
         // Shouldn't happen with 100% discount, but handle just in case
         window.location.href = data.init_point;
