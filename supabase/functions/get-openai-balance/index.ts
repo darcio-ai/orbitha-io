@@ -5,6 +5,24 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface CostBucket {
+  start_time: number;
+  end_time: number;
+  results: Array<{
+    object: string;
+    amount: { value: number; currency: string };
+    line_item?: string;
+    project_id?: string;
+  }>;
+}
+
+interface CostsResponse {
+  object: string;
+  data: CostBucket[];
+  has_more: boolean;
+  next_page?: string;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -38,85 +56,122 @@ serve(async (req) => {
     console.log(`Fetching OpenAI costs from ${startTime} to ${endTime} (Unix timestamps)`);
     console.log(`Period: ${startOfMonth.toISOString()} to ${now.toISOString()}`);
 
-    // Try to get costs from OpenAI Organization API
-    // Note: This requires an Admin API Key with api.usage.read permission
-    const costsResponse = await fetch(
-      `https://api.openai.com/v1/organization/costs?start_time=${startTime}&end_time=${endTime}`,
-      {
+    // Fetch all pages of costs with pagination
+    let allCostBuckets: CostBucket[] = [];
+    let hasMore = true;
+    let nextPage: string | null = null;
+    let pageCount = 0;
+    const maxPages = 10; // Safety limit
+
+    while (hasMore && pageCount < maxPages) {
+      const url = nextPage 
+        ? `https://api.openai.com/v1/organization/costs?start_time=${startTime}&end_time=${endTime}&page=${nextPage}`
+        : `https://api.openai.com/v1/organization/costs?start_time=${startTime}&end_time=${endTime}`;
+
+      console.log(`Fetching page ${pageCount + 1}: ${url}`);
+
+      const costsResponse = await fetch(url, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${openAIApiKey}`,
           'Content-Type': 'application/json',
         },
-      }
-    );
+      });
 
-    if (costsResponse.ok) {
-      const costsData = await costsResponse.json();
-      console.log('OpenAI costs data:', JSON.stringify(costsData, null, 2));
+      if (!costsResponse.ok) {
+        const errorText = await costsResponse.text();
+        console.log('OpenAI costs API error:', costsResponse.status, errorText);
 
-      // Calculate total cost from the response
-      let totalCost = 0;
-      if (costsData.data && Array.isArray(costsData.data)) {
-        totalCost = costsData.data.reduce((sum: number, item: any) => {
-          return sum + (item.results?.reduce((s: number, r: any) => s + (r.amount?.value || 0), 0) || 0);
-        }, 0);
-      }
-
-      return new Response(
-        JSON.stringify({
-          hasApiKey: true,
-          hasBillingAccess: true,
-          currentMonthCost: totalCost,
-          periodStart: startOfMonth.toISOString(),
-          periodEnd: now.toISOString(),
-          source: 'openai_api',
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        let errorDetails = '';
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorDetails = errorJson.error?.message || errorText;
+        } catch {
+          errorDetails = errorText;
         }
-      );
-    }
 
-    // If costs API fails, check the specific error
-    const errorText = await costsResponse.text();
-    console.log('OpenAI costs API error:', costsResponse.status, errorText);
-
-    // Parse error for more details
-    let errorDetails = '';
-    try {
-      const errorJson = JSON.parse(errorText);
-      errorDetails = errorJson.error?.message || errorText;
-    } catch {
-      errorDetails = errorText;
-    }
-
-    // Check if it's a permission issue
-    if (costsResponse.status === 403 || errorText.includes('permission') || errorText.includes('scope')) {
-      return new Response(
-        JSON.stringify({
-          hasApiKey: true,
-          hasBillingAccess: false,
-          message: 'A Admin Key não tem permissão api.usage.read. Verifique as permissões no painel OpenAI.',
-          error: errorDetails,
-          periodStart: startOfMonth.toISOString(),
-          periodEnd: now.toISOString(),
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        if (costsResponse.status === 403 || errorText.includes('permission') || errorText.includes('scope')) {
+          return new Response(
+            JSON.stringify({
+              hasApiKey: true,
+              hasBillingAccess: false,
+              message: 'A Admin Key não tem permissão api.usage.read. Verifique as permissões no painel OpenAI.',
+              error: errorDetails,
+              periodStart: startOfMonth.toISOString(),
+              periodEnd: now.toISOString(),
+            }),
+            { 
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            }
+          );
         }
-      );
+
+        return new Response(
+          JSON.stringify({
+            hasApiKey: true,
+            hasBillingAccess: false,
+            message: `Erro ao consultar API OpenAI: ${costsResponse.status}`,
+            error: errorDetails,
+            periodStart: startOfMonth.toISOString(),
+            periodEnd: now.toISOString(),
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+
+      const costsData: CostsResponse = await costsResponse.json();
+      console.log(`Page ${pageCount + 1} data:`, JSON.stringify(costsData, null, 2));
+
+      allCostBuckets = [...allCostBuckets, ...costsData.data];
+      hasMore = costsData.has_more;
+      nextPage = costsData.next_page || null;
+      pageCount++;
     }
 
-    // Other API errors
+    console.log(`Fetched ${pageCount} pages, ${allCostBuckets.length} cost buckets total`);
+
+    // Calculate total cost from all buckets
+    let totalCost = 0;
+    const costsByModel: Record<string, number> = {};
+    const costsByProject: Record<string, number> = {};
+
+    allCostBuckets.forEach(bucket => {
+      if (bucket.results && Array.isArray(bucket.results)) {
+        bucket.results.forEach(result => {
+          const amount = result.amount?.value || 0;
+          totalCost += amount;
+
+          // Track by line item (model/category)
+          if (result.line_item) {
+            costsByModel[result.line_item] = (costsByModel[result.line_item] || 0) + amount;
+          }
+
+          // Track by project
+          if (result.project_id) {
+            costsByProject[result.project_id] = (costsByProject[result.project_id] || 0) + amount;
+          }
+        });
+      }
+    });
+
+    console.log(`Total cost calculated: $${totalCost.toFixed(6)}`);
+    console.log('Costs by model:', costsByModel);
+    console.log('Costs by project:', costsByProject);
+
     return new Response(
       JSON.stringify({
         hasApiKey: true,
-        hasBillingAccess: false,
-        message: `Erro ao consultar API OpenAI: ${costsResponse.status}`,
-        error: errorDetails,
+        hasBillingAccess: true,
+        currentMonthCost: totalCost,
+        costsByModel,
+        costsByProject,
         periodStart: startOfMonth.toISOString(),
         periodEnd: now.toISOString(),
+        source: 'openai_api',
+        pagesProcessed: pageCount,
+        bucketsProcessed: allCostBuckets.length,
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
