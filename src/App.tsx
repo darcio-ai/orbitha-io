@@ -44,6 +44,7 @@ import DashboardAppointments from "./pages/DashboardAppointments";
 import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardAIUsage from "./pages/DashboardAIUsage";
 import DashboardCoupons from "./pages/DashboardCoupons";
+import DashboardBetaUsers from "./pages/DashboardBetaUsers";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -112,6 +113,7 @@ function AppRoutes() {
         <Route path="users/:userId/agents" element={<ManageUserAgents />} />
         <Route path="agents" element={<DashboardAgents />} />
         <Route path="coupons" element={<DashboardCoupons />} />
+        <Route path="beta-users" element={<DashboardBetaUsers />} />
         <Route path="agents-for-user" element={<DashboardAgentsForUser />} />
         <Route path="profile" element={<Profile />} />
         <Route path="appointments" element={<DashboardAppointments />} />
