@@ -446,7 +446,7 @@ const DashboardBetaUsers = () => {
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
               <Sparkles className="h-8 w-8 text-primary" />
-              Beta Natal 2024
+              Beta Natal 2025
             </h1>
             <p className="text-muted-foreground mt-1">
               Acompanhamento da campanha de beta testers
