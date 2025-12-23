@@ -199,7 +199,7 @@ serve(async (req) => {
 
       // Check if this is a beta coupon (BETANATAL)
       const isBetaCoupon = couponCode && couponCode.toUpperCase().includes("BETANATAL") && !couponCode.toUpperCase().includes("BETANATAL50");
-      const betaExpiresAt = isBetaCoupon ? new Date("2025-01-15T23:59:59-03:00").toISOString() : null;
+      const betaExpiresAt = isBetaCoupon ? new Date("2026-01-15T23:59:59-03:00").toISOString() : null;
 
       const profileUpdate: Record<string, any> = {
         billing_name: billingInfo.name,
