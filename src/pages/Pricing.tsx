@@ -8,7 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSubscription } from "@/hooks/useUserSubscription";
 import { MercadoPagoCheckoutDialog } from "@/components/MercadoPagoCheckoutDialog";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
+const COMBO_COUPONS: Record<string, string> = {
+  life_balance: "BETANATAL-LB",
+  growth: "BETANATAL-GR",
+  suite: "BETANATAL-SU",
+};
 const Pricing = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -164,6 +170,19 @@ const Pricing = () => {
               </CardContent>
 
               <CardFooter className="flex-col gap-3 px-4 md:px-6">
+                <BetaActivationButton
+                  assistantId={plan.planType}
+                  assistantName={plan.name}
+                  planType={plan.planType}
+                  couponCode={COMBO_COUPONS[plan.planType]}
+                />
+                
+                <div className="flex items-center gap-2 w-full">
+                  <div className="flex-1 h-px bg-border" />
+                  <span className="text-xs text-muted-foreground">ou</span>
+                  <div className="flex-1 h-px bg-border" />
+                </div>
+                
                 <Button
                   className="w-full"
                   variant="default"

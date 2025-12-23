@@ -80,7 +80,7 @@ const Header = () => {
         { name: "Assistentes IA", href: "/assistentes", description: "Teste nossos assistentes com demo" },
       ],
     },
-    { type: "link", name: "Preços", href: "/pricing" },
+    { type: "link", name: "Combos", href: "/pricing" },
     { type: "link", name: "Blog", href: "/blog" },
     { type: "link", name: "Contato", href: "/contato" },
   ];
@@ -331,7 +331,7 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              {/* Preços - Simple Link */}
+              {/* Combos - Simple Link */}
               <NavigationMenuItem>
                 <Link
                   to="/pricing"
@@ -340,7 +340,7 @@ const Header = () => {
                     isActive("/pricing") ? "text-primary" : "text-muted-foreground"
                   )}
                 >
-                  Preços
+                  Combos
                 </Link>
               </NavigationMenuItem>
 
