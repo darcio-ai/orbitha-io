@@ -31,16 +31,17 @@ serve(async (req) => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
-    // Format dates for OpenAI API (YYYY-MM-DD)
-    const startDate = startOfMonth.toISOString().split('T')[0];
-    const endDate = now.toISOString().split('T')[0];
+    // Convert to Unix timestamps (seconds) as required by OpenAI API
+    const startTime = Math.floor(startOfMonth.getTime() / 1000);
+    const endTime = Math.floor(now.getTime() / 1000);
 
-    console.log(`Fetching OpenAI costs from ${startDate} to ${endDate}`);
+    console.log(`Fetching OpenAI costs from ${startTime} to ${endTime} (Unix timestamps)`);
+    console.log(`Period: ${startOfMonth.toISOString()} to ${now.toISOString()}`);
 
     // Try to get costs from OpenAI Organization API
-    // Note: This requires an Admin API Key with billing:read permission
+    // Note: This requires an Admin API Key with api.usage.read permission
     const costsResponse = await fetch(
-      `https://api.openai.com/v1/organization/costs?start_date=${startDate}&end_date=${endDate}`,
+      `https://api.openai.com/v1/organization/costs?start_time=${startTime}&end_time=${endTime}`,
       {
         method: 'GET',
         headers: {
@@ -52,7 +53,7 @@ serve(async (req) => {
 
     if (costsResponse.ok) {
       const costsData = await costsResponse.json();
-      console.log('OpenAI costs data:', costsData);
+      console.log('OpenAI costs data:', JSON.stringify(costsData, null, 2));
 
       // Calculate total cost from the response
       let totalCost = 0;
@@ -67,8 +68,8 @@ serve(async (req) => {
           hasApiKey: true,
           hasBillingAccess: true,
           currentMonthCost: totalCost,
-          periodStart: startDate,
-          periodEnd: endDate,
+          periodStart: startOfMonth.toISOString(),
+          periodEnd: now.toISOString(),
           source: 'openai_api',
         }),
         { 
@@ -81,30 +82,25 @@ serve(async (req) => {
     const errorText = await costsResponse.text();
     console.log('OpenAI costs API error:', costsResponse.status, errorText);
 
-    // Try the legacy usage endpoint as fallback
-    const usageResponse = await fetch(
-      `https://api.openai.com/v1/usage?date=${endDate}`,
-      {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${openAIApiKey}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    // Parse error for more details
+    let errorDetails = '';
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorDetails = errorJson.error?.message || errorText;
+    } catch {
+      errorDetails = errorText;
+    }
 
-    if (usageResponse.ok) {
-      const usageData = await usageResponse.json();
-      console.log('OpenAI usage data:', usageData);
-
+    // Check if it's a permission issue
+    if (costsResponse.status === 403 || errorText.includes('permission') || errorText.includes('scope')) {
       return new Response(
         JSON.stringify({
           hasApiKey: true,
-          hasBillingAccess: true,
-          usage: usageData,
-          periodStart: startDate,
-          periodEnd: endDate,
-          source: 'openai_usage_api',
+          hasBillingAccess: false,
+          message: 'A Admin Key não tem permissão api.usage.read. Verifique as permissões no painel OpenAI.',
+          error: errorDetails,
+          periodStart: startOfMonth.toISOString(),
+          periodEnd: now.toISOString(),
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -112,16 +108,15 @@ serve(async (req) => {
       );
     }
 
-    // Neither endpoint worked - API key doesn't have billing permissions
-    console.log('No billing access with current API key');
-    
+    // Other API errors
     return new Response(
       JSON.stringify({
         hasApiKey: true,
         hasBillingAccess: false,
-        message: 'A chave API atual não tem permissão de billing. Use uma Admin API Key para acessar os custos.',
-        periodStart: startDate,
-        periodEnd: endDate,
+        message: `Erro ao consultar API OpenAI: ${costsResponse.status}`,
+        error: errorDetails,
+        periodStart: startOfMonth.toISOString(),
+        periodEnd: now.toISOString(),
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
