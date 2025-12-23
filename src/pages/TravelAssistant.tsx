@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useNavigate } from "react-router-dom";
 import agenteViagens from "@/assets/agente_viagens.png";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const TravelAssistant = () => {
   const navigate = useNavigate();
@@ -108,13 +109,19 @@ const TravelAssistant = () => {
                 <p className="text-xl text-muted-foreground mb-8">
                   Bora tirar sua viagem do papel? Eu monto roteiro, organizo custos e simplifico a logística pra você só curtir.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-4 flex-wrap">
                   <Button size="lg" className="text-lg" onClick={handleStartDemo}>
                     Testar demo rápida
                   </Button>
                   <Button size="lg" variant="outline" className="text-lg" onClick={() => navigate('/pricing?focus=suite')}>
                     Ver planos
                   </Button>
+                  <BetaActivationButton
+                    assistantId="viagens"
+                    assistantName="Viagens"
+                    planType="life_balance"
+                    couponCode="BETANATAL-VIA"
+                  />
                 </div>
               </div>
               <div className="relative">

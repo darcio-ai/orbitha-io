@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import agenteFinanceiro from "@/assets/agente_financeiro.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const FinancialAssistant = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const FinancialAssistant = () => {
               <p className="text-xl text-muted-foreground mb-8">
                 Análise completa em 60 segundos. Diagnóstico financeiro + classificação automática + roadmap prático para seus objetivos.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
                 <Button size="lg" className="text-lg px-8 py-6 w-full md:w-auto" onClick={handleStartDemo}>
                   Testar demo rápida
                 </Button>
@@ -43,6 +44,12 @@ const FinancialAssistant = () => {
                 >
                   Ver planos
                 </Button>
+                <BetaActivationButton
+                  assistantId="financeiro"
+                  assistantName="Financeiro"
+                  planType="life_balance"
+                  couponCode="BETANATAL-FIN"
+                />
               </div>
             </div>
             <div className="relative">

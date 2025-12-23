@@ -9,6 +9,7 @@ import {
 import agenteVendas from "@/assets/agente_vendas.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const SalesAssistant = () => {
   const navigate = useNavigate();
@@ -131,13 +132,19 @@ const SalesAssistant = () => {
                     IA para prospecção, SPIN Selling, CRM e objeções — com plano claro e scripts prontos.
                   </p>
 
-                  <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:items-center flex-wrap">
                     <Button size="lg" className="text-lg" onClick={handleStartDemo}>
                       Testar demo rápida
                     </Button>
                     <Button size="lg" variant="outline" className="text-lg sm:text-lg text-sm" onClick={() => navigate('/pricing?focus=growth')}>
                       Ver planos
                     </Button>
+                    <BetaActivationButton
+                      assistantId="vendas"
+                      assistantName="Vendas"
+                      planType="growth"
+                      couponCode="BETANATAL-VEN"
+                    />
                   </div>
 
                   <p className="text-sm text-muted-foreground mt-4">
