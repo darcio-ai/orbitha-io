@@ -267,10 +267,12 @@ export type Database = {
           allows_testimonial: boolean | null
           assistant_name: string | null
           created_at: string | null
+          feedback_quality: string | null
           feedback_text: string | null
           id: string
           rating: number
           screenshot_url: string | null
+          testimonial_status: string | null
           updated_at: string | null
           user_id: string
         }
@@ -279,10 +281,12 @@ export type Database = {
           allows_testimonial?: boolean | null
           assistant_name?: string | null
           created_at?: string | null
+          feedback_quality?: string | null
           feedback_text?: string | null
           id?: string
           rating: number
           screenshot_url?: string | null
+          testimonial_status?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -291,10 +295,12 @@ export type Database = {
           allows_testimonial?: boolean | null
           assistant_name?: string | null
           created_at?: string | null
+          feedback_quality?: string | null
           feedback_text?: string | null
           id?: string
           rating?: number
           screenshot_url?: string | null
+          testimonial_status?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -470,6 +476,7 @@ export type Database = {
           firstname: string
           id: string
           is_beta_user: boolean | null
+          last_seen_at: string | null
           lastname: string
           monthly_income: number | null
           phone: string
@@ -497,6 +504,7 @@ export type Database = {
           firstname: string
           id: string
           is_beta_user?: boolean | null
+          last_seen_at?: string | null
           lastname: string
           monthly_income?: number | null
           phone: string
@@ -524,6 +532,7 @@ export type Database = {
           firstname?: string
           id?: string
           is_beta_user?: boolean | null
+          last_seen_at?: string | null
           lastname?: string
           monthly_income?: number | null
           phone?: string
