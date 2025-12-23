@@ -261,6 +261,45 @@ export type Database = {
           },
         ]
       }
+      beta_feedback: {
+        Row: {
+          allows_screenshot: boolean | null
+          allows_testimonial: boolean | null
+          assistant_name: string | null
+          created_at: string | null
+          feedback_text: string | null
+          id: string
+          rating: number
+          screenshot_url: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          allows_screenshot?: boolean | null
+          allows_testimonial?: boolean | null
+          assistant_name?: string | null
+          created_at?: string | null
+          feedback_text?: string | null
+          id?: string
+          rating: number
+          screenshot_url?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          allows_screenshot?: boolean | null
+          allows_testimonial?: boolean | null
+          assistant_name?: string | null
+          created_at?: string | null
+          feedback_text?: string | null
+          id?: string
+          rating?: number
+          screenshot_url?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       clientes: {
         Row: {
           conversa_id: string | null
@@ -420,6 +459,9 @@ export type Database = {
         Row: {
           age: number | null
           asaas_customer_id: string | null
+          beta_assistant_choice: string | null
+          beta_expires_at: string | null
+          beta_source: string | null
           billing_name: string | null
           cpf_cnpj: string | null
           created_at: string
@@ -427,6 +469,7 @@ export type Database = {
           financial_goal: string | null
           firstname: string
           id: string
+          is_beta_user: boolean | null
           lastname: string
           monthly_income: number | null
           phone: string
@@ -443,6 +486,9 @@ export type Database = {
         Insert: {
           age?: number | null
           asaas_customer_id?: string | null
+          beta_assistant_choice?: string | null
+          beta_expires_at?: string | null
+          beta_source?: string | null
           billing_name?: string | null
           cpf_cnpj?: string | null
           created_at?: string
@@ -450,6 +496,7 @@ export type Database = {
           financial_goal?: string | null
           firstname: string
           id: string
+          is_beta_user?: boolean | null
           lastname: string
           monthly_income?: number | null
           phone: string
@@ -466,6 +513,9 @@ export type Database = {
         Update: {
           age?: number | null
           asaas_customer_id?: string | null
+          beta_assistant_choice?: string | null
+          beta_expires_at?: string | null
+          beta_source?: string | null
           billing_name?: string | null
           cpf_cnpj?: string | null
           created_at?: string
@@ -473,6 +523,7 @@ export type Database = {
           financial_goal?: string | null
           firstname?: string
           id?: string
+          is_beta_user?: boolean | null
           lastname?: string
           monthly_income?: number | null
           phone?: string
