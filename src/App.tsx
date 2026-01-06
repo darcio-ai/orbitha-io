@@ -40,6 +40,7 @@ import NotFound from "./pages/NotFound";
 import DashboardRedirect from "./pages/DashboardRedirect";
 import ScrollToTop from "./components/ScrollToTop";
 import Termos from "./pages/Termos";
+import Privacidade from "./pages/Privacidade";
 import AdminGenerateDora from "./pages/AdminGenerateDora";
 import DashboardAppointments from "./pages/DashboardAppointments";
 import DashboardAnalytics from "./pages/DashboardAnalytics";
@@ -95,6 +96,7 @@ function AppRoutes() {
       <Route path="/pricing" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       <Route path="/planos" element={<><Header /><Pricing /><Footer /><WhatsAppFloat /></>} />
       <Route path="/termos" element={<><Header /><Termos /><Footer /><WhatsAppFloat /></>} />
+      <Route path="/privacidade" element={<><Header /><Privacidade /><Footer /><WhatsAppFloat /></>} />
       
       {/* Redirect old route to new */}
       <Route path="/agentes-ia" element={<Navigate to="/solucoes" replace />} />

@@ -102,10 +102,27 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
+          {/* Legal */}
+          <div className="text-center md:text-left">
+            <h3 className="text-base font-semibold mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/termos" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Termos de Uso
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacidade" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Política de Privacidade
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="border-t border-border mt-6 md:mt-8 pt-6 md:pt-8 text-center text-xs md:text-sm text-muted-foreground">
-          <p>&copy; 2024 Orbitha. Todos os direitos reservados.</p>
+          <p>&copy; 2025 Orbitha. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
