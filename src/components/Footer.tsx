@@ -122,7 +122,16 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border mt-6 md:mt-8 pt-6 md:pt-8 text-center text-xs md:text-sm text-muted-foreground">
-          <p>&copy; 2025 Orbitha. Todos os direitos reservados.</p>
+          <p className="mb-2">&copy; 2025 Orbitha. Todos os direitos reservados.</p>
+          <div className="flex justify-center gap-4">
+            <Link to="/termos" className="hover:text-primary transition-colors">
+              Termos de Uso
+            </Link>
+            <span>|</span>
+            <Link to="/privacidade" className="hover:text-primary transition-colors">
+              Política de Privacidade
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
