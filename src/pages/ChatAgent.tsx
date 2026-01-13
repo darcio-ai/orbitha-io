@@ -8,6 +8,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Send, ArrowLeft, User } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
+import { StyleSelector, type CommunicationStyle } from "@/components/chat/StyleSelector";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Message {
   id: string;
@@ -26,16 +29,30 @@ interface Agent {
   temperature: number;
 }
 
+interface Conversation {
+  id: string;
+  title: string | null;
+  style: string;
+  created_at: string;
+  updated_at: string;
+}
+
 const ChatAgent = () => {
   const { url } = useParams<{ url: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  
   const [agent, setAgent] = useState<Agent | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState<CommunicationStyle>('normal');
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [streamingMessage, setStreamingMessage] = useState("");
 
@@ -46,9 +63,27 @@ const ChatAgent = () => {
   useEffect(() => {
     if (userId && url) {
       loadAgent();
-      loadMessages();
     }
   }, [userId, url]);
+
+  useEffect(() => {
+    if (agent && userId) {
+      loadConversations();
+    }
+  }, [agent, userId]);
+
+  useEffect(() => {
+    if (currentConversationId) {
+      loadMessages();
+      // Update selected style from conversation
+      const conv = conversations.find(c => c.id === currentConversationId);
+      if (conv && conv.style) {
+        setSelectedStyle(conv.style as CommunicationStyle);
+      }
+    } else {
+      setMessages([]);
+    }
+  }, [currentConversationId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -105,138 +140,127 @@ const ChatAgent = () => {
     }
   };
 
-  const loadMessages = async () => {
-    if (!userId) return;
+  const loadConversations = async () => {
+    if (!userId || !agent) return;
 
     try {
-      const { data: agentData } = await supabase
-        .from('agents')
-        .select('id')
-        .eq('url', url)
-        .single();
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('agent_id', agent.id)
+        .order('updated_at', { ascending: false });
 
-      if (!agentData) return;
+      if (error) throw error;
+      setConversations(data || []);
 
-      // Check if this is a fresh login by checking localStorage
-      const lastLoginKey = `last_login_${agentData.id}`;
-      const lastLogin = localStorage.getItem(lastLoginKey);
-      const now = new Date().getTime();
-      
-      // Consider it a new session if no login timestamp or last login was over 1 hour ago
-      const isNewSession = !lastLogin || (now - parseInt(lastLogin)) > 3600000;
-      
-      if (isNewSession) {
-        // Clear old messages from database on fresh login
-        await supabase
-          .from('agent_messages')
-          .delete()
-          .eq('user_id', userId)
-          .eq('agent_id', agentData.id);
-        
-        // Mark this login time
-        localStorage.setItem(lastLoginKey, now.toString());
-        
-        // No messages to load since we cleared them
-        setMessages([]);
-        setTimeout(() => scrollToBottom(), 300);
-        return;
+      // Auto-select the most recent conversation or create new one
+      if (data && data.length > 0 && !currentConversationId) {
+        setCurrentConversationId(data[0].id);
       }
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+    }
+  };
 
-      // Load existing messages from current session
+  const loadMessages = async () => {
+    if (!userId || !currentConversationId) return;
+
+    try {
       const { data, error } = await supabase
         .from('agent_messages')
         .select('*')
-        .eq('user_id', userId)
-        .eq('agent_id', agentData.id)
+        .eq('conversation_id', currentConversationId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       setMessages(data || []);
-      
-      // Scroll to bottom after messages load
       setTimeout(() => scrollToBottom(), 300);
-
-      // Don't send continuation message on reload
     } catch (error) {
       console.error('Error loading messages:', error);
     }
   };
 
-  const sendContinuationMessage = async (agentId: string) => {
-    if (!userId) return;
-    
-    setIsSending(true);
-    setStreamingMessage("");
+  const createNewConversation = async () => {
+    if (!userId || !agent) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/login');
-        return;
+      const { data, error } = await supabase
+        .from('conversations')
+        .insert({
+          user_id: userId,
+          agent_id: agent.id,
+          style: selectedStyle,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setConversations(prev => [data, ...prev]);
+      setCurrentConversationId(data.id);
+      setMessages([]);
+      
+      // Close sidebar on mobile after creating
+      if (isMobile) {
+        setSidebarOpen(false);
       }
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-agent`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            agentId: agentId,
-            message: "Vamos continuar de onde paramos?",
-            userId: userId,
-          }),
-        }
-      );
-
-      if (!response.ok) throw new Error('Failed to send message');
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) throw new Error('No reader available');
-
-      let fullMessage = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.trim() !== '');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
-
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.content) {
-                fullMessage += parsed.content;
-                setStreamingMessage(fullMessage);
-              }
-            } catch (e) {
-              console.error('Error parsing chunk:', e);
-            }
-          }
-        }
-      }
-
-      // Reload messages to get the saved response
-      await loadMessages();
-      setStreamingMessage("");
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error creating conversation:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível enviar a mensagem.",
+        description: "Não foi possível criar nova conversa.",
         variant: "destructive",
       });
-    } finally {
-      setIsSending(false);
+    }
+  };
+
+  const selectConversation = (id: string) => {
+    setCurrentConversationId(id);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
+  const deleteConversation = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('conversations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setConversations(prev => prev.filter(c => c.id !== id));
+      
+      if (currentConversationId === id) {
+        const remaining = conversations.filter(c => c.id !== id);
+        setCurrentConversationId(remaining.length > 0 ? remaining[0].id : null);
+      }
+
+      toast({
+        title: "Conversa excluída",
+        description: "A conversa foi removida com sucesso.",
+      });
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir a conversa.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleStyleChange = async (style: CommunicationStyle) => {
+    setSelectedStyle(style);
+    
+    // Update conversation style if one exists
+    if (currentConversationId) {
+      await supabase
+        .from('conversations')
+        .update({ style })
+        .eq('id', currentConversationId);
     }
   };
 
@@ -247,6 +271,37 @@ const ChatAgent = () => {
     setInput("");
     setIsSending(true);
     setStreamingMessage("");
+
+    // Create conversation if none exists
+    let conversationId = currentConversationId;
+    if (!conversationId) {
+      try {
+        const { data, error } = await supabase
+          .from('conversations')
+          .insert({
+            user_id: userId,
+            agent_id: agent.id,
+            style: selectedStyle,
+            title: userMessage.substring(0, 50),
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        conversationId = data.id;
+        setCurrentConversationId(data.id);
+        setConversations(prev => [data, ...prev]);
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível criar a conversa.",
+          variant: "destructive",
+        });
+        setIsSending(false);
+        return;
+      }
+    }
 
     // Add user message optimistically
     const tempUserMessage: Message = {
@@ -275,7 +330,8 @@ const ChatAgent = () => {
           body: JSON.stringify({
             agentId: agent.id,
             message: userMessage,
-            userId: userId,
+            conversationId: conversationId,
+            style: selectedStyle,
           }),
         }
       );
@@ -316,6 +372,8 @@ const ChatAgent = () => {
 
       // Reload messages to get the saved response
       await loadMessages();
+      // Reload conversations to update the title/updated_at
+      await loadConversations();
       setStreamingMessage("");
     } catch (error) {
       console.error('Error sending message:', error);
@@ -357,156 +415,185 @@ const ChatAgent = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-primary/20 bg-gradient-to-r from-background via-card to-background">
-        <div className="container max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/dashboard/agents')}
-                className="shrink-0"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              {agent.avatar_url && (
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-75"></div>
-                  <img
-                    src={agent.avatar_url}
-                    alt={agent.name}
-                    className="relative h-12 w-12 rounded-full object-cover border-2 border-primary/50"
+    <div className="flex h-screen bg-background">
+      {/* Sidebar - Desktop */}
+      {!isMobile && (
+        <ConversationSidebar
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onNewConversation={createNewConversation}
+          onSelectConversation={selectConversation}
+          onDeleteConversation={deleteConversation}
+          isOpen={sidebarOpen}
+          onToggle={() => setSidebarOpen(!sidebarOpen)}
+        />
+      )}
+
+      {/* Main Chat Area */}
+      <div className="flex flex-col flex-1 min-w-0">
+        {/* Header */}
+        <div className="border-b border-primary/20 bg-gradient-to-r from-background via-card to-background">
+          <div className="px-4 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                {/* Mobile sidebar trigger */}
+                {isMobile && (
+                  <ConversationSidebar
+                    conversations={conversations}
+                    currentConversationId={currentConversationId}
+                    onNewConversation={createNewConversation}
+                    onSelectConversation={selectConversation}
+                    onDeleteConversation={deleteConversation}
+                    isOpen={sidebarOpen}
+                    onToggle={() => setSidebarOpen(!sidebarOpen)}
+                    isMobile={true}
                   />
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/dashboard/agents')}
+                  className="shrink-0"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+                {agent.avatar_url && (
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-75"></div>
+                    <img
+                      src={agent.avatar_url}
+                      alt={agent.name}
+                      className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-primary/50"
+                    />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h1 className="text-base sm:text-lg font-semibold text-foreground truncate">{agent.name}</h1>
+                  <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Assistente Financeiro</p>
                 </div>
-              )}
-              <div>
-                <h1 className="text-lg font-semibold text-foreground">{agent.name}</h1>
-                <p className="text-sm text-muted-foreground">Assistente Financeiro</p>
               </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex flex-col items-center px-3 py-1.5 rounded-md border border-primary/30 bg-primary/10">
-                <span className="text-xs font-bold text-primary">100%</span>
-                <span className="text-[10px] text-primary/80">ATIVO</span>
-              </div>
-              <div className="flex flex-col items-center px-3 py-1.5 rounded-md border border-accent/30 bg-accent/10">
-                <span className="text-xs font-bold text-accent">24/7</span>
-                <span className="text-[10px] text-accent/80">ONLINE</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <StyleSelector
+                  selectedStyle={selectedStyle}
+                  onStyleChange={handleStyleChange}
+                  disabled={isSending}
+                />
+                <div className="hidden sm:flex flex-col items-center px-3 py-1.5 rounded-md border border-primary/30 bg-primary/10">
+                  <span className="text-xs font-bold text-primary">100%</span>
+                  <span className="text-[10px] text-primary/80">ATIVO</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 container max-w-4xl mx-auto px-4" ref={scrollRef}>
-        <div className="py-6 space-y-4">
-          {allMessages.length === 0 ? (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-semibold mb-2 text-foreground">
-                Olá! Sou {agent.name}
-              </h2>
-              <p className="text-muted-foreground">
-                {agent.description || "Como posso ajudar você hoje?"}
-              </p>
-            </div>
-          ) : (
-            allMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex gap-3 ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                {msg.writer === 'assistant' && agent.avatar_url && (
-                  <div className="relative shrink-0">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-60"></div>
-                    <img
-                      src={agent.avatar_url}
-                      alt={agent.name}
-                      className="relative h-10 w-10 rounded-full object-cover border-2 border-primary/40"
-                    />
-                  </div>
-                )}
+        {/* Messages */}
+        <ScrollArea className="flex-1 px-4" ref={scrollRef}>
+          <div className="max-w-4xl mx-auto py-6 space-y-4">
+            {allMessages.length === 0 ? (
+              <div className="text-center py-12">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-foreground">
+                  Olá! Sou {agent.name}
+                </h2>
+                <p className="text-muted-foreground">
+                  {agent.description || "Como posso ajudar você hoje?"}
+                </p>
+              </div>
+            ) : (
+              allMessages.map((msg) => (
                 <div
-                  className={`max-w-[75%] rounded-lg px-4 py-3 ${
-                    msg.writer === 'user'
-                      ? 'bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 text-foreground'
-                      : 'bg-gradient-to-br from-muted to-secondary border border-border/50 text-foreground'
-                  }`}
+                  key={msg.id}
+                  className={`flex gap-3 ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {msg.writer === 'assistant' ? (
-                    <div className="prose prose-sm prose-invert max-w-none">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          a: ({ node, ...props }) => (
-                            <a
-                              {...props}
-                              className="text-primary hover:text-primary/80 underline font-semibold"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            />
-                          ),
-                          h3: ({ node, ...props }) => (
-                            <h3 {...props} className="text-lg font-bold mt-4 mb-2" />
-                          ),
-                          hr: ({ node, ...props }) => (
-                            <hr {...props} className="my-4 border-border" />
-                          ),
-                          ul: ({ node, ...props }) => (
-                            <ul {...props} className="list-none space-y-1 my-2" />
-                          ),
-                          p: ({ node, ...props }) => (
-                            <p {...props} className="text-[0.875rem] leading-relaxed mb-2" />
-                          ),
-                        }}
-                      >
-                        {msg.message}
-                      </ReactMarkdown>
+                  {msg.writer === 'assistant' && agent.avatar_url && (
+                    <div className="relative shrink-0">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-60"></div>
+                      <img
+                        src={agent.avatar_url}
+                        alt={agent.name}
+                        className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-primary/40"
+                      />
                     </div>
-                  ) : (
-                    <p className="whitespace-pre-wrap break-words text-[0.875rem] leading-relaxed">{msg.message}</p>
+                  )}
+                  <div
+                    className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-4 py-3 ${
+                      msg.writer === 'user'
+                        ? 'bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 text-foreground'
+                        : 'bg-gradient-to-br from-muted to-secondary border border-border/50 text-foreground'
+                    }`}
+                  >
+                    {msg.writer === 'assistant' ? (
+                      <div className="prose prose-sm prose-invert max-w-none">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a
+                                {...props}
+                                className="text-primary hover:text-primary/80 underline font-semibold"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              />
+                            ),
+                            h3: ({ node, ...props }) => (
+                              <h3 {...props} className="text-lg font-bold mt-4 mb-2" />
+                            ),
+                            hr: ({ node, ...props }) => (
+                              <hr {...props} className="my-4 border-border" />
+                            ),
+                            ul: ({ node, ...props }) => (
+                              <ul {...props} className="list-none space-y-1 my-2" />
+                            ),
+                            p: ({ node, ...props }) => (
+                              <p {...props} className="text-[0.875rem] leading-relaxed mb-2" />
+                            ),
+                          }}
+                        >
+                          {msg.message}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="whitespace-pre-wrap break-words text-[0.875rem] leading-relaxed">{msg.message}</p>
+                    )}
+                  </div>
+                  {msg.writer === 'user' && (
+                    <div className="relative shrink-0">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent blur-sm opacity-60"></div>
+                      <div className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 border-2 border-primary/40 flex items-center justify-center">
+                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      </div>
+                    </div>
                   )}
                 </div>
-                {msg.writer === 'user' && (
-                  <div className="relative shrink-0">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent blur-sm opacity-60"></div>
-                    <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 border-2 border-primary/40 flex items-center justify-center">
-                      <User className="h-5 w-5 text-primary" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-      </ScrollArea>
+              ))
+            )}
+          </div>
+        </ScrollArea>
 
-      {/* Input */}
-      <div className="border-t bg-card">
-        <div className="container max-w-4xl mx-auto px-4 py-4">
-          <div className="flex gap-2">
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Digite sua mensagem..."
-              className="min-h-[60px] max-h-[200px] resize-none"
-              disabled={isSending}
-            />
-            <Button
-              onClick={sendMessage}
-              disabled={!input.trim() || isSending}
-              size="icon"
-              className="h-[60px] w-[60px]"
-            >
-              {isSending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-            </Button>
+        {/* Input */}
+        <div className="border-t bg-card">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <div className="flex gap-2">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Digite sua mensagem..."
+                className="min-h-[60px] max-h-[200px] resize-none"
+                disabled={isSending}
+              />
+              <Button
+                onClick={sendMessage}
+                disabled={!input.trim() || isSending}
+                className="shrink-0 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+              >
+                {isSending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

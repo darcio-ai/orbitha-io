@@ -76,6 +76,7 @@ export type Database = {
       agent_messages: {
         Row: {
           agent_id: string
+          conversation_id: string | null
           created_at: string
           id: string
           message: string
@@ -84,6 +85,7 @@ export type Database = {
         }
         Insert: {
           agent_id: string
+          conversation_id?: string | null
           created_at?: string
           id?: string
           message: string
@@ -92,6 +94,7 @@ export type Database = {
         }
         Update: {
           agent_id?: string
+          conversation_id?: string | null
           created_at?: string
           id?: string
           message?: string
@@ -111,6 +114,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -368,6 +378,51 @@ export type Database = {
           read?: boolean
         }
         Relationships: []
+      }
+      conversations: {
+        Row: {
+          agent_id: string
+          created_at: string
+          id: string
+          style: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          id?: string
+          style?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          id?: string
+          style?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agent_public_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       coupon_usage: {
         Row: {
