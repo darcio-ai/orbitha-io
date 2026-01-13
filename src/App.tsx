@@ -89,6 +89,11 @@ function AppRoutes() {
       <Route path="/assistentes/sales-assistant" element={<Navigate to="/assistentes/vendas" replace />} />
       <Route path="/assistentes/marketing-assistant" element={<Navigate to="/assistentes/marketing" replace />} />
       <Route path="/assistentes/support-assistant" element={<Navigate to="/assistentes/suporte" replace />} />
+      
+      {/* Redirects from singular Portuguese forms to plural */}
+      <Route path="/assistentes/viagem" element={<Navigate to="/assistentes/viagens" replace />} />
+      <Route path="/assistentes/venda" element={<Navigate to="/assistentes/vendas" replace />} />
+      
       <Route path="/demo/:assistantId" element={<DemoAssistant />} />
       <Route path="/blog" element={<><Header /><Blog /><Footer /><WhatsAppFloat /></>} />
       <Route path="/blog/:slug" element={<><Header /><BlogPost /><Footer /><WhatsAppFloat /></>} />
