@@ -6,7 +6,7 @@
   "scope": "/fitness",
   "display": "standalone",
   "background_color": "#0a0a0a",
-  "theme_color": "#22c55e",
+  "theme_color": "#6366f1",
   "orientation": "portrait",
   "icons": [
     {
