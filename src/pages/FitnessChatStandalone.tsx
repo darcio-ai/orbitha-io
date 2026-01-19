@@ -224,24 +224,33 @@ const FitnessChatStandalone = () => {
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      setConversations(data || []);
+      
+      const formattedData = data?.map(c => ({ ...c, style: c.style || 'normal' })) || [];
+      setConversations(formattedData);
 
-      // Always create new conversation on access
+      // Open last conversation if exists, otherwise create new
       if (!currentConversationId) {
-        const { data: newConv, error: createError } = await supabase
-          .from('conversations')
-          .insert({
-            user_id: userId,
-            agent_id: agent.id,
-            style: currentStyle,
-          })
-          .select()
-          .single();
+        if (formattedData.length > 0) {
+          // Select most recent conversation
+          setCurrentConversationId(formattedData[0].id);
+          setCurrentStyle(formattedData[0].style as CommunicationStyle || 'normal');
+        } else {
+          // Only create new if no conversations exist
+          const { data: newConv, error: createError } = await supabase
+            .from('conversations')
+            .insert({
+              user_id: userId,
+              agent_id: agent.id,
+              style: currentStyle,
+            })
+            .select()
+            .single();
 
-        if (!createError && newConv) {
-          const formattedConv = { ...newConv, style: newConv.style || 'normal' };
-          setConversations([formattedConv, ...(data?.map(c => ({ ...c, style: c.style || 'normal' })) || [])]);
-          setCurrentConversationId(formattedConv.id);
+          if (!createError && newConv) {
+            const formattedConv = { ...newConv, style: newConv.style || 'normal' };
+            setConversations([formattedConv]);
+            setCurrentConversationId(formattedConv.id);
+          }
         }
       }
     } catch (error) {
