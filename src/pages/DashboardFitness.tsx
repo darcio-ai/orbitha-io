@@ -286,12 +286,12 @@ const DashboardFitness = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Evolução Fitness</h1>
-        <p className="text-muted-foreground">Acompanhe seu progresso e métricas de saúde</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Evolução Fitness</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Acompanhe seu progresso e métricas de saúde</p>
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1">
@@ -302,13 +302,13 @@ const DashboardFitness = () => {
           <CardContent>
             {bmi ? (
               <>
-                <p className="text-2xl font-bold">{bmi}</p>
-                <p className={`text-sm ${getBMIStatus(parseFloat(bmi)).color}`}>
+                <p className="text-xl sm:text-2xl font-bold">{bmi}</p>
+                <p className={`text-xs sm:text-sm ${getBMIStatus(parseFloat(bmi)).color}`}>
                   {getBMIStatus(parseFloat(bmi)).label}
                 </p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">Configure altura e peso</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Configure altura e peso</p>
             )}
           </CardContent>
         </Card>
@@ -323,11 +323,11 @@ const DashboardFitness = () => {
           <CardContent>
             {bmr ? (
               <>
-                <p className="text-2xl font-bold">{bmr}</p>
-                <p className="text-sm text-muted-foreground">kcal/dia</p>
+                <p className="text-xl sm:text-2xl font-bold">{bmr}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">kcal/dia</p>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">Complete seu perfil</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Complete seu perfil</p>
             )}
           </CardContent>
         </Card>
@@ -342,16 +342,16 @@ const DashboardFitness = () => {
           <CardContent>
             {profile?.current_weight_kg ? (
               <>
-                <p className="text-2xl font-bold">{profile.current_weight_kg}kg</p>
+                <p className="text-xl sm:text-2xl font-bold">{profile.current_weight_kg}kg</p>
                 {trend && (
-                  <p className={`text-sm flex items-center gap-1 ${trend.color}`}>
+                  <p className={`text-xs sm:text-sm flex items-center gap-1 ${trend.color}`}>
                     <trend.icon className="h-3 w-3" />
-                    {trend.message}
+                    <span className="truncate">{trend.message}</span>
                   </p>
                 )}
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">Registre seu peso</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Registre seu peso</p>
             )}
           </CardContent>
         </Card>
@@ -366,42 +366,42 @@ const DashboardFitness = () => {
           <CardContent>
             {profile?.target_weight_kg ? (
               <>
-                <p className="text-2xl font-bold">{profile.target_weight_kg}kg</p>
+                <p className="text-xl sm:text-2xl font-bold">{profile.target_weight_kg}kg</p>
                 {profile?.current_weight_kg && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Faltam {Math.abs(profile.current_weight_kg - profile.target_weight_kg).toFixed(1)}kg
                   </p>
                 )}
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">Defina sua meta</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Defina sua meta</p>
             )}
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
         {/* Calorie Chart */}
         <Card>
-          <CardHeader>
-            <CardTitle>Consumo Calórico</CardTitle>
-            <CardDescription>Últimos 7 dias</CardDescription>
+          <CardHeader className="pb-2 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg">Consumo Calórico</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Últimos 7 dias</CardDescription>
           </CardHeader>
           <CardContent>
             {dailyCalories.some(d => d.calories > 0) ? (
-              <ChartContainer config={caloriesChartConfig} className="h-[200px]">
+              <ChartContainer config={caloriesChartConfig} className="h-[180px] sm:h-[200px]">
                 <BarChart data={dailyCalories}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="date" tickLine={false} axisLine={false} fontSize={12} />
-                  <YAxis tickLine={false} axisLine={false} fontSize={12} />
+                  <XAxis dataKey="date" tickLine={false} axisLine={false} fontSize={10} />
+                  <YAxis tickLine={false} axisLine={false} fontSize={10} width={35} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="calories" fill="var(--color-calories)" radius={4} />
                 </BarChart>
               </ChartContainer>
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                <p>Envie fotos de refeições para o assistente para registrar calorias</p>
+              <div className="h-[180px] sm:h-[200px] flex items-center justify-center text-muted-foreground px-4">
+                <p className="text-xs sm:text-sm text-center">Envie fotos de refeições para o assistente para registrar calorias</p>
               </div>
             )}
           </CardContent>
@@ -409,13 +409,13 @@ const DashboardFitness = () => {
 
         {/* Weight Evolution Chart */}
         <Card>
-          <CardHeader>
-            <CardTitle>Evolução do Peso</CardTitle>
-            <CardDescription>Histórico de pesagens</CardDescription>
+          <CardHeader className="pb-2 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg">Evolução do Peso</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Histórico de pesagens</CardDescription>
           </CardHeader>
           <CardContent>
             {weightHistory.length > 0 ? (
-              <ChartContainer config={weightChartConfig} className="h-[200px]">
+              <ChartContainer config={weightChartConfig} className="h-[180px] sm:h-[200px]">
                 <LineChart data={[...weightHistory].reverse().slice(-10)}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis 
@@ -425,13 +425,14 @@ const DashboardFitness = () => {
                     fontSize={10}
                     tickFormatter={(value) => {
                       const date = new Date(value);
-                      return `${date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })} ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                      return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
                     }}
                   />
                   <YAxis 
                     tickLine={false} 
                     axisLine={false} 
-                    fontSize={12}
+                    fontSize={10}
+                    width={35}
                     domain={['dataMin - 1', 'dataMax + 1']}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
@@ -445,8 +446,8 @@ const DashboardFitness = () => {
                 </LineChart>
               </ChartContainer>
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                <p>Registre seu peso para ver o histórico</p>
+              <div className="h-[180px] sm:h-[200px] flex items-center justify-center text-muted-foreground px-4">
+                <p className="text-xs sm:text-sm text-center">Registre seu peso para ver o histórico</p>
               </div>
             )}
           </CardContent>
@@ -454,17 +455,17 @@ const DashboardFitness = () => {
       </div>
 
       {/* Forms */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
         {/* Weight Registration */}
         <Card>
-          <CardHeader>
-            <CardTitle>Registrar Peso</CardTitle>
-            <CardDescription>Acompanhe sua evolução regularmente</CardDescription>
+          <CardHeader className="pb-2 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg">Registrar Peso</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Acompanhe sua evolução regularmente</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
               <div className="flex-1">
-                <Label htmlFor="weight">Peso (kg)</Label>
+                <Label htmlFor="weight" className="text-sm">Peso (kg)</Label>
                 <Input
                   id="weight"
                   type="number"
@@ -472,10 +473,11 @@ const DashboardFitness = () => {
                   placeholder="Ex: 75.5"
                   value={newWeight}
                   onChange={(e) => setNewWeight(e.target.value)}
+                  className="text-base"
                 />
               </div>
-              <div className="flex items-end">
-                <Button onClick={handleSaveWeight} disabled={saving || !newWeight}>
+              <div className="flex sm:items-end">
+                <Button onClick={handleSaveWeight} disabled={saving || !newWeight} className="w-full sm:w-auto">
                   {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar"}
                 </Button>
               </div>
@@ -485,24 +487,25 @@ const DashboardFitness = () => {
 
         {/* Profile Health Settings */}
         <Card>
-          <CardHeader>
-            <CardTitle>Configurações de Saúde</CardTitle>
-            <CardDescription>Dados para cálculo de IMC e TMB</CardDescription>
+          <CardHeader className="pb-2 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg">Configurações de Saúde</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Dados para cálculo de IMC e TMB</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="height">Altura (cm)</Label>
+                <Label htmlFor="height" className="text-sm">Altura (cm)</Label>
                 <Input
                   id="height"
                   type="number"
                   placeholder="Ex: 175"
                   value={heightCm}
                   onChange={(e) => setHeightCm(e.target.value)}
+                  className="text-base"
                 />
               </div>
               <div>
-                <Label htmlFor="target">Meta de Peso (kg)</Label>
+                <Label htmlFor="target" className="text-sm">Meta de Peso (kg)</Label>
                 <Input
                   id="target"
                   type="number"
@@ -510,23 +513,25 @@ const DashboardFitness = () => {
                   placeholder="Ex: 70"
                   value={targetWeight}
                   onChange={(e) => setTargetWeight(e.target.value)}
+                  className="text-base"
                 />
               </div>
               <div>
-                <Label htmlFor="age">Idade</Label>
+                <Label htmlFor="age" className="text-sm">Idade</Label>
                 <Input
                   id="age"
                   type="number"
                   placeholder="Ex: 30"
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
+                  className="text-base"
                 />
               </div>
               <div>
-                <Label htmlFor="gender">Sexo</Label>
+                <Label htmlFor="gender" className="text-sm">Sexo</Label>
                 <select
                   id="gender"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base"
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
                 >
