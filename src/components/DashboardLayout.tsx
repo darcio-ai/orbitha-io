@@ -98,7 +98,7 @@ const DashboardLayout = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen-dynamic">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
@@ -171,20 +171,20 @@ const DashboardLayout = () => {
   // Mobile Layout
   if (isMobile) {
     return (
-      <div className="flex flex-col min-h-screen bg-muted/10">
-        {/* Mobile Header */}
-        <header className="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
-          {/* Menu Hamburger */}
+      <div className="flex flex-col min-h-screen-dynamic bg-muted/10">
+        {/* Mobile Header - Compact 56px */}
+        <header className="bg-card border-b border-border px-3 h-14 flex items-center justify-between safe-top">
+          {/* Menu Hamburger - Touch friendly */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-11 w-11 touch-target">
+                <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-0">
               <div className="flex flex-col h-full">
                 {/* Header do Menu */}
-                <div className="p-4 border-b border-border">
+                <div className="p-4 border-b border-border safe-top">
                   <Link 
                     to="/" 
                     className="flex items-center space-x-3"
@@ -199,8 +199,8 @@ const DashboardLayout = () => {
                   </Link>
                 </div>
 
-                {/* Menu Items */}
-                <nav className="flex-1 p-4 space-y-2 overflow-auto">
+                {/* Menu Items - Touch friendly 48px height */}
+                <nav className="flex-1 p-3 space-y-1 overflow-auto mobile-scroll">
                   {visibleMenuItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.path;
@@ -210,31 +210,31 @@ const DashboardLayout = () => {
                         key={item.path}
                         to={item.path}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                        className={`flex items-center space-x-3 px-4 h-12 rounded-xl transition-colors touch-target ${
                           isActive
                             ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted text-foreground"
+                            : "hover:bg-muted text-foreground active:bg-muted/80"
                         }`}
                       >
                         <Icon className="h-5 w-5 shrink-0" />
-                        <span className="font-medium">{item.name}</span>
+                        <span className="font-medium text-base">{item.name}</span>
                       </Link>
                     );
                   })}
                 </nav>
 
-                {/* Logout no rodapé */}
-                <div className="p-4 border-t border-border">
+                {/* Logout no rodapé - Touch friendly */}
+                <div className="p-3 border-t border-border safe-bottom">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start h-12 touch-target"
                     onClick={() => {
                       setMobileMenuOpen(false);
                       handleLogout();
                     }}
                   >
                     <LogOut className="h-5 w-5 mr-3" />
-                    <span>Sair</span>
+                    <span className="text-base">Sair</span>
                   </Button>
                 </div>
               </div>
@@ -252,11 +252,11 @@ const DashboardLayout = () => {
           </Link>
 
           {/* Espaçador para centralizar logo */}
-          <div className="w-10" />
+          <div className="w-11" />
         </header>
 
         {/* Mobile Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto mobile-scroll">
           <Outlet />
         </main>
       </div>

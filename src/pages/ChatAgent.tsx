@@ -12,6 +12,7 @@ import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { StyleSelector, type CommunicationStyle } from "@/components/chat/StyleSelector";
 import { ImageUploadButton } from "@/components/chat/ImageUploadButton";
 import { useIsMobile } from "@/hooks/use-mobile";
+
 interface Message {
   id: string;
   message: string;
@@ -409,7 +410,7 @@ const ChatAgent = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen-dynamic">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -428,7 +429,7 @@ const ChatAgent = () => {
   }
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen-dynamic bg-background">
       {/* Sidebar - Desktop */}
       {!isMobile && (
         <ConversationSidebar
@@ -444,11 +445,11 @@ const ChatAgent = () => {
 
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Header */}
-        <div className="border-b border-primary/20 bg-gradient-to-r from-background via-card to-background">
-          <div className="px-4 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+        {/* Header - Compact on mobile */}
+        <div className="border-b border-primary/20 bg-gradient-to-r from-background via-card to-background safe-top">
+          <div className="px-3 py-3 sm:px-4 sm:py-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                 {/* Mobile sidebar trigger */}
                 {isMobile && (
                   <ConversationSidebar
@@ -466,26 +467,26 @@ const ChatAgent = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => navigate('/dashboard/agents')}
-                  className="shrink-0"
+                  className="shrink-0 h-10 w-10 touch-target"
                 >
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
                 {agent.avatar_url && (
-                  <div className="relative">
+                  <div className="relative shrink-0">
                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-75"></div>
                     <img
                       src={agent.avatar_url}
                       alt={agent.name}
-                      className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-primary/50"
+                      className="relative h-8 w-8 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-primary/50"
                     />
                   </div>
                 )}
                 <div className="min-w-0">
-                  <h1 className="text-base sm:text-lg font-semibold text-foreground truncate">{agent.name}</h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Assistente Financeiro</p>
+                  <h1 className="text-sm sm:text-lg font-semibold text-foreground truncate">{agent.name}</h1>
+                  <p className="text-xs text-muted-foreground hidden sm:block">Assistente Financeiro</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <StyleSelector
                   selectedStyle={selectedStyle}
                   onStyleChange={handleStyleChange}
@@ -501,14 +502,14 @@ const ChatAgent = () => {
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 px-4" ref={scrollRef}>
-          <div className="max-w-4xl mx-auto py-6 space-y-4">
+        <ScrollArea className="flex-1 px-3 sm:px-4 mobile-scroll" ref={scrollRef}>
+          <div className="max-w-4xl mx-auto py-4 sm:py-6 space-y-3 sm:space-y-4">
             {allMessages.length === 0 ? (
-              <div className="text-center py-12">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-2 text-foreground">
+              <div className="text-center py-8 sm:py-12 px-4">
+                <h2 className="text-lg sm:text-2xl font-semibold mb-2 text-foreground">
                   Olá! Sou {agent.name}
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {agent.description || "Como posso ajudar você hoje?"}
                 </p>
               </div>
@@ -516,7 +517,7 @@ const ChatAgent = () => {
               allMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex gap-3 ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex gap-2 sm:gap-3 ${msg.writer === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.writer === 'assistant' && agent.avatar_url && (
                     <div className="relative shrink-0">
@@ -524,12 +525,12 @@ const ChatAgent = () => {
                       <img
                         src={agent.avatar_url}
                         alt={agent.name}
-                        className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-primary/40"
+                        className="relative h-7 w-7 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-primary/40"
                       />
                     </div>
                   )}
                   <div
-                    className={`max-w-[85%] sm:max-w-[75%] rounded-lg px-4 py-3 ${
+                    className={`max-w-[88%] sm:max-w-[75%] rounded-xl sm:rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 ${
                       msg.writer === 'user'
                         ? 'bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 text-foreground'
                         : 'bg-gradient-to-br from-muted to-secondary border border-border/50 text-foreground'
@@ -549,7 +550,7 @@ const ChatAgent = () => {
                               />
                             ),
                             h3: ({ node, ...props }) => (
-                              <h3 {...props} className="text-lg font-bold mt-4 mb-2" />
+                              <h3 {...props} className="text-base sm:text-lg font-bold mt-4 mb-2" />
                             ),
                             hr: ({ node, ...props }) => (
                               <hr {...props} className="my-4 border-border" />
@@ -558,7 +559,7 @@ const ChatAgent = () => {
                               <ul {...props} className="list-none space-y-1 my-2" />
                             ),
                             p: ({ node, ...props }) => (
-                              <p {...props} className="text-[0.875rem] leading-relaxed mb-2" />
+                              <p {...props} className="text-[0.9375rem] sm:text-[0.875rem] leading-relaxed mb-2" />
                             ),
                           }}
                         >
@@ -566,14 +567,14 @@ const ChatAgent = () => {
                         </ReactMarkdown>
                       </div>
                     ) : (
-                      <p className="whitespace-pre-wrap break-words text-[0.875rem] leading-relaxed">{msg.message}</p>
+                      <p className="whitespace-pre-wrap break-words text-[0.9375rem] sm:text-[0.875rem] leading-relaxed">{msg.message}</p>
                     )}
                   </div>
                   {msg.writer === 'user' && (
                     <div className="relative shrink-0">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent blur-sm opacity-60"></div>
-                      <div className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 border-2 border-primary/40 flex items-center justify-center">
-                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                      <div className="relative h-7 w-7 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 border-2 border-primary/40 flex items-center justify-center">
+                        <User className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-primary" />
                       </div>
                     </div>
                   )}
@@ -583,9 +584,9 @@ const ChatAgent = () => {
           </div>
         </ScrollArea>
 
-        {/* Input */}
-        <div className="border-t bg-card">
-          <div className="max-w-4xl mx-auto px-4 py-4">
+        {/* Input - Optimized for mobile */}
+        <div className="border-t bg-card safe-bottom">
+          <div className="max-w-4xl mx-auto px-3 py-3 sm:px-4 sm:py-4">
             <div className="flex gap-2 items-end">
               {isFitnessAgent && (
                 <ImageUploadButton
@@ -598,14 +599,14 @@ const ChatAgent = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={isFitnessAgent ? "Digite ou envie foto da refeição..." : "Digite sua mensagem..."}
-                className="min-h-[60px] max-h-[200px] resize-none flex-1"
+                placeholder={isFitnessAgent ? "Digite ou envie foto..." : "Digite sua mensagem..."}
+                className="min-h-[48px] max-h-[120px] sm:max-h-[200px] resize-none flex-1 text-base rounded-xl"
                 disabled={isSending}
               />
               <Button
                 onClick={sendMessage}
                 disabled={(!input.trim() && !selectedImage) || isSending}
-                className="shrink-0 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                className="shrink-0 h-12 w-12 p-0 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 touch-target rounded-xl"
               >
                 {isSending ? (
                   <Loader2 className="h-5 w-5 animate-spin" />

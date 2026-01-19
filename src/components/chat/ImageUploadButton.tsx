@@ -107,7 +107,7 @@ export const ImageUploadButton = ({
   if (selectedImage) {
     return (
       <div className="relative inline-block">
-        <div className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-primary/50">
+        <div className="relative w-14 h-14 sm:w-12 sm:h-12 rounded-xl overflow-hidden border-2 border-primary/50">
           <img 
             src={selectedImage} 
             alt="Preview" 
@@ -116,9 +116,10 @@ export const ImageUploadButton = ({
           <button
             onClick={handleRemoveImage}
             disabled={disabled}
-            className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 hover:bg-destructive/90 transition-colors"
+            className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90 transition-colors touch-target"
+            style={{ minWidth: '24px', minHeight: '24px' }}
           >
-            <X className="h-3 w-3" />
+            <X className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -149,7 +150,7 @@ export const ImageUploadButton = ({
             variant="ghost"
             size="icon"
             disabled={disabled || isLoading}
-            className="shrink-0 text-muted-foreground hover:text-primary"
+            className="shrink-0 text-muted-foreground hover:text-primary h-12 w-12 touch-target rounded-xl"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -158,13 +159,13 @@ export const ImageUploadButton = ({
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={openCamera} className="gap-2">
-            <Camera className="h-4 w-4" />
+        <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuItem onClick={openCamera} className="gap-3 h-12 text-base touch-target">
+            <Camera className="h-5 w-5" />
             Tirar foto
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={openGallery} className="gap-2">
-            <ImageIcon className="h-4 w-4" />
+          <DropdownMenuItem onClick={openGallery} className="gap-3 h-12 text-base touch-target">
+            <ImageIcon className="h-5 w-5" />
             Escolher da galeria
           </DropdownMenuItem>
         </DropdownMenuContent>
