@@ -60,6 +60,7 @@ const ChatAgent = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [streamingMessage, setStreamingMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isThinking, setIsThinking] = useState(false);
 
   // Check if this is a fitness agent
   const isFitnessAgent = url ? FITNESS_AGENT_URLS.includes(url.toLowerCase()) : false;
@@ -162,9 +163,22 @@ const ChatAgent = () => {
       if (error) throw error;
       setConversations(data || []);
 
-      // Auto-select the most recent conversation or create new one
-      if (data && data.length > 0 && !currentConversationId) {
-        setCurrentConversationId(data[0].id);
+      // Sempre criar nova conversa ao acessar o chat
+      if (!currentConversationId) {
+        const { data: newConv, error: createError } = await supabase
+          .from('conversations')
+          .insert({
+            user_id: userId,
+            agent_id: agent.id,
+            style: 'normal',
+          })
+          .select()
+          .single();
+
+        if (!createError && newConv) {
+          setConversations([newConv, ...(data || [])]);
+          setCurrentConversationId(newConv.id);
+        }
       }
     } catch (error) {
       console.error('Error loading conversations:', error);
@@ -280,6 +294,7 @@ const ChatAgent = () => {
     setInput("");
     setSelectedImage(null);
     setIsSending(true);
+    setIsThinking(true);
     setStreamingMessage("");
 
     // Create conversation if none exists
@@ -374,6 +389,7 @@ const ChatAgent = () => {
             try {
               const parsed = JSON.parse(data);
               if (parsed.content) {
+                setIsThinking(false);
                 fullMessage += parsed.content;
                 
                 // Remove JSON blocks in real-time - both complete and incomplete
@@ -414,6 +430,7 @@ const ChatAgent = () => {
       });
     } finally {
       setIsSending(false);
+      setIsThinking(false);
     }
   };
 
@@ -423,6 +440,31 @@ const ChatAgent = () => {
       sendMessage();
     }
   };
+
+  const ThinkingIndicator = () => (
+    <div className="flex gap-2 sm:gap-3 justify-start">
+      {agent?.avatar_url && (
+        <div className="relative shrink-0">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-accent to-primary blur-sm opacity-60 animate-pulse"></div>
+          <img
+            src={agent.avatar_url}
+            alt={agent?.name}
+            className="relative h-7 w-7 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-primary/40"
+          />
+        </div>
+      )}
+      <div className="max-w-[88%] sm:max-w-[75%] rounded-xl sm:rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-br from-muted to-secondary border border-border/50">
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          </div>
+          <span className="text-sm text-muted-foreground">Pensando...</span>
+        </div>
+      </div>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -597,6 +639,7 @@ const ChatAgent = () => {
                 </div>
               ))
             )}
+            {isThinking && !streamingMessage && <ThinkingIndicator />}
           </div>
         </ScrollArea>
 
