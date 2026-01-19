@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User, BarChart3, Cpu, Ticket, Sparkles } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User, BarChart3, Cpu, Ticket, Sparkles, Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const DashboardLayout = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem("sidebarCollapsed");
@@ -168,14 +170,78 @@ const DashboardLayout = () => {
 
   // Mobile Layout
   if (isMobile) {
-    const mobileMenuItems = visibleMenuItems.filter(item => 
-      item.path === "/dashboard/agents-for-user" || item.path === "/dashboard/profile"
-    );
-
     return (
       <div className="flex flex-col min-h-screen bg-muted/10">
         {/* Mobile Header */}
         <header className="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+          {/* Menu Hamburger */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 p-0">
+              <div className="flex flex-col h-full">
+                {/* Header do Menu */}
+                <div className="p-4 border-b border-border">
+                  <Link 
+                    to="/" 
+                    className="flex items-center space-x-3"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <img 
+                      src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
+                      alt="Orbitha Logo" 
+                      className="w-8 h-8 object-contain"
+                    />
+                    <span className="text-xl font-bold">Orbitha</span>
+                  </Link>
+                </div>
+
+                {/* Menu Items */}
+                <nav className="flex-1 p-4 space-y-2 overflow-auto">
+                  {visibleMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.path;
+                    
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "hover:bg-muted text-foreground"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" />
+                        <span className="font-medium">{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+
+                {/* Logout no rodapé */}
+                <div className="p-4 border-t border-border">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    <LogOut className="h-5 w-5 mr-3" />
+                    <span>Sair</span>
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Logo central */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
               src="/lovable-uploads/3a01f0ad-7d48-4819-9887-c0f0d70eb3ee.png" 
@@ -185,37 +251,8 @@ const DashboardLayout = () => {
             <span className="text-lg font-bold">Orbitha</span>
           </Link>
 
-          {/* Mobile Navigation Tabs - Icons Only */}
-          <nav className="flex items-center gap-2">
-            {mobileMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center justify-center p-2.5 rounded-full transition-colors ${
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted text-muted-foreground"
-                  }`}
-                  title={item.name}
-                >
-                  <Icon className="h-5 w-5" />
-                </Link>
-              );
-            })}
-          </nav>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleLogout}
-            title="Sair"
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          {/* Espaçador para centralizar logo */}
+          <div className="w-10" />
         </header>
 
         {/* Mobile Content */}
