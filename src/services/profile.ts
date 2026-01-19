@@ -3,12 +3,21 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const syncUserProfile = async (user: User) => {
     const { id, email, user_metadata } = user;
-    const firstname = user_metadata?.firstname || user_metadata?.first_name || '';
-    const lastname = user_metadata?.lastname || user_metadata?.last_name || '';
-    const phone = user_metadata?.phone || '';
-    const whatsapp = user_metadata?.whatsapp || '';
 
-    // Prepare the payload using only columns that exist in profiles table
+    // 1. Fetch existing profile to preserve data
+    const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("firstname, lastname, phone, whatsapp, cpf_cnpj")
+        .eq("id", id)
+        .maybeSingle();
+
+    // 2. Prepare updates preserving existing data when new data is not available
+    const firstname = user_metadata?.firstname || user_metadata?.first_name || existingProfile?.firstname || '';
+    const lastname = user_metadata?.lastname || user_metadata?.last_name || existingProfile?.lastname || '';
+    const phone = user_metadata?.phone || existingProfile?.phone || '';
+    // IMPORTANT: Preserve existing whatsapp - don't overwrite with empty
+    const whatsapp = existingProfile?.whatsapp || user_metadata?.whatsapp || '';
+
     const updates = {
         id,
         email,
@@ -19,6 +28,7 @@ export const syncUserProfile = async (user: User) => {
     };
 
     console.log("Syncing profile for user:", id);
+    console.log("Existing profile:", existingProfile);
     console.log("Payload:", updates);
 
     const { error } = await supabase
