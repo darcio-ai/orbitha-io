@@ -518,17 +518,22 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity_level: string | null
           age: number | null
           asaas_customer_id: string | null
           beta_assistant_choice: string | null
           beta_expires_at: string | null
           beta_source: string | null
           billing_name: string | null
+          calorie_goal: number | null
           cpf_cnpj: string | null
           created_at: string
+          current_weight_kg: number | null
           email: string
           financial_goal: string | null
           firstname: string
+          gender: string | null
+          height_cm: number | null
           id: string
           is_beta_user: boolean | null
           last_seen_at: string | null
@@ -543,20 +548,26 @@ export type Database = {
           subscription_plan: string | null
           subscription_start_date: string | null
           subscription_status: string | null
+          target_weight_kg: number | null
           whatsapp: string
         }
         Insert: {
+          activity_level?: string | null
           age?: number | null
           asaas_customer_id?: string | null
           beta_assistant_choice?: string | null
           beta_expires_at?: string | null
           beta_source?: string | null
           billing_name?: string | null
+          calorie_goal?: number | null
           cpf_cnpj?: string | null
           created_at?: string
+          current_weight_kg?: number | null
           email: string
           financial_goal?: string | null
           firstname: string
+          gender?: string | null
+          height_cm?: number | null
           id: string
           is_beta_user?: boolean | null
           last_seen_at?: string | null
@@ -571,20 +582,26 @@ export type Database = {
           subscription_plan?: string | null
           subscription_start_date?: string | null
           subscription_status?: string | null
+          target_weight_kg?: number | null
           whatsapp?: string
         }
         Update: {
+          activity_level?: string | null
           age?: number | null
           asaas_customer_id?: string | null
           beta_assistant_choice?: string | null
           beta_expires_at?: string | null
           beta_source?: string | null
           billing_name?: string | null
+          calorie_goal?: number | null
           cpf_cnpj?: string | null
           created_at?: string
+          current_weight_kg?: number | null
           email?: string
           financial_goal?: string | null
           firstname?: string
+          gender?: string | null
+          height_cm?: number | null
           id?: string
           is_beta_user?: boolean | null
           last_seen_at?: string | null
@@ -599,6 +616,7 @@ export type Database = {
           subscription_plan?: string | null
           subscription_start_date?: string | null
           subscription_status?: string | null
+          target_weight_kg?: number | null
           whatsapp?: string
         }
         Relationships: []
@@ -703,6 +721,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_weight_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          recorded_at: string
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          recorded_at?: string
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          recorded_at?: string
+          user_id?: string
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_weight_history_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"

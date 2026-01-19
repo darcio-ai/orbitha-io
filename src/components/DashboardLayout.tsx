@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User, BarChart3, Cpu, Ticket, Sparkles, Menu } from "lucide-react";
+import { LogOut, LayoutDashboard, Users, Bot, PanelLeftClose, PanelLeftOpen, User, BarChart3, Cpu, Ticket, Sparkles, Menu, Dumbbell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -153,6 +153,12 @@ const DashboardLayout = () => {
       path: "/dashboard/agents-for-user",
       adminOnly: false,
       userOnly: true,
+    },
+    {
+      name: "Evolução Fitness",
+      icon: Dumbbell,
+      path: "/dashboard/fitness",
+      adminOnly: false,
     },
     {
       name: "Perfil",

@@ -375,8 +375,22 @@ const ChatAgent = () => {
               const parsed = JSON.parse(data);
               if (parsed.content) {
                 fullMessage += parsed.content;
-                // Remove JSON blocks in real-time to avoid showing code to user
-                const cleanMessage = fullMessage.replace(/```json\s*[\s\S]*?```\s*/g, '').trim();
+                
+                // Remove JSON blocks in real-time - both complete and incomplete
+                let cleanMessage = fullMessage.replace(/```json\s*[\s\S]*?```\s*/g, '').trim();
+                
+                // If there's an incomplete JSON block (opened but not closed), hide from that point
+                const incompleteJsonStart = cleanMessage.indexOf('```json');
+                if (incompleteJsonStart !== -1) {
+                  cleanMessage = cleanMessage.substring(0, incompleteJsonStart).trim();
+                }
+                
+                // Also handle if it starts with ``` without 'json' (variation)
+                const incompleteBlockStart = cleanMessage.indexOf('```');
+                if (incompleteBlockStart !== -1 && !cleanMessage.substring(incompleteBlockStart + 3).includes('```')) {
+                  cleanMessage = cleanMessage.substring(0, incompleteBlockStart).trim();
+                }
+                
                 setStreamingMessage(cleanMessage);
               }
             } catch (e) {

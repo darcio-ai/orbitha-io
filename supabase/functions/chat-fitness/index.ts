@@ -559,7 +559,10 @@ ${todayContext}`;
       { role: 'user', content: userContent }
     ];
 
-    const model = 'google/gemini-2.5-pro';
+    // Use faster model for image analysis, more robust for conversation
+    const model = imageBase64 
+      ? 'google/gemini-2.5-flash'  // 5x faster for images
+      : 'google/gemini-2.5-pro';   // Full power for conversations
     const startTime = Date.now();
     
     console.log('[chat-fitness] Request:', {

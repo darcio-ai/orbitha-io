@@ -47,6 +47,7 @@ import DashboardAnalytics from "./pages/DashboardAnalytics";
 import DashboardAIUsage from "./pages/DashboardAIUsage";
 import DashboardCoupons from "./pages/DashboardCoupons";
 import DashboardBetaUsers from "./pages/DashboardBetaUsers";
+import DashboardFitness from "./pages/DashboardFitness";
 import CompleteProfile from "./pages/CompleteProfile";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -126,6 +127,7 @@ function AppRoutes() {
         <Route path="coupons" element={<DashboardCoupons />} />
         <Route path="beta-users" element={<DashboardBetaUsers />} />
         <Route path="agents-for-user" element={<DashboardAgentsForUser />} />
+        <Route path="fitness" element={<DashboardFitness />} />
         <Route path="profile" element={<Profile />} />
         <Route path="appointments" element={<DashboardAppointments />} />
       </Route>

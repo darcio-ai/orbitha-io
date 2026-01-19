@@ -1,21 +1,20 @@
-import { Check, ShieldAlert, Dumbbell, Apple, HeartPulse, Sparkles, Activity } from "lucide-react";
+import { Check, ShieldAlert, Dumbbell, Apple, Sparkles, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import agenteFitness from "@/assets/agente_fitness.png";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { BetaActivationButton } from "@/components/BetaActivationButton";
 
 const FitnessAssistant = () => {
   const navigate = useNavigate();
 
-  const handleStartDemo = async () => {
+  const handleStartChat = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      navigate(`/login?redirectTo=${encodeURIComponent('/demo/fitness')}`);
+      navigate(`/login?redirectTo=${encodeURIComponent('/chat/fitness')}`);
     } else {
-      navigate('/demo/fitness');
+      navigate('/chat/fitness');
     }
   };
 
@@ -91,19 +90,13 @@ const FitnessAssistant = () => {
                   Seu coach de IA para treinos personalizados, nutrição educativa e hábitos saudáveis — do jeito que
                   cabe na sua vida.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
-                  <Button size="lg" className="text-lg" onClick={handleStartDemo}>
-                    Testar demo rápida
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button size="lg" className="text-lg" onClick={handleStartChat}>
+                    Começar Agora
                   </Button>
-                  <Button variant="outline" size="lg" className="text-lg" onClick={() => navigate("/pricing?focus=suite")}>
-                    Ver planos
+                  <Button variant="ghost" size="lg" className="text-lg" onClick={() => navigate("/quem-sou")}>
+                    Saiba mais
                   </Button>
-                  <BetaActivationButton
-                    assistantId="fitness"
-                    assistantName="Fitness"
-                    planType="life_balance"
-                    couponCode="BETANATAL-FIT"
-                  />
                 </div>
 
                 <p className="mt-4 text-sm text-muted-foreground">
@@ -218,8 +211,8 @@ const FitnessAssistant = () => {
               <p className="text-lg text-muted-foreground mb-6">
                 Diagnóstico rápido + treino personalizado + hábitos que sustentam resultados.
               </p>
-              <Button size="lg" className="text-lg" onClick={handleStartDemo}>
-                Testar demo rápida
+              <Button size="lg" className="text-lg" onClick={handleStartChat}>
+                Começar Agora
               </Button>
               <p className="mt-3 text-xs text-muted-foreground">
                 Conteúdo educativo • Ajustável à sua rotina • Sem promessas irreais
