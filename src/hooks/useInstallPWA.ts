@@ -9,19 +9,20 @@ export const useInstallPWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    // Only check if running in standalone mode (actually installed as PWA)
+    // Detect iOS
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(iOS);
+
+    // Check if running in standalone mode (actually installed as PWA)
     const checkInstalled = () => {
       // Check if running as installed PWA (standalone mode)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isIOSStandalone = (window.navigator as any).standalone === true;
       
-      // Also check if accessed from home screen on iOS
-      const isIOSPWA = isIOSStandalone || 
-        (window.navigator.userAgent.includes('Safari') && !window.navigator.userAgent.includes('Chrome') && isStandalone);
-      
-      setIsInstalled(isStandalone || isIOSPWA);
+      setIsInstalled(isStandalone || isIOSStandalone);
     };
     
     checkInstalled();
@@ -78,5 +79,6 @@ export const useInstallPWA = () => {
     canInstall,
     isInstalled,
     promptInstall,
+    isIOS,
   };
 };

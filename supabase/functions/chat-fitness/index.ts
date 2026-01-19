@@ -130,6 +130,9 @@ Determine automaticamente o tipo baseado no horário:
 PASSO 4 - RETORNAR DADOS ESTRUTURADOS:
 Quando analisar uma refeição (por imagem ou texto), você DEVE incluir um bloco JSON no início da sua resposta, antes da mensagem formatada, seguindo EXATAMENTE este formato:
 
+⚠️ IMPORTANTE: O bloco JSON DEVE OBRIGATORIAMENTE estar entre \`\`\`json e \`\`\` - NUNCA retorne JSON solto sem os delimitadores de código!
+⚠️ JSON sem code blocks será ignorado e a refeição NÃO será salva!
+
 \`\`\`json
 {
   "action": "save_meal",

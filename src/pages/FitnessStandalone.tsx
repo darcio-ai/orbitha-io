@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useInstallPWA } from "@/hooks/useInstallPWA";
 import { supabase } from "@/integrations/supabase/client";
-import { Download, MessageCircle, BarChart3, Dumbbell, LogOut, User } from "lucide-react";
+import { Download, MessageCircle, BarChart3, Dumbbell, LogOut, User, Share } from "lucide-react";
 import { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
 const FitnessStandalone = () => {
   const navigate = useNavigate();
-  const { canInstall, isInstalled, promptInstall } = useInstallPWA();
+  const { canInstall, isInstalled, promptInstall, isIOS } = useInstallPWA();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,6 +75,25 @@ const FitnessStandalone = () => {
     }
   };
 
+  // iOS Install Instructions Component
+  const IOSInstallInstructions = () => (
+    <div className="w-full p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+          <Share className="h-5 w-5 text-primary" />
+        </div>
+        <div className="space-y-2">
+          <p className="font-medium text-sm text-foreground">Instalar no iPhone/iPad</p>
+          <ol className="text-xs text-muted-foreground space-y-1">
+            <li>1. Toque no botão <span className="inline-flex items-center mx-1 px-1.5 py-0.5 rounded bg-muted"><Share className="h-3 w-3" /></span> (Compartilhar)</li>
+            <li>2. Role e toque em "Adicionar à Tela de Início"</li>
+            <li>3. Toque em "Adicionar" para confirmar</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/10 flex flex-col">
       {/* Header */}
@@ -130,6 +149,7 @@ const FitnessStandalone = () => {
 
           {/* Actions */}
           <div className="space-y-3 pt-4">
+            {/* Android/Chrome Install Button */}
             {canInstall && !isInstalled && (
               <Button
                 onClick={promptInstall}
@@ -139,6 +159,11 @@ const FitnessStandalone = () => {
                 <Download className="h-5 w-5" />
                 Instalar App
               </Button>
+            )}
+
+            {/* iOS Install Instructions */}
+            {isIOS && !isInstalled && !canInstall && (
+              <IOSInstallInstructions />
             )}
 
             {isInstalled && (
@@ -151,9 +176,9 @@ const FitnessStandalone = () => {
             <Button
               onClick={handleStartChat}
               size="lg"
-              variant={canInstall && !isInstalled ? "outline" : "default"}
+              variant={(canInstall || (isIOS && !isInstalled)) && !isInstalled ? "outline" : "default"}
               className={`w-full h-14 text-base gap-2 ${
-                !canInstall || isInstalled 
+                (!canInstall && !isIOS) || isInstalled 
                   ? "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground" 
                   : "border-primary/50 hover:bg-primary/10"
               }`}
