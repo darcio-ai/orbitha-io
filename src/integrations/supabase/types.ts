@@ -645,6 +645,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_meals: {
+        Row: {
+          created_at: string | null
+          date_only: string | null
+          datetime: string
+          id: string
+          items: Json
+          meal_name: string
+          month: string | null
+          total_calories: number
+          user_id: string
+          week_number: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_only?: string | null
+          datetime?: string
+          id?: string
+          items?: Json
+          meal_name: string
+          month?: string | null
+          total_calories: number
+          user_id: string
+          week_number?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          date_only?: string | null
+          datetime?: string
+          id?: string
+          items?: Json
+          meal_name?: string
+          month?: string | null
+          total_calories?: number
+          user_id?: string
+          week_number?: number | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -711,6 +750,24 @@ export type Database = {
       }
     }
     Functions: {
+      get_daily_summary: {
+        Args: { _date: string; _user_id: string }
+        Returns: {
+          meal_count: number
+          meals: Json
+          total_calories: number
+        }[]
+      }
+      get_monthly_summary: {
+        Args: { _month: string; _user_id: string }
+        Returns: {
+          avg_daily_calories: number
+          by_meal_type: Json
+          days_logged: number
+          meal_count: number
+          total_calories: number
+        }[]
+      }
       get_user_agents: {
         Args: never
         Returns: {
@@ -733,6 +790,15 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      get_weekly_summary: {
+        Args: { _user_id: string; _week: number; _year: number }
+        Returns: {
+          avg_daily_calories: number
+          days_logged: number
+          meal_count: number
+          total_calories: number
+        }[]
       }
       has_role: {
         Args: {
