@@ -166,19 +166,12 @@ const FitnessStandalone = () => {
               <IOSInstallInstructions />
             )}
 
-            {isInstalled && (
-              <div className="flex items-center justify-center gap-2 text-primary py-2">
-                <Download className="h-4 w-4" />
-                <span className="text-sm font-medium">App instalado!</span>
-              </div>
-            )}
-
             <Button
               onClick={handleStartChat}
               size="lg"
-              variant={(canInstall || (isIOS && !isInstalled)) && !isInstalled ? "outline" : "default"}
+              variant={canInstall && isMobile ? "outline" : "default"}
               className={`w-full h-14 text-base gap-2 ${
-                (!canInstall && !isIOS) || isInstalled 
+                !canInstall || !isMobile
                   ? "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground" 
                   : "border-primary/50 hover:bg-primary/10"
               }`}
