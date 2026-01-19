@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Bot } from "lucide-react";
+import { MessageSquare, Bot, ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -76,55 +76,65 @@ const DashboardAgentsForUser = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-8 min-h-[50vh]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  // Mobile Layout - Cards
+  // Mobile Layout - Cards otimizados
   if (isMobile) {
     return (
-      <div className="p-4 space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold">Meus Assistentes</h1>
+      <div className="p-4 space-y-5">
+        <div className="px-1">
+          <h1 className="text-xl font-bold">Meus Assistentes</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Assistentes de IA disponíveis para você
+            Assistentes de IA disponíveis
           </p>
         </div>
 
         {agents.length === 0 ? (
-          <div className="text-center py-12">
-            <Bot className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <div className="text-center py-16 px-4">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <Bot className="h-8 w-8 text-muted-foreground" />
+            </div>
             <h3 className="text-lg font-medium mb-2">Nenhum assistente disponível</h3>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm max-w-xs mx-auto">
               Você ainda não tem acesso a nenhum assistente. Entre em contato com o administrador.
             </p>
           </div>
         ) : (
           <div className="space-y-3">
             {agents.map((agent) => (
-              <div
+              <button
                 key={agent.id}
-                className="p-4 border rounded-lg bg-card flex items-center justify-between"
+                onClick={() => handleChat(agent.url)}
+                className="w-full p-4 border rounded-xl bg-card flex items-center justify-between gap-3 active:bg-muted/50 transition-colors touch-target"
               >
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
+                <div className="flex items-center gap-4 min-w-0">
+                  <Avatar className="h-12 w-12 shrink-0">
                     <AvatarImage src={agent.avatar_url || undefined} />
-                    <AvatarFallback>
+                    <AvatarFallback className="text-base">
                       {agent.name.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="font-medium">{agent.name}</span>
+                  <div className="text-left min-w-0">
+                    <span className="font-semibold text-base block truncate">{agent.name}</span>
+                    {agent.description && (
+                      <span className="text-sm text-muted-foreground block truncate">
+                        {agent.description}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <Button
-                  size="sm"
-                  onClick={() => handleChat(agent.url)}
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Conversar
-                </Button>
-              </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-lg">
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-sm font-medium">Conversar</span>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </div>
+              </button>
             ))}
           </div>
         )}
