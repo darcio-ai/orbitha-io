@@ -24,6 +24,9 @@ verify_jwt = true
 [functions.chat-agent]
 verify_jwt = true
 
+[functions.chat-fitness]
+verify_jwt = true
+
 [functions.demo-chat]
 verify_jwt = false
 
