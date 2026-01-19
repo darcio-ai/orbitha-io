@@ -16,6 +16,53 @@ function calculateCost(model: string, promptTokens: number, completionTokens: nu
   return (promptTokens * pricing.input + completionTokens * pricing.output) / 1_000_000;
 }
 
+// Calculate daily calorie goal based on profile data
+function calculateDailyCalorieGoal(
+  weight: number,
+  height: number,
+  age: number,
+  gender: string,
+  activityLevel: string,
+  targetWeight: number | null
+): { bmr: number; tdee: number; goal: number; explanation: string } {
+  // Mifflin-St Jeor Equation
+  const bmr = gender === 'male'
+    ? (10 * weight) + (6.25 * height) - (5 * age) + 5
+    : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+
+  // Activity multipliers
+  const multipliers: Record<string, number> = {
+    'sedentario': 1.2,
+    'leve': 1.375,
+    'moderado': 1.55,
+    'intenso': 1.725,
+    'muito_intenso': 1.9
+  };
+
+  const multiplier = multipliers[activityLevel] || 1.375;
+  const tdee = Math.round(bmr * multiplier);
+
+  // Adjust for goal
+  let goal = tdee;
+  let explanation = '';
+
+  if (targetWeight && targetWeight !== weight) {
+    if (targetWeight < weight) {
+      // Deficit for weight loss (500 kcal = ~0.5kg/week)
+      goal = tdee - 500;
+      explanation = `Déficit de 500 kcal para perda de ~0.5kg/semana`;
+    } else {
+      // Surplus for weight gain (300 kcal = ~0.3kg/week)
+      goal = tdee + 300;
+      explanation = `Superávit de 300 kcal para ganho de massa`;
+    }
+  } else {
+    explanation = `Manutenção de peso`;
+  }
+
+  return { bmr: Math.round(bmr), tdee, goal, explanation };
+}
+
 // Full fitness assistant system prompt
 const FITNESS_SYSTEM_PROMPT = `Você é o Assistente Fitness da Orbitha - especialista em treino, nutrição e acompanhamento nutricional com análise de refeições por imagem.
 
@@ -267,6 +314,59 @@ SINAIS DE ALERTA (sugira ajuda profissional):
 - Exercício excessivo compensatório
 
 ═══════════════════════════════════════════════════════════
+🎯 PLANOS PERSONALIZADOS E COLETA DE DADOS
+═══════════════════════════════════════════════════════════
+
+Quando o usuário solicitar plano personalizado (emagrecer, ganhar massa, dieta, plano alimentar):
+
+SE NÃO TIVER DADOS DE SAÚDE no contexto:
+1. Pergunte de forma amigável as informações necessárias:
+   "Para criar um plano personalizado, preciso de algumas informações:
+   📏 Qual sua altura (em cm)?
+   ⚖️ Qual seu peso atual (em kg)?
+   🎯 Qual seu peso objetivo (em kg)?
+   🗓️ Qual sua idade?
+   👤 Você é homem ou mulher?
+   🏃 Qual seu nível de atividade? (sedentário, leve, moderado, intenso)"
+
+2. Após receber as informações, retorne JSON para salvar:
+
+\`\`\`json
+{
+  "action": "save_profile",
+  "height_cm": 175,
+  "current_weight_kg": 85,
+  "target_weight_kg": 70,
+  "age": 32,
+  "gender": "male",
+  "activity_level": "moderado"
+}
+\`\`\`
+
+E depois apresente os cálculos e o plano.
+
+Níveis de atividade aceitos:
+- sedentario: trabalho de escritório, sem exercício
+- leve: exercício 1-3x/semana
+- moderado: exercício 3-5x/semana
+- intenso: exercício 6-7x/semana
+- muito_intenso: atleta, 2x/dia
+
+SE JÁ TIVER DADOS DE SAÚDE:
+- Use os cálculos automáticos fornecidos no contexto (TMB, TDEE, Meta)
+- Apresente os valores calculados
+- Crie plano baseado na meta calórica
+
+QUANDO USUÁRIO INFORMAR PESO ATUAL (ex: "hoje estou com 84kg", "peso 83.5"):
+Retorne JSON para registrar no histórico:
+\`\`\`json
+{
+  "action": "save_weight",
+  "weight_kg": 84.5
+}
+\`\`\`
+
+═══════════════════════════════════════════════════════════
 🎯 ONBOARDING (PRIMEIRA INTERAÇÃO)
 ═══════════════════════════════════════════════════════════
 
@@ -429,10 +529,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get user profile
+    // Get user profile with health data
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('plan, firstname, lastname')
+      .select('plan, firstname, lastname, height_cm, current_weight_kg, target_weight_kg, calorie_goal, activity_level, gender, age')
       .eq('id', userId)
       .single();
 
@@ -445,6 +545,53 @@ Deno.serve(async (req) => {
     }
 
     const userName = `${profile.firstname} ${profile.lastname}`.trim();
+
+    // Build health info context
+    const hasHealthData = profile.height_cm && profile.current_weight_kg && profile.age && profile.gender;
+    let healthInfo = '';
+    let calorieContext = '';
+
+    if (hasHealthData) {
+      healthInfo = `
+DADOS DE SAÚDE DO USUÁRIO:
+- Altura: ${profile.height_cm}cm
+- Peso atual: ${profile.current_weight_kg}kg
+- Peso objetivo: ${profile.target_weight_kg || 'não definido'}kg
+- Nível de atividade: ${profile.activity_level || 'leve'}
+- Gênero: ${profile.gender === 'male' ? 'masculino' : 'feminino'}
+- Idade: ${profile.age} anos`;
+
+      // Calculate TDEE and calorie goal
+      const calc = calculateDailyCalorieGoal(
+        profile.current_weight_kg!,
+        profile.height_cm!,
+        profile.age!,
+        profile.gender!,
+        profile.activity_level || 'leve',
+        profile.target_weight_kg
+      );
+
+      const bmi = profile.current_weight_kg! / Math.pow(profile.height_cm! / 100, 2);
+      let bmiStatus = 'Peso normal';
+      if (bmi < 18.5) bmiStatus = 'Abaixo do peso';
+      else if (bmi >= 25 && bmi < 30) bmiStatus = 'Sobrepeso';
+      else if (bmi >= 30) bmiStatus = 'Obesidade';
+
+      calorieContext = `
+CÁLCULOS AUTOMÁTICOS (use esses valores):
+- IMC: ${bmi.toFixed(1)} (${bmiStatus})
+- Taxa Metabólica Basal (TMB): ${calc.bmr} kcal/dia
+- Gasto Diário Total (TDEE): ${calc.tdee} kcal/dia
+- Meta Calórica Recomendada: ${calc.goal} kcal/dia (${calc.explanation})`;
+
+      // Auto-update calorie_goal if not set
+      if (!profile.calorie_goal) {
+        await supabase.from('profiles').update({ calorie_goal: calc.goal }).eq('id', userId);
+        console.log('[chat-fitness] Auto-calculated calorie goal:', calc.goal);
+      }
+    } else {
+      healthInfo = '\n⚠️ DADOS DE SAÚDE NÃO PREENCHIDOS - Pergunte altura, peso atual, idade, gênero e nível de atividade quando o usuário pedir plano alimentar ou cálculos personalizados.';
+    }
 
     // Update last_seen_at
     await supabase
@@ -534,7 +681,15 @@ ${styleInstruction}
 INFORMAÇÕES DO USUÁRIO:
 - Nome: ${userName}
 - Horário atual: ${currentTime} (use para classificar o tipo de refeição)
-${todayContext}`;
+${healthInfo}
+${calorieContext}
+${todayContext}
+
+REGRAS IMPORTANTES SOBRE DADOS DO USUÁRIO:
+1. Se o usuário pedir plano alimentar/treino e NÃO tiver dados de saúde preenchidos, PERGUNTE as informações e depois retorne action save_profile
+2. Se os dados JÁ estiverem preenchidos, USE-OS diretamente sem perguntar novamente
+3. Quando o usuário informar seu peso atual (ex: "estou com 84kg hoje"), retorne action save_weight
+4. Compare o consumo do dia com a meta calórica calculada automaticamente`;
 
     // Build message content (multimodal if image provided)
     let userContent: any;
@@ -655,32 +810,93 @@ ${todayContext}`;
             }
           }
 
-          // Parse and save meal if AI returned structured data
+          // Parse and save data if AI returned structured data
           if (fullResponse) {
             // Extract JSON block from response
             const jsonMatch = fullResponse.match(/```json\s*([\s\S]*?)\s*```/);
             if (jsonMatch) {
               try {
-                const mealData = JSON.parse(jsonMatch[1]);
-                if (mealData.action === 'save_meal' && mealData.items && mealData.total_calories) {
-                  // Save meal to user_meals table
+                const actionData = JSON.parse(jsonMatch[1]);
+                
+                // Handle save_meal action
+                if (actionData.action === 'save_meal' && actionData.items && actionData.total_calories) {
                   const { error: mealError } = await supabase
                     .from('user_meals')
                     .insert({
                       user_id: userId,
-                      meal_name: mealData.meal_name || 'refeição',
-                      items: mealData.items,
-                      total_calories: Math.round(mealData.total_calories),
+                      meal_name: actionData.meal_name || 'refeição',
+                      items: actionData.items,
+                      total_calories: Math.round(actionData.total_calories),
                     });
 
                   if (mealError) {
                     console.error('[chat-fitness] Error saving meal:', mealError);
                   } else {
-                    console.log('[chat-fitness] Meal saved:', mealData.meal_name, mealData.total_calories, 'kcal');
+                    console.log('[chat-fitness] Meal saved:', actionData.meal_name, actionData.total_calories, 'kcal');
+                  }
+                }
+
+                // Handle save_profile action - sync data from chat to profile
+                if (actionData.action === 'save_profile') {
+                  const profileUpdates: Record<string, any> = {};
+                  if (actionData.height_cm) profileUpdates.height_cm = actionData.height_cm;
+                  if (actionData.current_weight_kg) profileUpdates.current_weight_kg = actionData.current_weight_kg;
+                  if (actionData.target_weight_kg) profileUpdates.target_weight_kg = actionData.target_weight_kg;
+                  if (actionData.age) profileUpdates.age = actionData.age;
+                  if (actionData.gender) profileUpdates.gender = actionData.gender;
+                  if (actionData.activity_level) profileUpdates.activity_level = actionData.activity_level;
+
+                  if (Object.keys(profileUpdates).length > 0) {
+                    // Calculate and set calorie goal automatically
+                    if (profileUpdates.current_weight_kg && profileUpdates.height_cm && profileUpdates.age && profileUpdates.gender) {
+                      const calc = calculateDailyCalorieGoal(
+                        profileUpdates.current_weight_kg,
+                        profileUpdates.height_cm,
+                        profileUpdates.age,
+                        profileUpdates.gender,
+                        profileUpdates.activity_level || 'leve',
+                        profileUpdates.target_weight_kg || null
+                      );
+                      profileUpdates.calorie_goal = calc.goal;
+                    }
+
+                    const { error: profileError } = await supabase
+                      .from('profiles')
+                      .update(profileUpdates)
+                      .eq('id', userId);
+
+                    if (profileError) {
+                      console.error('[chat-fitness] Error saving profile:', profileError);
+                    } else {
+                      console.log('[chat-fitness] Profile updated from chat:', profileUpdates);
+                    }
+                  }
+                }
+
+                // Handle save_weight action - record weight in history
+                if (actionData.action === 'save_weight' && actionData.weight_kg) {
+                  // Insert into weight history
+                  const { error: weightHistoryError } = await supabase
+                    .from('user_weight_history')
+                    .insert({
+                      user_id: userId,
+                      weight_kg: actionData.weight_kg,
+                      recorded_at: new Date().toISOString()
+                    });
+
+                  if (weightHistoryError) {
+                    console.error('[chat-fitness] Error saving weight history:', weightHistoryError);
+                  } else {
+                    // Also update current_weight_kg in profile
+                    await supabase
+                      .from('profiles')
+                      .update({ current_weight_kg: actionData.weight_kg })
+                      .eq('id', userId);
+                    console.log('[chat-fitness] Weight saved:', actionData.weight_kg, 'kg');
                   }
                 }
               } catch (parseError) {
-                console.error('[chat-fitness] Error parsing meal JSON:', parseError);
+                console.error('[chat-fitness] Error parsing action JSON:', parseError);
               }
             }
 
