@@ -10,23 +10,35 @@ const FitnessDashboardStandalone = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session?.user) {
+          localStorage.setItem('fitness-redirect', '/fitness/dashboard');
+          navigate("/login");
+          return;
+        }
+        setIsLoading(false);
+      }
+    );
 
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      localStorage.setItem('fitness-redirect', '/fitness/dashboard');
-      navigate("/login");
-      return;
-    }
-    setIsLoading(false);
-  };
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) {
+        localStorage.setItem('fitness-redirect', '/fitness/dashboard');
+        navigate("/login");
+        return;
+      }
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -47,8 +59,8 @@ const FitnessDashboardStandalone = () => {
             </Button>
             
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                <Dumbbell className="h-4 w-4 text-white" />
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                <Dumbbell className="h-4 w-4 text-primary-foreground" />
               </div>
               <span className="font-semibold text-sm sm:text-base">Meu Progresso</span>
             </div>

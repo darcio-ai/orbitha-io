@@ -51,8 +51,31 @@ const FitnessChatStandalone = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session?.user) {
+          localStorage.setItem('fitness-redirect', '/fitness/chat');
+          navigate("/login");
+          return;
+        }
+        setUserId(session.user.id);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) {
+        localStorage.setItem('fitness-redirect', '/fitness/chat');
+        navigate("/login");
+        return;
+      }
+      setUserId(session.user.id);
+      loadAgent();
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   useEffect(() => {
     if (agent && userId) {
@@ -69,17 +92,6 @@ const FitnessChatStandalone = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, streamingMessage]);
-
-  const checkAuth = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      localStorage.setItem('fitness-redirect', '/fitness/chat');
-      navigate("/login");
-      return;
-    }
-    setUserId(user.id);
-    await loadAgent();
-  };
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -439,8 +451,8 @@ const FitnessChatStandalone = () => {
             </Button>
             
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                <Dumbbell className="h-4 w-4 text-white" />
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                <Dumbbell className="h-4 w-4 text-primary-foreground" />
               </div>
               <span className="font-semibold text-sm sm:text-base">Fitness Coach</span>
             </div>
@@ -479,8 +491,8 @@ const FitnessChatStandalone = () => {
             <div className="max-w-3xl mx-auto space-y-4">
               {messages.length === 0 && !streamingMessage && (
                 <div className="text-center py-12">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-600/20 flex items-center justify-center mb-4">
-                    <Dumbbell className="h-8 w-8 text-green-500" />
+                  <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4">
+                    <Dumbbell className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-lg font-medium mb-2">Olá! Sou seu Fitness Coach</h3>
                   <p className="text-muted-foreground text-sm max-w-md mx-auto">
@@ -506,7 +518,7 @@ const FitnessChatStandalone = () => {
                   <div
                     className={`max-w-[88%] sm:max-w-[75%] rounded-xl sm:rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 ${
                       message.writer === "user"
-                        ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white"
+                        ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground"
                         : "bg-muted"
                     }`}
                   >
@@ -581,7 +593,7 @@ const FitnessChatStandalone = () => {
                   onClick={sendMessage}
                   disabled={isSending || (!input.trim() && !selectedImage)}
                   size="icon"
-                  className="shrink-0 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  className="shrink-0 bg-gradient-to-br from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                 >
                   {isSending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
