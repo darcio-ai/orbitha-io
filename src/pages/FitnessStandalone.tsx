@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 const FitnessStandalone = () => {
   const navigate = useNavigate();
-  const { canInstall, isInstalled, promptInstall, isIOS } = useInstallPWA();
+  const { canInstall, isInstalled, promptInstall, isIOS, isMobile } = useInstallPWA();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,8 +149,8 @@ const FitnessStandalone = () => {
 
           {/* Actions */}
           <div className="space-y-3 pt-4">
-            {/* Android/Chrome Install Button */}
-            {canInstall && !isInstalled && (
+            {/* Android/Chrome Install Button - Only show on mobile */}
+            {canInstall && !isInstalled && isMobile && (
               <Button
                 onClick={promptInstall}
                 size="lg"
@@ -161,8 +161,8 @@ const FitnessStandalone = () => {
               </Button>
             )}
 
-            {/* iOS Install Instructions */}
-            {isIOS && !isInstalled && !canInstall && (
+            {/* iOS Install Instructions - Only show on mobile iOS */}
+            {isIOS && !isInstalled && !canInstall && isMobile && (
               <IOSInstallInstructions />
             )}
 

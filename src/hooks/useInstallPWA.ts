@@ -10,8 +10,23 @@ export const useInstallPWA = () => {
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Detect mobile devices via userAgent and screen width
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobileDevice = mobileRegex.test(navigator.userAgent);
+    const isSmallScreen = window.innerWidth <= 768;
+    setIsMobile(isMobileDevice || isSmallScreen);
+
+    // Listen for resize to update mobile status
+    const handleResize = () => {
+      const isSmall = window.innerWidth <= 768;
+      const isMobileUA = mobileRegex.test(navigator.userAgent);
+      setIsMobile(isMobileUA || isSmall);
+    };
+    window.addEventListener('resize', handleResize);
+
     // Detect iOS
     const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(iOS);
@@ -50,6 +65,7 @@ export const useInstallPWA = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
       mediaQuery.removeEventListener('change', handleDisplayModeChange);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
@@ -80,5 +96,6 @@ export const useInstallPWA = () => {
     isInstalled,
     promptInstall,
     isIOS,
+    isMobile,
   };
 };

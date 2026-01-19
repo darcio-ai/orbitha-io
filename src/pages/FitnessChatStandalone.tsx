@@ -37,7 +37,7 @@ interface DailySummary {
 
 const FITNESS_AGENT_URL = "fitness";
 
-// Function to clean JSON from messages
+// Function to clean JSON from messages - more robust patterns
 const cleanJsonFromMessage = (text: string): string => {
   let cleaned = text;
   
@@ -47,17 +47,23 @@ const cleanJsonFromMessage = (text: string): string => {
   // Remove incomplete ```json blocks
   cleaned = cleaned.replace(/```json[\s\S]*/g, '');
   
-  // Remove JSON objects with "action": "save_meal" pattern
-  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"save_\w+"[\s\S]*?\}\s*\}/g, '');
+  // Remove JSON objects with meal_name/items/total_calories (multiline, more flexible)
+  cleaned = cleaned.replace(/\{\s*"(?:action|meal_name)"[^{}]*"items"\s*:\s*\[[\s\S]*?\][^{}]*"total_calories"\s*:\s*\d+[^{}]*\}/g, '');
   
-  // Remove JSON objects with meal_name pattern
-  cleaned = cleaned.replace(/\{\s*"meal_name"[\s\S]*?"total_calories"\s*:\s*\d+\s*\}/g, '');
+  // Remove JSON objects with "action": "save_meal" pattern (nested)
+  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"save_meal"[\s\S]*?\]\s*,?\s*"total_calories"\s*:\s*\d+\s*\}/g, '');
   
-  // Remove standalone JSON objects (starts with { and ends with })
-  cleaned = cleaned.replace(/^\s*\{[\s\S]*?"action"[\s\S]*?\}\s*$/gm, '');
+  // Remove JSON with action: save_profile (can be multiline)
+  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"save_profile"[\s\S]*?\}/g, '');
   
-  // Remove JSON with action: save_profile or save_weight
-  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"(save_profile|save_weight)"[\s\S]*?\}/g, '');
+  // Remove JSON with action: save_weight
+  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"save_weight"[\s\S]*?\}/g, '');
+  
+  // Remove any remaining standalone JSON objects that look like actions
+  cleaned = cleaned.replace(/^\s*\{[^{}]*"action"[^{}]*\}\s*$/gm, '');
+  
+  // Remove lines that are only JSON fragments (brackets, commas, numbers)
+  cleaned = cleaned.replace(/^\s*[\[\]{},"\d:]+\s*$/gm, '');
   
   // Clean up multiple newlines
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
