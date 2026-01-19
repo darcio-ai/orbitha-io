@@ -815,14 +815,54 @@ REGRAS IMPORTANTES SOBRE DADOS DO USUÁRIO:
 
           // Parse and save data if AI returned structured data
           if (fullResponse) {
-            // Extract JSON block from response
-            const jsonMatch = fullResponse.match(/```json\s*([\s\S]*?)\s*```/);
-            if (jsonMatch) {
+            let actionData = null;
+            
+            // 1. Try to extract JSON from code block ```json ... ```
+            const jsonBlockMatch = fullResponse.match(/```json\s*([\s\S]*?)\s*```/);
+            if (jsonBlockMatch) {
               try {
-                const actionData = JSON.parse(jsonMatch[1]);
+                actionData = JSON.parse(jsonBlockMatch[1]);
+                console.log('[chat-fitness] JSON found in code block');
+              } catch (e) {
+                console.error('[chat-fitness] Parse error from code block:', e);
+              }
+            }
+            
+            // 2. If not found, try to extract loose meal JSON (with meal_name, items, total_calories)
+            if (!actionData) {
+              const looseMealMatch = fullResponse.match(/\{\s*"(?:action|meal_name)"[^{}]*"items"\s*:\s*\[[\s\S]*?\][^{}]*"total_calories"\s*:\s*\d+[^{}]*\}/);
+              if (looseMealMatch) {
+                try {
+                  actionData = JSON.parse(looseMealMatch[0]);
+                  console.log('[chat-fitness] Loose meal JSON found in response');
+                } catch (e) {
+                  console.error('[chat-fitness] Parse error from loose meal JSON:', e);
+                }
+              }
+            }
+            
+            // 3. If still not found, try to extract loose action JSON (save_profile or save_weight)
+            if (!actionData) {
+              const looseActionMatch = fullResponse.match(/\{\s*"action"\s*:\s*"(save_profile|save_weight)"[\s\S]*?\}/);
+              if (looseActionMatch) {
+                try {
+                  actionData = JSON.parse(looseActionMatch[0]);
+                  console.log('[chat-fitness] Loose action JSON found in response');
+                } catch (e) {
+                  console.error('[chat-fitness] Parse error from loose action JSON:', e);
+                }
+              }
+            }
+            
+            // Process action data if found
+            if (actionData) {
+              try {
+                // Handle save_meal action - don't require "action" if has meal_name + items + total_calories
+                const isMealData = (actionData.action === 'save_meal' || actionData.meal_name) 
+                                   && actionData.items 
+                                   && actionData.total_calories;
                 
-                // Handle save_meal action
-                if (actionData.action === 'save_meal' && actionData.items && actionData.total_calories) {
+                if (isMealData) {
                   const { error: mealError } = await supabase
                     .from('user_meals')
                     .insert({
@@ -899,7 +939,7 @@ REGRAS IMPORTANTES SOBRE DADOS DO USUÁRIO:
                   }
                 }
               } catch (parseError) {
-                console.error('[chat-fitness] Error parsing action JSON:', parseError);
+                console.error('[chat-fitness] Error processing action data:', parseError);
               }
             }
 

@@ -102,7 +102,19 @@ const DashboardFitness = () => {
 
       if (mealsData) {
         const caloriesByDay = last7Days.map(date => {
-          const dayMeals = mealsData.filter(m => m.date_only === date);
+          // Normalize date comparison to handle different date formats from Supabase
+          const dayMeals = mealsData.filter(m => {
+            if (!m.date_only) return false;
+            // Normalize date_only to YYYY-MM-DD string format
+            let mealDate: string;
+            if (typeof m.date_only === 'string') {
+              // Could come as "2026-01-19" or "2026-01-19T00:00:00"
+              mealDate = m.date_only.split('T')[0];
+            } else {
+              mealDate = new Date(m.date_only).toISOString().split('T')[0];
+            }
+            return mealDate === date;
+          });
           const totalCalories = dayMeals.reduce((sum, m) => sum + (m.total_calories || 0), 0);
           return {
             date: new Date(date).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' }),
