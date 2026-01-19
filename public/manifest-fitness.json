@@ -1,0 +1,19 @@
+{
+  "name": "Fitness Coach by Orbitha",
+  "short_name": "Fitness Coach",
+  "description": "Seu coach de IA para treinos, nutrição e hábitos saudáveis",
+  "start_url": "/fitness",
+  "scope": "/fitness",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#22c55e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/agents/agente_fitness.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

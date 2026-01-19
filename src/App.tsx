@@ -49,6 +49,9 @@ import DashboardCoupons from "./pages/DashboardCoupons";
 import DashboardBetaUsers from "./pages/DashboardBetaUsers";
 import DashboardFitness from "./pages/DashboardFitness";
 import CompleteProfile from "./pages/CompleteProfile";
+import FitnessStandalone from "./pages/FitnessStandalone";
+import FitnessChatStandalone from "./pages/FitnessChatStandalone";
+import FitnessDashboardStandalone from "./pages/FitnessDashboardStandalone";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -131,6 +134,11 @@ function AppRoutes() {
         <Route path="profile" element={<Profile />} />
         <Route path="appointments" element={<DashboardAppointments />} />
       </Route>
+      
+      {/* Standalone Fitness routes (without Orbitha Header/Footer) */}
+      <Route path="/fitness" element={<FitnessStandalone />} />
+      <Route path="/fitness/chat" element={<FitnessChatStandalone />} />
+      <Route path="/fitness/dashboard" element={<FitnessDashboardStandalone />} />
       
       {/* Chat route */}
       <Route path="/chat/:url" element={<ChatAgent />} />
