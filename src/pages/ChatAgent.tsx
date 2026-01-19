@@ -375,7 +375,9 @@ const ChatAgent = () => {
               const parsed = JSON.parse(data);
               if (parsed.content) {
                 fullMessage += parsed.content;
-                setStreamingMessage(fullMessage);
+                // Remove JSON blocks in real-time to avoid showing code to user
+                const cleanMessage = fullMessage.replace(/```json\s*[\s\S]*?```\s*/g, '').trim();
+                setStreamingMessage(cleanMessage);
               }
             } catch (e) {
               console.error('Error parsing chunk:', e);
