@@ -5,11 +5,12 @@ import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { ImageUploadButton } from "@/components/chat/ImageUploadButton";
 import { StyleSelector, CommunicationStyle } from "@/components/chat/StyleSelector";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ArrowLeft, Send, Loader2, BarChart3, Dumbbell } from "lucide-react";
+import { ArrowLeft, Send, Loader2, BarChart3, Dumbbell, Flame } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -28,7 +29,41 @@ interface Conversation {
   updated_at: string;
 }
 
+interface DailySummary {
+  total_calories: number;
+  meal_count: number;
+  calorie_goal: number | null;
+}
+
 const FITNESS_AGENT_URL = "fitness";
+
+// Function to clean JSON from messages
+const cleanJsonFromMessage = (text: string): string => {
+  let cleaned = text;
+  
+  // Remove ```json ... ``` blocks (complete)
+  cleaned = cleaned.replace(/```json[\s\S]*?```/g, '');
+  
+  // Remove incomplete ```json blocks
+  cleaned = cleaned.replace(/```json[\s\S]*/g, '');
+  
+  // Remove JSON objects with "action": "save_meal" pattern
+  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"save_\w+"[\s\S]*?\}\s*\}/g, '');
+  
+  // Remove JSON objects with meal_name pattern
+  cleaned = cleaned.replace(/\{\s*"meal_name"[\s\S]*?"total_calories"\s*:\s*\d+\s*\}/g, '');
+  
+  // Remove standalone JSON objects (starts with { and ends with })
+  cleaned = cleaned.replace(/^\s*\{[\s\S]*?"action"[\s\S]*?\}\s*$/gm, '');
+  
+  // Remove JSON with action: save_profile or save_weight
+  cleaned = cleaned.replace(/\{\s*"action"\s*:\s*"(save_profile|save_weight)"[\s\S]*?\}/g, '');
+  
+  // Clean up multiple newlines
+  cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+  
+  return cleaned.trim();
+};
 
 const FitnessChatStandalone = () => {
   const navigate = useNavigate();
@@ -47,8 +82,10 @@ const FitnessChatStandalone = () => {
   const [currentStyle, setCurrentStyle] = useState<CommunicationStyle>("normal");
   const [userId, setUserId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [streamingMessage, setStreamingMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [dailySummary, setDailySummary] = useState<DailySummary | null>(null);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -80,6 +117,7 @@ const FitnessChatStandalone = () => {
   useEffect(() => {
     if (agent && userId) {
       loadConversations();
+      loadDailySummary();
     }
   }, [agent, userId]);
 
@@ -96,6 +134,53 @@ const FitnessChatStandalone = () => {
   const scrollToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
+
+  const handleInputFocus = () => {
+    // Scroll input into view when keyboard opens on mobile
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }, 300);
+  };
+
+  const loadDailySummary = async () => {
+    if (!userId) return;
+    
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Get daily summary
+      const { data: summary } = await supabase.rpc('get_daily_summary', { 
+        _date: today, 
+        _user_id: userId 
+      });
+      
+      // Get calorie goal from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('calorie_goal')
+        .eq('id', userId)
+        .single();
+      
+      if (summary && summary[0]) {
+        setDailySummary({
+          total_calories: summary[0].total_calories || 0,
+          meal_count: summary[0].meal_count || 0,
+          calorie_goal: profile?.calorie_goal || null
+        });
+      } else {
+        setDailySummary({
+          total_calories: 0,
+          meal_count: 0,
+          calorie_goal: profile?.calorie_goal || null
+        });
+      }
+    } catch (error) {
+      console.error('Error loading daily summary:', error);
     }
   };
 
@@ -345,11 +430,9 @@ const FitnessChatStandalone = () => {
                 setIsThinking(false);
                 fullMessage += parsed.content;
                 
-                // Clean JSON blocks
-                let displayMessage = fullMessage;
-                displayMessage = displayMessage.replace(/```json[\s\S]*?```/g, "");
-                displayMessage = displayMessage.replace(/```json[\s\S]*/g, "");
-                setStreamingMessage(displayMessage.trim());
+                // Clean JSON from streaming message
+                const displayMessage = cleanJsonFromMessage(fullMessage);
+                setStreamingMessage(displayMessage);
               }
             } catch {}
           }
@@ -357,9 +440,7 @@ const FitnessChatStandalone = () => {
       }
 
       // Clean final message
-      let cleanMessage = fullMessage;
-      cleanMessage = cleanMessage.replace(/```json[\s\S]*?```/g, "");
-      cleanMessage = cleanMessage.trim();
+      const cleanMessage = cleanJsonFromMessage(fullMessage);
 
       // Save assistant message
       const { data: assistantMessage } = await supabase
@@ -379,6 +460,9 @@ const FitnessChatStandalone = () => {
       }
 
       setStreamingMessage("");
+      
+      // Reload daily summary after message (might have logged a meal)
+      loadDailySummary();
       
       // Update conversation timestamp
       await supabase.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", convId);
@@ -406,20 +490,20 @@ const FitnessChatStandalone = () => {
     <div className="flex gap-2 sm:gap-3 justify-start">
       {agent?.avatar_url && (
         <div className="relative shrink-0">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-500 via-emerald-500 to-green-500 blur-sm opacity-60 animate-pulse"></div>
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary via-primary/80 to-primary blur-sm opacity-60 animate-pulse"></div>
           <img
             src={agent.avatar_url}
             alt={agent?.name}
-            className="relative h-7 w-7 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-green-500/40"
+            className="relative h-7 w-7 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-primary/40"
           />
         </div>
       )}
       <div className="max-w-[88%] sm:max-w-[75%] rounded-xl sm:rounded-lg px-3 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-br from-muted to-secondary border border-border/50">
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
-            <span className="w-2 h-2 rounded-full bg-green-500/60 animate-bounce" style={{ animationDelay: '0ms' }}></span>
-            <span className="w-2 h-2 rounded-full bg-green-500/60 animate-bounce" style={{ animationDelay: '150ms' }}></span>
-            <span className="w-2 h-2 rounded-full bg-green-500/60 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: '300ms' }}></span>
           </div>
           <span className="text-sm text-muted-foreground">Pensando...</span>
         </div>
@@ -427,10 +511,44 @@ const FitnessChatStandalone = () => {
     </div>
   );
 
+  // Calorie Progress Component
+  const CalorieProgress = () => {
+    if (!dailySummary) return null;
+    
+    const { total_calories, meal_count, calorie_goal } = dailySummary;
+    const percentage = calorie_goal ? Math.min((total_calories / calorie_goal) * 100, 100) : 0;
+    const remaining = calorie_goal ? Math.max(calorie_goal - total_calories, 0) : null;
+    
+    return (
+      <div className="px-4 py-2 bg-primary/5 border-b border-border/30">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between text-sm mb-1">
+            <div className="flex items-center gap-2">
+              <Flame className="h-4 w-4 text-orange-500" />
+              <span className="font-medium">{total_calories} kcal</span>
+              <span className="text-muted-foreground text-xs">({meal_count} refeições)</span>
+            </div>
+            {calorie_goal && (
+              <span className="text-muted-foreground text-xs">
+                {remaining && remaining > 0 ? `Faltam ${remaining} kcal` : 'Meta atingida! 🎉'}
+              </span>
+            )}
+          </div>
+          {calorie_goal && (
+            <Progress 
+              value={percentage} 
+              className="h-2"
+            />
+          )}
+        </div>
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -470,6 +588,9 @@ const FitnessChatStandalone = () => {
           </div>
         </div>
       </header>
+
+      {/* Calorie Progress Bar */}
+      <CalorieProgress />
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
@@ -558,8 +679,8 @@ const FitnessChatStandalone = () => {
             </div>
           </ScrollArea>
 
-          {/* Input Area */}
-          <div className="border-t border-border/50 p-4 bg-background">
+          {/* Input Area - Sticky */}
+          <div className="sticky bottom-0 border-t border-border/50 p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90">
             <div className="max-w-3xl mx-auto">
               {selectedImage && (
                 <div className="mb-2 p-2 bg-muted rounded-lg flex items-center gap-2">
@@ -581,9 +702,11 @@ const FitnessChatStandalone = () => {
                   disabled={isSending}
                 />
                 <Textarea
+                  ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
+                  onFocus={handleInputFocus}
                   placeholder="Digite sua mensagem ou envie uma foto de refeição..."
                   disabled={isSending}
                   className="min-h-[44px] max-h-32 resize-none"
