@@ -10,8 +10,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { StyleSelector, type CommunicationStyle } from "@/components/chat/StyleSelector";
+import { ImageUploadButton } from "@/components/chat/ImageUploadButton";
 import { useIsMobile } from "@/hooks/use-mobile";
-
 interface Message {
   id: string;
   message: string;
@@ -37,6 +37,9 @@ interface Conversation {
   updated_at: string;
 }
 
+// Fitness agent URLs that should use chat-fitness endpoint
+const FITNESS_AGENT_URLS = ['fitness', 'agente-fitness', 'assistente-fitness'];
+
 const ChatAgent = () => {
   const { url } = useParams<{ url: string }>();
   const navigate = useNavigate();
@@ -55,6 +58,10 @@ const ChatAgent = () => {
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [streamingMessage, setStreamingMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Check if this is a fitness agent
+  const isFitnessAgent = url ? FITNESS_AGENT_URLS.includes(url.toLowerCase()) : false;
 
   useEffect(() => {
     checkAuth();
@@ -265,10 +272,12 @@ const ChatAgent = () => {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || !agent || !userId || isSending) return;
+    if ((!input.trim() && !selectedImage) || !agent || !userId || isSending) return;
 
     const userMessage = input.trim();
+    const imageToSend = selectedImage;
     setInput("");
+    setSelectedImage(null);
     setIsSending(true);
     setStreamingMessage("");
 
@@ -282,7 +291,7 @@ const ChatAgent = () => {
             user_id: userId,
             agent_id: agent.id,
             style: selectedStyle,
-            title: userMessage.substring(0, 50),
+            title: (userMessage || 'Análise de refeição').substring(0, 50),
           })
           .select()
           .single();
@@ -306,7 +315,7 @@ const ChatAgent = () => {
     // Add user message optimistically
     const tempUserMessage: Message = {
       id: crypto.randomUUID(),
-      message: userMessage,
+      message: imageToSend ? (userMessage || '📷 Imagem enviada') : userMessage,
       writer: 'user',
       created_at: new Date().toISOString(),
     };
@@ -319,8 +328,11 @@ const ChatAgent = () => {
         return;
       }
 
+      // Choose endpoint based on agent type
+      const endpoint = isFitnessAgent ? 'chat-fitness' : 'chat-agent';
+      
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-agent`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${endpoint}`,
         {
           method: 'POST',
           headers: {
@@ -330,6 +342,7 @@ const ChatAgent = () => {
           body: JSON.stringify({
             agentId: agent.id,
             message: userMessage,
+            imageBase64: imageToSend,
             conversationId: conversationId,
             style: selectedStyle,
           }),
@@ -573,18 +586,25 @@ const ChatAgent = () => {
         {/* Input */}
         <div className="border-t bg-card">
           <div className="max-w-4xl mx-auto px-4 py-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-end">
+              {isFitnessAgent && (
+                <ImageUploadButton
+                  onImageSelect={setSelectedImage}
+                  selectedImage={selectedImage}
+                  disabled={isSending}
+                />
+              )}
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Digite sua mensagem..."
-                className="min-h-[60px] max-h-[200px] resize-none"
+                placeholder={isFitnessAgent ? "Digite ou envie foto da refeição..." : "Digite sua mensagem..."}
+                className="min-h-[60px] max-h-[200px] resize-none flex-1"
                 disabled={isSending}
               />
               <Button
                 onClick={sendMessage}
-                disabled={!input.trim() || isSending}
+                disabled={(!input.trim() && !selectedImage) || isSending}
                 className="shrink-0 h-auto bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >
                 {isSending ? (
