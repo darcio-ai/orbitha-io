@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Bot, ChevronRight } from "lucide-react";
+import { MessageSquare, Bot } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -104,37 +104,38 @@ const DashboardAgentsForUser = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid gap-4">
             {agents.map((agent) => (
-              <button
+              <div
                 key={agent.id}
-                onClick={() => handleChat(agent.url)}
-                className="w-full p-4 border rounded-xl bg-card flex items-center justify-between gap-3 active:bg-muted/50 transition-colors touch-target"
+                className="p-4 border rounded-xl bg-card space-y-3"
               >
-                <div className="flex items-center gap-4 min-w-0">
-                  <Avatar className="h-12 w-12 shrink-0">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-14 w-14 shrink-0">
                     <AvatarImage src={agent.avatar_url || undefined} />
-                    <AvatarFallback className="text-base">
+                    <AvatarFallback className="text-lg">
                       {agent.name.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="text-left min-w-0">
-                    <span className="font-semibold text-base block truncate">{agent.name}</span>
-                    {agent.description && (
-                      <span className="text-sm text-muted-foreground block truncate">
-                        {agent.description}
-                      </span>
-                    )}
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-base">{agent.name}</h3>
+                    <Badge variant="secondary" className="text-xs mt-1">Ativo</Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-lg">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm font-medium">Conversar</span>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </button>
+                {agent.description && (
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {agent.description}
+                  </p>
+                )}
+                <Button 
+                  onClick={() => handleChat(agent.url)}
+                  className="w-full"
+                  size="lg"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Conversar
+                </Button>
+              </div>
             ))}
           </div>
         )}

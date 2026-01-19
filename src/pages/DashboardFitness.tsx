@@ -198,13 +198,13 @@ const DashboardFitness = () => {
 
       const weightValue = parseFloat(newWeight);
 
-      // Insert weight history
+      // Insert weight history with full timestamp
       const { error: weightError } = await supabase
         .from("user_weight_history")
         .insert({
           user_id: user.id,
           weight_kg: weightValue,
-          recorded_at: new Date().toISOString().split('T')[0]
+          recorded_at: new Date().toISOString()
         });
 
       if (weightError) throw weightError;
@@ -422,8 +422,11 @@ const DashboardFitness = () => {
                     dataKey="recorded_at" 
                     tickLine={false} 
                     axisLine={false} 
-                    fontSize={12}
-                    tickFormatter={(value) => new Date(value).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}
+                    fontSize={10}
+                    tickFormatter={(value) => {
+                      const date = new Date(value);
+                      return `${date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })} ${date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                    }}
                   />
                   <YAxis 
                     tickLine={false} 
