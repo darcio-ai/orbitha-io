@@ -5,12 +5,17 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export const useInstallPWA = () => {
+interface UseInstallPWAOptions {
+  manifestPath?: string; // e.g., '/manifest-fitness.json'
+}
+
+export const useInstallPWA = (options?: UseInstallPWAOptions) => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [canInstall, setCanInstall] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isInOtherPWA, setIsInOtherPWA] = useState(false);
 
   useEffect(() => {
     // Detect mobile devices via userAgent and screen width
@@ -33,11 +38,26 @@ export const useInstallPWA = () => {
 
     // Check if running in standalone mode (actually installed as PWA)
     const checkInstalled = () => {
-      // Check if running as installed PWA (standalone mode)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       const isIOSStandalone = (window.navigator as any).standalone === true;
+      const isRunningAsPWA = isStandalone || isIOSStandalone;
       
-      setIsInstalled(isStandalone || isIOSStandalone);
+      // Check if we're in the context of a different PWA
+      if (isRunningAsPWA && options?.manifestPath) {
+        const manifestLink = document.querySelector('link[rel="manifest"]');
+        const currentManifest = manifestLink?.getAttribute('href');
+        
+        // If we're running as PWA but the manifest doesn't match our expected one,
+        // we're inside a different PWA (e.g., accessing /fitness from the main Orbitha PWA)
+        if (currentManifest !== options.manifestPath) {
+          setIsInOtherPWA(true);
+          setIsInstalled(false); // Allow showing install prompt
+          return;
+        }
+      }
+      
+      setIsInstalled(isRunningAsPWA);
+      setIsInOtherPWA(false);
     };
     
     checkInstalled();
@@ -97,5 +117,6 @@ export const useInstallPWA = () => {
     promptInstall,
     isIOS,
     isMobile,
+    isInOtherPWA,
   };
 };

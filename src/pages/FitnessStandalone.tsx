@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useInstallPWA } from "@/hooks/useInstallPWA";
 import { supabase } from "@/integrations/supabase/client";
-import { Download, MessageCircle, BarChart3, Dumbbell, LogOut, User, Share } from "lucide-react";
+import { Download, MessageCircle, BarChart3, Dumbbell, LogOut, User, Share, ExternalLink } from "lucide-react";
 import { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
 const FitnessStandalone = () => {
   const navigate = useNavigate();
-  const { canInstall, isInstalled, promptInstall, isIOS, isMobile } = useInstallPWA();
+  const { canInstall, isInstalled, promptInstall, isIOS, isMobile, isInOtherPWA } = useInstallPWA({
+    manifestPath: '/manifest-fitness.json'
+  });
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,6 +96,27 @@ const FitnessStandalone = () => {
     </div>
   );
 
+  // Instructions when accessing from another PWA (e.g., main Orbitha app)
+  const OtherPWAInstructions = () => (
+    <div className="w-full p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/20">
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+          <ExternalLink className="h-5 w-5 text-amber-400" />
+        </div>
+        <div className="space-y-2">
+          <p className="font-medium text-sm text-foreground">Instalar App Separado</p>
+          <p className="text-xs text-muted-foreground">
+            Você está acessando pelo app Orbitha. Para instalar o Fitness Coach como app separado:
+          </p>
+          <ol className="text-xs text-muted-foreground space-y-1">
+            <li>1. Abra <code className="px-1.5 py-0.5 rounded bg-muted text-foreground">orbitha.io/fitness</code> no navegador</li>
+            <li>2. Clique em "Instalar App" ou use as instruções de instalação</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/10 flex flex-col">
       {/* Header */}
@@ -161,8 +184,13 @@ const FitnessStandalone = () => {
               </Button>
             )}
 
-            {/* iOS Install Instructions - Only show on mobile iOS */}
-            {isIOS && !isInstalled && !canInstall && isMobile && (
+            {/* Show instructions when inside another PWA (e.g., main Orbitha app) */}
+            {isInOtherPWA && isMobile && (
+              <OtherPWAInstructions />
+            )}
+
+            {/* iOS Install Instructions - Only show on mobile iOS when not in another PWA */}
+            {isIOS && !isInstalled && !canInstall && isMobile && !isInOtherPWA && (
               <IOSInstallInstructions />
             )}
 
