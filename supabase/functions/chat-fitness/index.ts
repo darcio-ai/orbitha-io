@@ -664,8 +664,8 @@ CÁLCULOS AUTOMÁTICOS (use esses valores):
         content: msg.message
       }));
 
-    // Get today's summary for context
-    const today = new Date().toISOString().split('T')[0];
+    // Get today's summary for context (using Brazil timezone)
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
     const { data: todaySummary } = await supabase
       .rpc('get_daily_summary', { _date: today, _user_id: userId });
 
