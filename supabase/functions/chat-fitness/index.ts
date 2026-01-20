@@ -822,26 +822,52 @@ REGRAS IMPORTANTES SOBRE DADOS DO USUÁRIO:
             if (jsonBlockMatch) {
               try {
                 actionData = JSON.parse(jsonBlockMatch[1]);
-                console.log('[chat-fitness] JSON found in code block');
+                console.log('[chat-fitness] JSON found in ```json block');
               } catch (e) {
-                console.error('[chat-fitness] Parse error from code block:', e);
+                console.error('[chat-fitness] Parse error from ```json block:', e);
               }
             }
             
-            // 2. If not found, try to extract loose meal JSON (with meal_name, items, total_calories)
+            // 2. Try to extract JSON from code block without "json" label: ```{ ... }```
             if (!actionData) {
-              const looseMealMatch = fullResponse.match(/\{\s*"(?:action|meal_name)"[^{}]*"items"\s*:\s*\[[\s\S]*?\][^{}]*"total_calories"\s*:\s*\d+[^{}]*\}/);
+              const jsonNoLabelMatch = fullResponse.match(/```\s*(\{[\s\S]*?\})\s*```/);
+              if (jsonNoLabelMatch) {
+                try {
+                  actionData = JSON.parse(jsonNoLabelMatch[1]);
+                  console.log('[chat-fitness] JSON found in ``` block (no json label)');
+                } catch (e) {
+                  console.error('[chat-fitness] Parse error from ``` block:', e);
+                }
+              }
+            }
+            
+            // 3. If not found, try to extract loose meal JSON with action save_meal
+            if (!actionData) {
+              const looseSaveMealMatch = fullResponse.match(/\{\s*"action"\s*:\s*"save_meal"[\s\S]*?"total_calories"\s*:\s*\d+\s*\}/);
+              if (looseSaveMealMatch) {
+                try {
+                  actionData = JSON.parse(looseSaveMealMatch[0]);
+                  console.log('[chat-fitness] Loose save_meal JSON found in response');
+                } catch (e) {
+                  console.error('[chat-fitness] Parse error from loose save_meal JSON:', e);
+                }
+              }
+            }
+            
+            // 4. Try to extract meal JSON with meal_name, items, total_calories (without action field)
+            if (!actionData) {
+              const looseMealMatch = fullResponse.match(/\{\s*"meal_name"[\s\S]*?"items"\s*:\s*\[[\s\S]*?\][\s\S]*?"total_calories"\s*:\s*\d+\s*\}/);
               if (looseMealMatch) {
                 try {
                   actionData = JSON.parse(looseMealMatch[0]);
-                  console.log('[chat-fitness] Loose meal JSON found in response');
+                  console.log('[chat-fitness] Loose meal JSON (no action) found in response');
                 } catch (e) {
                   console.error('[chat-fitness] Parse error from loose meal JSON:', e);
                 }
               }
             }
             
-            // 3. If still not found, try to extract loose action JSON (save_profile or save_weight)
+            // 5. If still not found, try to extract loose action JSON (save_profile or save_weight)
             if (!actionData) {
               const looseActionMatch = fullResponse.match(/\{\s*"action"\s*:\s*"(save_profile|save_weight)"[\s\S]*?\}/);
               if (looseActionMatch) {
@@ -852,6 +878,12 @@ REGRAS IMPORTANTES SOBRE DADOS DO USUÁRIO:
                   console.error('[chat-fitness] Parse error from loose action JSON:', e);
                 }
               }
+            }
+            
+            // Debug: Log if no JSON was found but response seems to contain meal data
+            if (!actionData && (fullResponse.includes('save_meal') || fullResponse.includes('total_calories'))) {
+              console.log('[chat-fitness] WARNING: Response contains meal keywords but no parseable JSON found');
+              console.log('[chat-fitness] Response excerpt:', fullResponse.substring(0, 500));
             }
             
             // Process action data if found
